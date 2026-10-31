@@ -1,7 +1,7 @@
 # cleanrules.github.io
 
 Source of <https://cleanrules.github.io>, the website of
-[cleanrules](https://github.com/cleanrules): an explainable rules engine with one
+[cleanrules](https://github.com/cleanrules/cleanrules): an explainable rules engine with one
 Rust core and bindings for Rust, C/C++, Python, JavaScript, Java/Scala and Go.
 
 A static site with no build step: `index.html`, `404.html` and `assets/`
