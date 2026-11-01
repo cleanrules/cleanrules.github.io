@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rules as JSON — cleanrules manual</title>
+  <meta name="description" content="Documents, decisions read back and verified, and versioning.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/json.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Rules as JSON — cleanrules manual">
+  <meta property="og:description" content="Documents, decisions read back and verified, and versioning.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/json.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html" aria-current="page">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">11 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html" aria-current="page">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 11</p>
+        <h1>Rules as JSON</h1>
+<p class="lead">Rules, decisions and explanations have one JSON form, defined by the format specification and written by the core. It is the contract between languages and with your files: a rule written in one language and read in another is the same tree and decides the same way.</p>
+
+<h2 id="documents">Documents<a class="h-anchor" href="#documents" aria-label="Link to this section">#</a></h2>
+<p>A document is an object with a <code>version</code> and exactly one content key:</p>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Content</th><th>The core reads it</th><th>The core writes it</th><th>From Python today</th></tr></thead>
+    <tbody>
+      <tr><td><code>condition</code></td><td>yes</td><td>yes</td><td>nodes pickle through it</td></tr>
+      <tr><td><code>rule</code>, <code>ruleset</code></td><td>yes</td><td>yes</td><td>loading and saving rule files is task D.1</td></tr>
+      <tr><td><code>decision</code></td><td>yes, checked against its rule set</td><td>yes</td><td><code>decision.to_dict()</code></td></tr>
+      <tr><td><code>explanation</code></td><td>no (output only)</td><td>yes</td><td><code>explanation.to_dict()</code></td></tr>
+      <tr><td><code>summary</code></td><td>no (output only)</td><td>yes</td><td><code>summary.to_dict()</code></td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Values that JSON cannot carry exactly have their own encoding: <code>{"$decimal": "0.15"}</code>, <code>{"$date": "2026-12-31"}</code>, <code>{"$datetime": "2026-12-15T14:00:00+01:00[Europe/Madrid]"}</code>, <code>{"$float": "inf"}</code>, and <code>{"$int": "…"}</code> for integers beyond 2<sup>53</sup>. The <a href="../format.html#values">format reference</a> has the full table.</p>
+
+<h2 id="decisions">Writing a decision from Python<a class="h-anchor" href="#decisions" aria-label="Link to this section">#</a></h2>
+<p>A decision document records every rule's result tree, with the value read at each field and the truth at each condition, and the rules selected. Outputs are not stored: they are derived from the payload trees.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">import json
+
+from cleanrules import F, Rule, RuleSet
+
+rules = RuleSet([Rule(&quot;vip&quot;, (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000), {&quot;discount&quot;: 0.15})])
+decision = rules.evaluate({&quot;customer&quot;: {&quot;years&quot;: 7}, &quot;order&quot;: {&quot;total&quot;: 1500}})
+print(json.dumps(decision.to_dict(), indent=1))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{
+ &quot;version&quot;: 1,
+ &quot;decision&quot;: {
+  &quot;hit_policy&quot;: &quot;first&quot;,
+  &quot;logic&quot;: &quot;boolean&quot;,
+  &quot;results&quot;: [
+   {
+    &quot;rule&quot;: &quot;vip&quot;,
+    &quot;fired&quot;: true,
+    &quot;when&quot;: {
+     &quot;op&quot;: &quot;and&quot;,
+     &quot;truth&quot;: true,
+     &quot;children&quot;: [
+      {
+       &quot;op&quot;: &quot;gt&quot;,
+       &quot;truth&quot;: true,
+       &quot;children&quot;: [
+        {
+         &quot;op&quot;: &quot;field&quot;,
+         &quot;path&quot;: [
+          &quot;customer&quot;,
+          &quot;years&quot;
+         ],
+         &quot;value&quot;: 7
+        },
+        {
+         &quot;op&quot;: &quot;const&quot;,
+         &quot;value&quot;: 5
+        }
+       ]
+      },
+      {
+       &quot;op&quot;: &quot;gt&quot;,
+       &quot;truth&quot;: true,
+       &quot;children&quot;: [
+        {
+         &quot;op&quot;: &quot;field&quot;,
+         &quot;path&quot;: [
+          &quot;order&quot;,
+          &quot;total&quot;
+         ],
+         &quot;value&quot;: 1500
+        },
+        {
+         &quot;op&quot;: &quot;const&quot;,
+         &quot;value&quot;: 1000
+        }
+       ]
+      }
+     ]
+    },
+    &quot;then&quot;: {
+     &quot;discount&quot;: {
+      &quot;op&quot;: &quot;const&quot;,
+      &quot;value&quot;: 0.15
+     }
+    }
+   }
+  ],
+  &quot;selected&quot;: [
+   &quot;vip&quot;
+  ]
+ }
+}</pre>
+</div>
+<p>Each worked example shows its rule set, decision and explanation as documents written by the core, for example the <a href="../examples/guardrail.html#rules">agent guardrail</a>.</p>
+
+<h2 id="rust">Reading documents in Rust<a class="h-anchor" href="#rust" aria-label="Link to this section">#</a></h2>
+<p>The core reads rule set documents today. This program reads one, evaluates it, writes the decision as a document, and reads that back. Reading a decision checks it against the rule set node by node, so a tampered decision (here, a constant changed from 5 to 2) is rejected with a pointer to the node. A document of a newer format version is rejected too.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>jsonfmt.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! Rules as JSON: read a rule set document, evaluate, write the decision and read it back.
+use cleanrules::format::{
+    Document, ValueContext, read_decision_document, read_document, read_value, write_decision,
+};
+use cleanrules::json::{Json, Limits, parse, to_string};
+
+const RULES: &amp;str = r#&quot;{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;first&quot;,
+    &quot;rules&quot;: [
+      {&quot;name&quot;: &quot;vip&quot;,
+       &quot;when&quot;: {&quot;op&quot;: &quot;and&quot;, &quot;operands&quot;: [
+         {&quot;op&quot;: &quot;gt&quot;, &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+                      &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}},
+         {&quot;op&quot;: &quot;gt&quot;, &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;]},
+                      &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}}]},
+       &quot;then&quot;: {&quot;discount&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;0.15&quot;}}}}
+    ]
+  }
+}&quot;#;
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let limits = Limits::default();
+    let Document::RuleSet(rules) = read_document(RULES, &amp;limits)? else {
+        return Err(&quot;not a rule set document&quot;.into());
+    };
+    let input = r#&quot;{&quot;customer&quot;: {&quot;years&quot;: 7}, &quot;order&quot;: {&quot;total&quot;: 1500}}&quot;#;
+    let data = read_value(&amp;parse(input, &amp;limits)?, &quot;&quot;, ValueContext::Data)?;
+    let decision = rules.evaluate(&amp;data)?;
+
+    let document = Json::Object(vec![
+        (&quot;version&quot;.to_owned(), parse(&quot;1&quot;, &amp;limits)?),
+        (&quot;decision&quot;.to_owned(), write_decision(&amp;decision)),
+    ]);
+    let text = to_string(&amp;document);
+    println!(&quot;decision document: {} bytes&quot;, text.len());
+
+    // Reading it back checks it against the rule set, node by node.
+    let again = read_decision_document(&amp;text, &amp;rules, &amp;limits)?;
+    println!(
+        &quot;read back, selected: {:?}&quot;,
+        again.selected().map(|r| r.rule.name()).collect::&lt;Vec&lt;_&gt;&gt;()
+    );
+
+    let tampered = text.replace(r#&quot;&quot;value&quot;:5&quot;#, r#&quot;&quot;value&quot;:2&quot;#);
+    match read_decision_document(&amp;tampered, &amp;rules, &amp;limits) {
+        Ok(_) =&gt; println!(&quot;accepted&quot;),
+        Err(error) =&gt; println!(&quot;{} at {:?}&quot;, error.code(), error.context().pointer),
+    }
+
+    let newer = RULES.replacen(&quot;\&quot;version\&quot;: 1&quot;, &quot;\&quot;version\&quot;: 2&quot;, 1);
+    if let Err(error) = read_document(&amp;newer, &amp;limits) {
+        println!(&quot;{}: {}&quot;, error.code(), error.message());
+    }
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">decision document: 468 bytes
+read back, selected: [&quot;vip&quot;]
+decision_mismatch at Some(&quot;/decision/results/0/when/children/0/children/1/value&quot;)
+unsupported_version: this reader knows format version 1</pre>
+</div>
+
+<h2 id="versioning">Versioning<a class="h-anchor" href="#versioning" aria-label="Link to this section">#</a></h2>
+<ul>
+  <li>The format version (<code>1</code>) is independent of the package versions. It changes only for a change that is not additive, and readers reject versions they do not know (<code>unsupported_version</code>).</li>
+  <li>Readers are strict: unknown keys, duplicate keys, integers beyond 64 bits and invalid nodes are errors with a JSON Pointer, never silently ignored.</li>
+  <li>Writers are canonical: the same object is always written the same way (<code>in</code> values sorted, defaults omitted), so documents can be compared and diffed.</li>
+  <li>Member order matters in one place: a payload's keys, which are the order of the output.</li>
+  <li>Readers enforce limits on size, JSON nesting and node depth, so documents from untrusted sources are safe to read.</li>
+</ul>
+
+<h2 id="planned">Planned<a class="h-anchor" href="#planned" aria-label="Link to this section">#</a></h2>
+<p>Loading and saving rule files in JSON and YAML from every binding (D.1), a text DSL with its own parser (<code>IF … THEN …</code>, D.2) and decision tables from rows, CSV or JSON (D.3). Until D.1, Python builds rule sets in code, as every example in this manual does.</p>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="errors.html"><small>← Previous</small>Errors</a><a class="next" href="pitfalls.html"><small>Next →</small>Python pitfalls</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#documents">Documents</a></li><li><a href="#decisions">Writing a decision from Python</a></li><li><a href="#rust">Reading documents in Rust</a></li><li><a href="#versioning">Versioning</a></li><li><a href="#planned">Planned</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

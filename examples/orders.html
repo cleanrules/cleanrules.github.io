@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order validation — cleanrules examples</title>
+  <meta name="description" content="Validation rules on a messy order: what is a violation, what is merely unknown, and when to make missing data an error with strict mode.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/examples/orders.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Order validation — cleanrules examples">
+  <meta property="og:description" content="Validation rules on a messy order: what is a violation, what is merely unknown, and when to make missing data an error with strict mode.">
+  <meta property="og:url" content="https://cleanrules.github.io/examples/orders.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html" aria-current="page">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="page-hero">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="crumbs muted"><a href="index.html">Examples</a> / 05</p>
+        <div class="ex-meta"><span class="chip dom">Data quality</span><span class="chip pol">RULE_ORDER · strict</span></div>
+        <h1>Order validation</h1>
+        <p class="lead">An order service validates incoming orders. Each rule describes a problem; the problems found are the outputs. The record below is messy on purpose: an email is missing and a quantity arrived as a string.</p>
+        <ul class="toc">
+          <li><a href="#problem">The problem</a></li><li><a href="#rules">The rules in every language</a></li>
+          <li><a href="#decision">The decision</a></li><li><a href="#explanation">The explanation</a></li>
+          <li><a href="#what-if">What happens if…</a></li><li><a href="#more">Learn more</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="problem">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The problem</p>
+          <h2>Order validation, in words.</h2>
+
+<ul>
+  <li><strong>missing_email</strong>: the customer has no email (<code>is_null</code>);</li>
+  <li><strong>bad_email</strong>: the email does not look like an address (a negated <code>matches</code>);</li>
+  <li><strong>bad_quantity</strong>: the quantity is zero or negative;</li>
+  <li><strong>total_mismatch</strong>: the total differs from quantity × unit price by more than 0.01 (<code>abs</code> of an expression);</li>
+  <li><strong>ships_before_order</strong>: the ship date is before the order date (two date fields).</li>
+</ul>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;},
+  &quot;quantity&quot;: &quot;3&quot;,
+  &quot;unit_price&quot;: 19.99,
+  &quot;total&quot;: 59.97,
+  &quot;order_date&quot;: {&quot;$date&quot;: &quot;2026-10-30&quot;},
+  &quot;ship_date&quot;: {&quot;$date&quot;: &quot;2026-10-28&quot;}
+}</code></pre>
+</div>
+          <p class="caption">A customer without an email, a quantity of &quot;3&quot; (a string), a unit price of 19.99, a total of 59.97, ordered on 30 October and shipped on 28 October. The input in the JSON format, where decimals and dates have their own encoding; in Python it is the dict in the program below.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="rules">
+      <div class="wrap">
+        <p class="eyebrow">The rules in every language</p>
+        <h2>One rule set, ten ways to write it.</h2>
+        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
+<button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
+<button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
+<button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
+<button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
+<button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="pv"></span>C</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
+</div>
+<div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.py</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from datetime import date
+
+from cleanrules import F, Rule, RuleSet
+
+checks = [
+    Rule(&quot;missing_email&quot;, F.customer.email.is_null(),
+         {&quot;field&quot;: &quot;customer.email&quot;, &quot;problem&quot;: &quot;missing&quot;}),
+    Rule(&quot;bad_email&quot;, ~F.customer.email.matches(r&quot;^[^@\s]+@[^@\s]+\.[a-z]{2,}$&quot;),
+         {&quot;field&quot;: &quot;customer.email&quot;, &quot;problem&quot;: &quot;malformed&quot;}),
+    Rule(&quot;bad_quantity&quot;, F.quantity &lt;= 0, {&quot;field&quot;: &quot;quantity&quot;, &quot;problem&quot;: &quot;not positive&quot;}),
+    Rule(&quot;total_mismatch&quot;, abs(F.quantity * F.unit_price - F.total) &gt; 0.01,
+         {&quot;field&quot;: &quot;total&quot;, &quot;problem&quot;: &quot;does not match quantity x price&quot;}),
+    Rule(&quot;ships_before_order&quot;, F.ship_date &lt; F.order_date,
+         {&quot;field&quot;: &quot;ship_date&quot;, &quot;problem&quot;: &quot;before the order date&quot;}),
+]
+validator = RuleSet(checks, hit_policy=&quot;rule_order&quot;)
+
+order = {&quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;}, &quot;quantity&quot;: &quot;3&quot;, &quot;unit_price&quot;: 19.99,
+         &quot;total&quot;: 59.97, &quot;order_date&quot;: date(2026, 10, 30), &quot;ship_date&quot;: date(2026, 10, 28)}
+decision = validator.evaluate(order)
+print(decision)
+for problem in decision.outputs:
+    print(&quot; &quot;, dict(problem))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Decision rule_order: selected [missing_email, ships_before_order]&gt;
+  {&#x27;field&#x27;: &#x27;customer.email&#x27;, &#x27;problem&#x27;: &#x27;missing&#x27;}
+  {&#x27;field&#x27;: &#x27;ship_date&#x27;, &#x27;problem&#x27;: &#x27;before the order date&#x27;}</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-rs" aria-labelledby="tab-rules-rs" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! Order validation: unknown is not &quot;passed&quot;, and strict mode raises.
+use cleanrules::Value;
+use cleanrules::build::{Build, constant, field};
+use cleanrules::explain::{Requirement, Status, explain};
+use cleanrules::format::{ValueContext, read_value, write_path};
+use cleanrules::json::{Limits, parse, to_string};
+use cleanrules::rules::{Config, HitPolicy, Rule, RuleSet};
+
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn std::error::Error&gt;&gt;;
+
+fn rule(name: &amp;str, when: Build, then: Vec&lt;(&amp;str, Build)&gt;) -&gt; Result&lt;Rule&gt; {
+    let then = then
+        .into_iter()
+        .map(|(key, value)| Ok((key.to_owned(), value.build()?)))
+        .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;
+    Ok(Rule::with_payload(name, when.build()?, then)?)
+}
+
+fn input(json: &amp;str) -&gt; Result&lt;Value&gt; {
+    Ok(read_value(
+        &amp;parse(json, &amp;Limits::default())?,
+        &quot;&quot;,
+        ValueContext::Data,
+    )?)
+}
+
+fn checks() -&gt; Vec&lt;(&amp;&#x27;static str, Build, &amp;&#x27;static str, &amp;&#x27;static str)&gt; {
+    vec![
+        (
+            &quot;missing_email&quot;,
+            field(&quot;customer&quot;).get(&quot;email&quot;).is_null(),
+            &quot;customer.email&quot;,
+            &quot;missing&quot;,
+        ),
+        (
+            &quot;bad_email&quot;,
+            !field(&quot;customer&quot;)
+                .get(&quot;email&quot;)
+                .matches(r&quot;^[^@\s]+@[^@\s]+\.[a-z]{2,}$&quot;),
+            &quot;customer.email&quot;,
+            &quot;malformed&quot;,
+        ),
+        (
+            &quot;bad_quantity&quot;,
+            field(&quot;quantity&quot;).le(0),
+            &quot;quantity&quot;,
+            &quot;not positive&quot;,
+        ),
+        (
+            &quot;total_mismatch&quot;,
+            (field(&quot;quantity&quot;) * field(&quot;unit_price&quot;) - field(&quot;total&quot;))
+                .abs()
+                .gt(0.01),
+            &quot;total&quot;,
+            &quot;does not match quantity x price&quot;,
+        ),
+        (
+            &quot;ships_before_order&quot;,
+            field(&quot;ship_date&quot;).lt(field(&quot;order_date&quot;)),
+            &quot;ship_date&quot;,
+            &quot;before the order date&quot;,
+        ),
+    ]
+}
+
+fn validator(strict: bool) -&gt; Result&lt;RuleSet&gt; {
+    let rules = checks()
+        .into_iter()
+        .map(|(name, when, at, problem)| {
+            rule(
+                name,
+                when,
+                vec![(&quot;field&quot;, constant(at)), (&quot;problem&quot;, constant(problem))],
+            )
+        })
+        .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;
+    let config = Config {
+        hit_policy: HitPolicy::RuleOrder,
+        strict,
+        ..Config::default()
+    };
+    Ok(RuleSet::new(rules, config)?)
+}
+
+fn main() -&gt; Result&lt;()&gt; {
+    let order = input(
+        r#&quot;{&quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;}, &quot;quantity&quot;: &quot;3&quot;, &quot;unit_price&quot;: 19.99, &quot;total&quot;: 59.97,
+            &quot;order_date&quot;: {&quot;$date&quot;: &quot;2026-10-30&quot;}, &quot;ship_date&quot;: {&quot;$date&quot;: &quot;2026-10-28&quot;}}&quot;#,
+    )?;
+    let lenient = validator(false)?;
+    let decision = lenient.evaluate(&amp;order)?;
+    for entry in explain(&amp;decision).rules {
+        let reason = match (&amp;entry.status, &amp;entry.requirement) {
+            (Status::Unknown, Requirement::Cause(cause)) =&gt; {
+                cause.reason().map_or(&quot;&quot;, |r| r.code.as_str())
+            }
+            _ =&gt; &quot;&quot;,
+        };
+        println!(&quot;{:&lt;19} {:&lt;10} {reason}&quot;, entry.rule, entry.status.as_str());
+    }
+
+    match validator(true)?.evaluate(&amp;order) {
+        Ok(_) =&gt; println!(&quot;strict: no error&quot;),
+        Err(error) =&gt; {
+            let context = error.context();
+            let rule = context.rule.as_deref().unwrap_or(&quot;-&quot;);
+            let path = context
+                .path
+                .as_ref()
+                .map(|p| to_string(&amp;write_path(p)))
+                .unwrap_or_default();
+            println!(&quot;strict: {} in rule {rule} at {path}: {error}&quot;, error.code());
+        }
+    }
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">missing_email       selected   
+bad_email           unknown    missing_field
+bad_quantity        unknown    type_mismatch
+total_mismatch      unknown    type_mismatch
+ships_before_order  selected   
+strict: missing_field in rule missing_email at [&quot;customer&quot;,&quot;email&quot;]: missing field customer.email</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-json" aria-labelledby="tab-rules-json" hidden>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>orders.ruleset.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;rule_order&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;missing_email&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;is_null&quot;,
+          &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;email&quot;]}
+        },
+        &quot;then&quot;: {
+          &quot;field&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;customer.email&quot;},
+          &quot;problem&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;missing&quot;}
+        }
+      },
+      {
+        &quot;name&quot;: &quot;bad_email&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;not&quot;,
+          &quot;operand&quot;: {
+            &quot;op&quot;: &quot;matches&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;email&quot;]},
+            &quot;pattern&quot;: &quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;
+          }
+        },
+        &quot;then&quot;: {
+          &quot;field&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;customer.email&quot;},
+          &quot;problem&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;malformed&quot;}
+        }
+      },
+      {
+        &quot;name&quot;: &quot;bad_quantity&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;le&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;quantity&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0}
+        },
+        &quot;then&quot;: {
+          &quot;field&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;quantity&quot;},
+          &quot;problem&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;not positive&quot;}
+        }
+      },
+      {
+        &quot;name&quot;: &quot;total_mismatch&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {
+            &quot;op&quot;: &quot;abs&quot;,
+            &quot;operand&quot;: {
+              &quot;op&quot;: &quot;sub&quot;,
+              &quot;left&quot;: {
+                &quot;op&quot;: &quot;mul&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;quantity&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;unit_price&quot;]}
+              },
+              &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;total&quot;]}
+            }
+          },
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.01}
+        },
+        &quot;then&quot;: {
+          &quot;field&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;total&quot;},
+          &quot;problem&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;does not match quantity x price&quot;}
+        }
+      },
+      {
+        &quot;name&quot;: &quot;ships_before_order&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;lt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;ship_date&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order_date&quot;]}
+        },
+        &quot;then&quot;: {
+          &quot;field&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;ship_date&quot;},
+          &quot;problem&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;before the order date&quot;}
+        }
+      }
+    ]
+  }
+}</code></pre>
+</div>
+<p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
+</div>
+<div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.ts</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
+import { F, Rule, RuleSet, date } from &quot;cleanrules&quot;;
+
+const checks = [
+  new Rule(&quot;missing_email&quot;, F.customer.email.isNull(), { field: &quot;customer.email&quot;, problem: &quot;missing&quot; }),
+  new Rule(
+    &quot;bad_email&quot;,
+    F.customer.email.matches(&quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;).not(),
+    { field: &quot;customer.email&quot;, problem: &quot;malformed&quot; },
+  ),
+  new Rule(&quot;bad_quantity&quot;, F.quantity.le(0), { field: &quot;quantity&quot;, problem: &quot;not positive&quot; }),
+  new Rule(
+    &quot;total_mismatch&quot;,
+    F.quantity.mul(F.unit_price).sub(F.total).abs().gt(0.01),
+    { field: &quot;total&quot;, problem: &quot;does not match quantity x price&quot; },
+  ),
+  new Rule(&quot;ships_before_order&quot;, F.ship_date.lt(F.order_date), {
+    field: &quot;ship_date&quot;,
+    problem: &quot;before the order date&quot;,
+  }),
+];
+const validator = new RuleSet(checks, { hitPolicy: &quot;rule_order&quot; });
+
+const order = {
+  customer: { name: &quot;Ana&quot; },
+  quantity: &quot;3&quot;,
+  unit_price: 19.99,
+  total: 59.97,
+  order_date: date(&quot;2026-10-30&quot;),
+  ship_date: date(&quot;2026-10-28&quot;),
+};
+const decision = validator.evaluate(order);
+console.log(decision.fired);
+for (const problem of decision.outputs) console.log(problem);</code></pre>
+</div>
+<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.java</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+import io.github.cleanrules.*;
+import java.time.LocalDate;
+import java.util.Map;
+
+import static io.github.cleanrules.Conditions.*;
+
+public class Orders {
+    static Rule check(String name, Condition when, String field, String problem) {
+        return Rule.named(name).when(when).then(&quot;field&quot;, field).then(&quot;problem&quot;, problem);
+    }
+
+    public static void main(String[] args) {
+        var email = field(&quot;customer&quot;, &quot;email&quot;);
+        var validator = RuleSet.builder()
+            .hitPolicy(HitPolicy.RULE_ORDER)
+            .add(check(&quot;missing_email&quot;, email.isNull(), &quot;customer.email&quot;, &quot;missing&quot;))
+            .add(check(&quot;bad_email&quot;, email.matches(&quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;).not(),
+                &quot;customer.email&quot;, &quot;malformed&quot;))
+            .add(check(&quot;bad_quantity&quot;, field(&quot;quantity&quot;).le(0), &quot;quantity&quot;, &quot;not positive&quot;))
+            .add(check(&quot;total_mismatch&quot;,
+                field(&quot;quantity&quot;).times(field(&quot;unit_price&quot;)).minus(field(&quot;total&quot;)).abs().gt(0.01),
+                &quot;total&quot;, &quot;does not match quantity x price&quot;))
+            .add(check(&quot;ships_before_order&quot;, field(&quot;ship_date&quot;).lt(field(&quot;order_date&quot;)),
+                &quot;ship_date&quot;, &quot;before the order date&quot;))
+            .build();
+
+        var order = Map.of(
+            &quot;customer&quot;, Map.of(&quot;name&quot;, &quot;Ana&quot;),
+            &quot;quantity&quot;, &quot;3&quot;,
+            &quot;unit_price&quot;, 19.99,
+            &quot;total&quot;, 59.97,
+            &quot;order_date&quot;, LocalDate.of(2026, 10, 30),
+            &quot;ship_date&quot;, LocalDate.of(2026, 10, 28));
+        var decision = validator.evaluate(order);
+        System.out.println(decision.fired());
+        decision.outputs().forEach(System.out::println);
+    }
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.scala</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
+import io.github.cleanrules.scala.*
+import java.time.LocalDate
+
+@main def orders(): Unit =
+    def problem(field: String, what: String) = Map(&quot;field&quot; -&gt; field, &quot;problem&quot; -&gt; what)
+    val email = F.customer.email
+    val validator = RuleSet(
+        Seq(
+            Rule(&quot;missing_email&quot;, email.isNull, problem(&quot;customer.email&quot;, &quot;missing&quot;)),
+            Rule(&quot;bad_email&quot;, !email.matches(&quot;&quot;&quot;^[^@\s]+@[^@\s]+\.[a-z]{2,}$&quot;&quot;&quot;),
+                problem(&quot;customer.email&quot;, &quot;malformed&quot;)),
+            Rule(&quot;bad_quantity&quot;, F.quantity &lt;= 0, problem(&quot;quantity&quot;, &quot;not positive&quot;)),
+            Rule(&quot;total_mismatch&quot;, (F.quantity * F.unit_price - F.total).abs &gt; 0.01,
+                problem(&quot;total&quot;, &quot;does not match quantity x price&quot;)),
+            Rule(&quot;ships_before_order&quot;, F.ship_date &lt; F.order_date,
+                problem(&quot;ship_date&quot;, &quot;before the order date&quot;)),
+        ),
+        hitPolicy = HitPolicy.RuleOrder,
+    )
+
+    val order = Map(
+        &quot;customer&quot; -&gt; Map(&quot;name&quot; -&gt; &quot;Ana&quot;),
+        &quot;quantity&quot; -&gt; &quot;3&quot;,
+        &quot;unit_price&quot; -&gt; 19.99,
+        &quot;total&quot; -&gt; 59.97,
+        &quot;order_date&quot; -&gt; LocalDate.of(2026, 10, 30),
+        &quot;ship_date&quot; -&gt; LocalDate.of(2026, 10, 28),
+    )
+    val decision = validator.evaluate(order)
+    println(decision.fired)
+    decision.outputs.foreach(println)</code></pre>
+</div>
+<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.go</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-go">// Design preview: the Go binding does not exist yet (phase H).
+package main
+
+import (
+	&quot;fmt&quot;
+	&quot;log&quot;
+	&quot;time&quot;
+
+	cr &quot;github.com/cleanrules/cleanrules/bindings/go&quot;
+)
+
+func main() {
+	check := func(name string, when cr.Expr, field, problem string) *cr.Rule {
+		return cr.NewRule(name, when).Then(&quot;field&quot;, field).Then(&quot;problem&quot;, problem)
+	}
+	email := cr.Field(&quot;customer&quot;, &quot;email&quot;)
+	mismatch := cr.Field(&quot;quantity&quot;).Mul(cr.Field(&quot;unit_price&quot;)).Sub(cr.Field(&quot;total&quot;)).Abs()
+	validator, err := cr.NewRuleSet([]*cr.Rule{
+		check(&quot;missing_email&quot;, email.IsNull(), &quot;customer.email&quot;, &quot;missing&quot;),
+		check(&quot;bad_email&quot;, cr.Not(email.Matches(`^[^@\s]+@[^@\s]+\.[a-z]{2,}$`)),
+			&quot;customer.email&quot;, &quot;malformed&quot;),
+		check(&quot;bad_quantity&quot;, cr.Field(&quot;quantity&quot;).Le(0), &quot;quantity&quot;, &quot;not positive&quot;),
+		check(&quot;total_mismatch&quot;, mismatch.Gt(0.01), &quot;total&quot;, &quot;does not match quantity x price&quot;),
+		check(&quot;ships_before_order&quot;, cr.Field(&quot;ship_date&quot;).Lt(cr.Field(&quot;order_date&quot;)),
+			&quot;ship_date&quot;, &quot;before the order date&quot;),
+	}, cr.WithHitPolicy(cr.RuleOrder))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	order := map[string]any{
+		&quot;customer&quot;:   map[string]any{&quot;name&quot;: &quot;Ana&quot;},
+		&quot;quantity&quot;:   &quot;3&quot;,
+		&quot;unit_price&quot;: 19.99,
+		&quot;total&quot;:      59.97,
+		&quot;order_date&quot;: cr.NewDate(2026, time.October, 30),
+		&quot;ship_date&quot;:  cr.NewDate(2026, time.October, 28),
+	}
+	decision, err := validator.Evaluate(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(decision.Fired())
+	for _, problem := range decision.Outputs() {
+		fmt.Println(problem)
+	}
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-c" aria-labelledby="tab-rules-c" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.c</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-c">// Design preview: the C binding does not exist yet (phase E).
+#include &lt;stdio.h&gt;
+#include &lt;cleanrules.h&gt;
+
+static int fail(cr_status status) {
+    fprintf(stderr, &quot;%s: %s\n&quot;, cr_status_name(status), cr_error_message(cr_last_error()));
+    return 1;
+}
+
+int main(void) {
+    cr_ruleset *rules = NULL;
+    cr_decision *decision = NULL;
+    char *outputs = NULL;
+
+    /* The rule set document shown in the JSON tab. */
+    cr_status status = cr_ruleset_read_file(&quot;orders.ruleset.json&quot;, &amp;rules);
+    if (status != CR_OK) return fail(status);
+
+    const char *order =
+        &quot;{\&quot;customer\&quot;: {\&quot;name\&quot;: \&quot;Ana\&quot;}, \&quot;quantity\&quot;: \&quot;3\&quot;, &quot;
+        &quot;\&quot;unit_price\&quot;: 19.99, \&quot;total\&quot;: 59.97, &quot;
+        &quot;\&quot;order_date\&quot;: {\&quot;$date\&quot;: \&quot;2026-10-30\&quot;}, &quot;
+        &quot;\&quot;ship_date\&quot;: {\&quot;$date\&quot;: \&quot;2026-10-28\&quot;}}&quot;;
+    status = cr_ruleset_evaluate_json(rules, order, &amp;decision);
+    if (status == CR_OK) status = cr_decision_outputs_json(decision, &amp;outputs);
+    if (status == CR_OK) puts(outputs);  /* a JSON array: one payload per selected rule */
+    else fail(status);
+
+    cr_string_free(outputs);
+    cr_decision_free(decision);
+    cr_ruleset_free(rules);
+    return status == CR_OK ? 0 : 1;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.cpp</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
+#include &lt;cleanrules.hpp&gt;
+#include &lt;iostream&gt;
+
+namespace cr = cleanrules;
+using cr::F;
+
+int main() {
+    auto problem = [](const char* field, const char* what) {
+        return cr::Value{{&quot;field&quot;, field}, {&quot;problem&quot;, what}};
+    };
+    auto email = F(&quot;customer&quot;)[&quot;email&quot;];
+    cr::RuleSet validator({
+        cr::Rule(&quot;missing_email&quot;, email.is_null()).then(problem(&quot;customer.email&quot;, &quot;missing&quot;)),
+        cr::Rule(&quot;bad_email&quot;, !email.matches(R&quot;(^[^@\s]+@[^@\s]+\.[a-z]{2,}$)&quot;))
+            .then(problem(&quot;customer.email&quot;, &quot;malformed&quot;)),
+        cr::Rule(&quot;bad_quantity&quot;, F(&quot;quantity&quot;) &lt;= 0).then(problem(&quot;quantity&quot;, &quot;not positive&quot;)),
+        cr::Rule(&quot;total_mismatch&quot;, (F(&quot;quantity&quot;) * F(&quot;unit_price&quot;) - F(&quot;total&quot;)).abs() &gt; 0.01)
+            .then(problem(&quot;total&quot;, &quot;does not match quantity x price&quot;)),
+        cr::Rule(&quot;ships_before_order&quot;, F(&quot;ship_date&quot;) &lt; F(&quot;order_date&quot;))
+            .then(problem(&quot;ship_date&quot;, &quot;before the order date&quot;)),
+    }, {.hit_policy = cr::HitPolicy::rule_order});
+
+    auto decision = validator.evaluate(cr::Value::from_json(R&quot;({
+        &quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;}, &quot;quantity&quot;: &quot;3&quot;, &quot;unit_price&quot;: 19.99, &quot;total&quot;: 59.97,
+        &quot;order_date&quot;: {&quot;$date&quot;: &quot;2026-10-30&quot;}, &quot;ship_date&quot;: {&quot;$date&quot;: &quot;2026-10-28&quot;}})&quot;));
+    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
+    std::cout &lt;&lt; &#x27;\n&#x27;;
+    for (const auto&amp; output : decision.outputs()) std::cout &lt;&lt; output.to_json() &lt;&lt; &#x27;\n&#x27;;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.erl</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-erlang">%% Design preview: the Erlang binding does not exist yet (phase N).
+-module(orders).
+-export([main/0]).
+
+main() -&gt;
+    C = cleanrules,
+    Problem = fun(Field, What) -&gt; [{field, Field}, {problem, What}] end,
+    Email = [customer, email],
+    Mismatch = C:abs(C:subtract(C:multiply([quantity], [unit_price]), [total])),
+    {ok, Validator} = C:ruleset([
+        C:rule(&lt;&lt;&quot;missing_email&quot;&gt;&gt;, C:is_null(Email), Problem(&lt;&lt;&quot;customer.email&quot;&gt;&gt;, &lt;&lt;&quot;missing&quot;&gt;&gt;)),
+        C:rule(&lt;&lt;&quot;bad_email&quot;&gt;&gt;, C:negate(C:matches(Email, &lt;&lt;&quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;&gt;&gt;)),
+               Problem(&lt;&lt;&quot;customer.email&quot;&gt;&gt;, &lt;&lt;&quot;malformed&quot;&gt;&gt;)),
+        C:rule(&lt;&lt;&quot;bad_quantity&quot;&gt;&gt;, C:le([quantity], 0), Problem(&lt;&lt;&quot;quantity&quot;&gt;&gt;, &lt;&lt;&quot;not positive&quot;&gt;&gt;)),
+        C:rule(&lt;&lt;&quot;total_mismatch&quot;&gt;&gt;, C:gt(Mismatch, 0.01),
+               Problem(&lt;&lt;&quot;total&quot;&gt;&gt;, &lt;&lt;&quot;does not match quantity x price&quot;&gt;&gt;)),
+        C:rule(&lt;&lt;&quot;ships_before_order&quot;&gt;&gt;, C:lt([ship_date], [order_date]),
+               Problem(&lt;&lt;&quot;ship_date&quot;&gt;&gt;, &lt;&lt;&quot;before the order date&quot;&gt;&gt;))
+    ], #{hit_policy =&gt; rule_order}),
+    Order = #{customer =&gt; #{name =&gt; &lt;&lt;&quot;Ana&quot;&gt;&gt;}, quantity =&gt; &lt;&lt;&quot;3&quot;&gt;&gt;, unit_price =&gt; 19.99,
+              total =&gt; 59.97, order_date =&gt; {date, {2026, 10, 30}},
+              ship_date =&gt; {date, {2026, 10, 28}}},
+    {ok, Decision} = C:evaluate(Validator, Order),
+    io:format(&quot;fired: ~p~n&quot;, [cleanrules:fired(Decision)]),
+    [io:format(&quot;~p~n&quot;, [Out]) || Out &lt;- cleanrules:outputs(Decision)],
+    ok.</code></pre>
+</div>
+<p class="panel-note">Design preview: the Erlang binding does not exist yet (phase N); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="decision">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The decision</p>
+          <h2>What the engine decided.</h2>
+<p>Two problems are certain: the email is missing and the ship date is before the order date. The other three rules did not report anything, but that does not mean they passed.</p>
+          <div class="table-wrap"><table class="data"><caption>Each rule's status, from the explanation the core wrote</caption><thead><tr><th>Rule</th><th>Status</th><th>Note</th></tr></thead><tbody><tr><td><code>missing_email</code></td><td><span class="st selected">selected</span></td><td></td></tr><tr><td><code>bad_email</code></td><td><span class="st unknown">unknown</span></td><td></td></tr><tr><td><code>bad_quantity</code></td><td><span class="st unknown">unknown</span></td><td></td></tr><tr><td><code>total_mismatch</code></td><td><span class="st unknown">unknown</span></td><td></td></tr><tr><td><code>ships_before_order</code></td><td><span class="st selected">selected</span></td><td></td></tr></tbody></table></div>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.outputs</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;outputs&quot;: [
+    {&quot;field&quot;: &quot;customer.email&quot;, &quot;problem&quot;: &quot;missing&quot;},
+    {&quot;field&quot;: &quot;ship_date&quot;, &quot;problem&quot;: &quot;before the order date&quot;}
+  ]
+}</code></pre>
+</div>
+          <div class="window scroll short"><div class="window-bar"><i></i><i></i><i></i><span>decision.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;decision&quot;: {
+    &quot;hit_policy&quot;: &quot;rule_order&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;results&quot;: [
+      {
+        &quot;rule&quot;: &quot;missing_email&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;is_null&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;field&quot;,
+              &quot;path&quot;: [&quot;customer&quot;, &quot;email&quot;],
+              &quot;value&quot;: null,
+              &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;email&quot;]]}
+            }
+          ]
+        },
+        &quot;then&quot;: {
+          &quot;field&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;customer.email&quot;},
+          &quot;problem&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;missing&quot;}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;bad_email&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;not&quot;,
+          &quot;truth&quot;: null,
+          &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;email&quot;]]},
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;matches&quot;,
+              &quot;truth&quot;: null,
+              &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;email&quot;]]},
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;customer&quot;, &quot;email&quot;],
+                  &quot;value&quot;: null,
+                  &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;email&quot;]]}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;bad_quantity&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;le&quot;,
+          &quot;truth&quot;: null,
+          &quot;reason&quot;: {
+            &quot;code&quot;: &quot;type_mismatch&quot;,
+            &quot;paths&quot;: [[&quot;quantity&quot;]],
+            &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+            &quot;detail&quot;: &quot;string vs number&quot;
+          },
+          &quot;children&quot;: [
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;quantity&quot;], &quot;value&quot;: &quot;3&quot;},
+            {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;total_mismatch&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;truth&quot;: null,
+          &quot;reason&quot;: {
+            &quot;code&quot;: &quot;type_mismatch&quot;,
+            &quot;paths&quot;: [[&quot;quantity&quot;], [&quot;unit_price&quot;]],
+            &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+            &quot;detail&quot;: &quot;arithmetic needs numbers&quot;
+          },
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;abs&quot;,
+              &quot;value&quot;: null,
+              &quot;reason&quot;: {
+                &quot;code&quot;: &quot;type_mismatch&quot;,
+                &quot;paths&quot;: [[&quot;quantity&quot;], [&quot;unit_price&quot;]],
+                &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+                &quot;detail&quot;: &quot;arithmetic needs numbers&quot;
+              },
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;sub&quot;,
+                  &quot;value&quot;: null,
+                  &quot;reason&quot;: {
+                    &quot;code&quot;: &quot;type_mismatch&quot;,
+                    &quot;paths&quot;: [[&quot;quantity&quot;], [&quot;unit_price&quot;]],
+                    &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+                    &quot;detail&quot;: &quot;arithmetic needs numbers&quot;
+                  },
+                  &quot;children&quot;: [
+                    {
+                      &quot;op&quot;: &quot;mul&quot;,
+                      &quot;value&quot;: null,
+                      &quot;reason&quot;: {
+                        &quot;code&quot;: &quot;type_mismatch&quot;,
+                        &quot;paths&quot;: [[&quot;quantity&quot;], [&quot;unit_price&quot;]],
+                        &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+                        &quot;detail&quot;: &quot;arithmetic needs numbers&quot;
+                      },
+                      &quot;children&quot;: [
+                        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;quantity&quot;], &quot;value&quot;: &quot;3&quot;},
+                        {
+                          &quot;op&quot;: &quot;field&quot;,
+                          &quot;path&quot;: [&quot;unit_price&quot;],
+                          &quot;value&quot;: 19.99
+                        }
+                      ]
+                    },
+                    {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;total&quot;], &quot;value&quot;: 59.97}
+                  ]
+                }
+              ]
+            },
+            {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.01}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;ships_before_order&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;lt&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;field&quot;,
+              &quot;path&quot;: [&quot;ship_date&quot;],
+              &quot;value&quot;: {&quot;$date&quot;: &quot;2026-10-28&quot;}
+            },
+            {
+              &quot;op&quot;: &quot;field&quot;,
+              &quot;path&quot;: [&quot;order_date&quot;],
+              &quot;value&quot;: {&quot;$date&quot;: &quot;2026-10-30&quot;}
+            }
+          ]
+        },
+        &quot;then&quot;: {
+          &quot;field&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;ship_date&quot;},
+          &quot;problem&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;before the order date&quot;}
+        }
+      }
+    ],
+    &quot;selected&quot;: [&quot;missing_email&quot;, &quot;ships_before_order&quot;]
+  }
+}</code></pre>
+</div>
+          <p class="caption">The decision document records every rule's result tree, with each value read; its outputs are derived from it. It equals <code>decision.to_dict()</code> in Python.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="explanation">
+      <div class="wrap">
+        <p class="eyebrow">The explanation</p>
+        <h2>Why, and why not.</h2>
+        <div class="prose"><p>The explanation separates <em>passed</em> from <em>could not tell</em>. <code>bad_email</code> is unknown because there is no email to check; <code>bad_quantity</code> and <code>total_mismatch</code> are unknown because <code>"3"</code> is a string, a type mismatch between string and number. cleanrules does not coerce types, so a data-quality report built from this can list them as "not checked".</p></div>
+        <div class="stack">
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">for rule in decision.explain().rules:
+    reason = rule.causes[0].reason if rule.status == &quot;unknown&quot; else None
+    print(f&quot;{rule.rule:&lt;19} {rule.status:&lt;10} {reason.code if reason else &#x27;&#x27;} {reason.types if reason else &#x27;&#x27;}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">missing_email       selected    
+bad_email           unknown    missing_field ()
+bad_quantity        unknown    type_mismatch (&#x27;string&#x27;, &#x27;number&#x27;)
+total_mismatch      unknown    type_mismatch (&#x27;string&#x27;, &#x27;number&#x27;)
+ships_before_order  selected    </pre>
+</div>
+            <p class="caption">The cells of this page run in order in one Python session.</p>
+          </div>
+          <div class="stack">
+            <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;rule_order&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;missing_email&quot;, &quot;ships_before_order&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;missing_email&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;is_null&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;email&quot;]}
+          },
+          &quot;at&quot;: &quot;/decision/results/0/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: []
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;bad_email&quot;,
+        &quot;status&quot;: &quot;unknown&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;matches&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;email&quot;]},
+            &quot;pattern&quot;: &quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;
+          },
+          &quot;at&quot;: &quot;/decision/results/1/when/children/0&quot;,
+          &quot;truth&quot;: null,
+          &quot;negated&quot;: true,
+          &quot;values&quot;: [],
+          &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;email&quot;]]}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;bad_quantity&quot;,
+        &quot;status&quot;: &quot;unknown&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;le&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;quantity&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0}
+          },
+          &quot;at&quot;: &quot;/decision/results/2/when&quot;,
+          &quot;truth&quot;: null,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;quantity&quot;], &quot;value&quot;: &quot;3&quot;}],
+          &quot;reason&quot;: {
+            &quot;code&quot;: &quot;type_mismatch&quot;,
+            &quot;paths&quot;: [[&quot;quantity&quot;]],
+            &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+            &quot;detail&quot;: &quot;string vs number&quot;
+          }
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;total_mismatch&quot;,
+        &quot;status&quot;: &quot;unknown&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {
+              &quot;op&quot;: &quot;abs&quot;,
+              &quot;operand&quot;: {
+                &quot;op&quot;: &quot;sub&quot;,
+                &quot;left&quot;: {
+                  &quot;op&quot;: &quot;mul&quot;,
+                  &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;quantity&quot;]},
+                  &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;unit_price&quot;]}
+                },
+                &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;total&quot;]}
+              }
+            },
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.01}
+          },
+          &quot;at&quot;: &quot;/decision/results/3/when&quot;,
+          &quot;truth&quot;: null,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [
+            {&quot;path&quot;: [&quot;quantity&quot;], &quot;value&quot;: &quot;3&quot;},
+            {&quot;path&quot;: [&quot;unit_price&quot;], &quot;value&quot;: 19.99},
+            {&quot;path&quot;: [&quot;total&quot;], &quot;value&quot;: 59.97}
+          ],
+          &quot;reason&quot;: {
+            &quot;code&quot;: &quot;type_mismatch&quot;,
+            &quot;paths&quot;: [[&quot;quantity&quot;], [&quot;unit_price&quot;]],
+            &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+            &quot;detail&quot;: &quot;arithmetic needs numbers&quot;
+          }
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;ships_before_order&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;lt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;ship_date&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order_date&quot;]}
+          },
+          &quot;at&quot;: &quot;/decision/results/4/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [
+            {&quot;path&quot;: [&quot;ship_date&quot;], &quot;value&quot;: {&quot;$date&quot;: &quot;2026-10-28&quot;}},
+            {&quot;path&quot;: [&quot;order_date&quot;], &quot;value&quot;: {&quot;$date&quot;: &quot;2026-10-30&quot;}}
+          ]
+        }
+      }
+    ]
+  }
+}</code></pre>
+</div>
+            <p class="caption">The same explanation as a JSON document, written by the core; it equals <code>decision.explain().to_dict()</code> in Python. Each <code>at</code> points into the decision document.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="what-if">
+      <div class="wrap">
+        <p class="eyebrow">What happens if…</p>
+        <h2>Change the input, see the outcome move.</h2>
+        <div class="prose">
+<p><strong>Strict mode.</strong> When the shape of the data is your contract, unknowns should be errors. With <code>strict=True</code>, the first problem in rule order raises: here a <em>missing</em> email, even under <code>is_null</code>, because a missing key and an explicit <code>None</code> are different things. Send <code>None</code> for "no email" and the next error surfaces: the quantity's type. Each error names the rule, the field's path and the failing node.</p>
+<p><strong>Batches.</strong> <code>evaluate_many</code> evaluates a list of orders. Leniently, each order gets its decision; strictly, the first failing order raises, and <code>row</code> says which.</p></div>
+        <div class="stack">
+          
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import EvaluationError
+
+strict = RuleSet(checks, hit_policy=&quot;rule_order&quot;, strict=True)
+no_email = {**order, &quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;, &quot;email&quot;: None}}
+for data in (order, no_email):
+    try:
+        strict.evaluate(data)
+    except EvaluationError as err:
+        print(f&quot;{type(err).__name__} | rule={err.rule} | path={err.path} | {err}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">MissingFieldError | rule=missing_email | path=(&#x27;customer&#x27;, &#x27;email&#x27;) | rule &#x27;missing_email&#x27;: missing field customer.email, in `F.customer.email`
+TypeMismatchError | rule=bad_quantity | path=(&#x27;quantity&#x27;,) | rule &#x27;bad_quantity&#x27;: type mismatch: string vs number, in `F.quantity &lt;= 0`</pre>
+</div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">good = {&quot;customer&quot;: {&quot;email&quot;: &quot;ana@example.com&quot;}, &quot;quantity&quot;: 3, &quot;unit_price&quot;: 19.99,
+        &quot;total&quot;: 59.97, &quot;order_date&quot;: date(2026, 10, 30), &quot;ship_date&quot;: date(2026, 10, 31)}
+typo = {**good, &quot;quantity&quot;: &quot;3&quot;}
+print([d.fired for d in validator.evaluate_many([good, order, typo])])
+try:
+    strict.evaluate_many([good, good, typo])
+except EvaluationError as err:
+    print(type(err).__name__, &quot;row&quot;, err.row, err.rule, err.types)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[(), (&#x27;missing_email&#x27;, &#x27;ships_before_order&#x27;), ()]
+TypeMismatchError row 2 bad_quantity (&#x27;string&#x27;, &#x27;number&#x27;)</pre>
+</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="more">
+      <div class="wrap">
+        <p class="eyebrow">Learn more</p>
+        <h2>The manual chapters this example uses.</h2>
+        <ul class="manual-links"><li><a href="../manual/evaluating.html#reasons">Unknown, and why</a></li><li><a href="../manual/evaluating.html#strict">Strict mode</a></li><li><a href="../manual/evaluating.html#strict-null">Strict mode and is_null</a></li><li><a href="../manual/evaluating.html#batches">Batches</a></li><li><a href="../manual/errors.html#codes">Error codes</a></li></ul>
+        <nav class="pager" aria-label="Examples"><a class="prev" href="fraud.html"><small>← Previous example</small>Fraud flags</a><a class="next" href="eligibility.html"><small>Next example →</small>Eligibility with dates</a></nav>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

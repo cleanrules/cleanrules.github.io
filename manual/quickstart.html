@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick start — cleanrules manual</title>
+  <meta name="description" content="One rule set from definition to explanation, in Python and in Rust.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/quickstart.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Quick start — cleanrules manual">
+  <meta property="og:description" content="One rule set from definition to explanation, in Python and in Rust.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/quickstart.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html" aria-current="page">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">03 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html" aria-current="page">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 03</p>
+        <h1>Quick start</h1>
+<p class="lead">A pricing rule set from start to finish: define three rules, evaluate one customer, read the decision, ask why a rule did not fire, and summarize the rule set. First in Python, then the same program in Rust.</p>
+
+<h2 id="define">Define the rules<a class="h-anchor" href="#define" aria-label="Link to this section">#</a></h2>
+<p>A <code>Rule</code> takes a name, a condition and a payload. <code>F</code> starts a field path into the input; comparisons and <code>&amp;</code> (and), <code>|</code> (or), <code>~</code> (not) build the condition tree. The rule set uses the <code>priority</code> hit policy: among the rules that fire, the one with the highest priority wins.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from decimal import Decimal
+
+from cleanrules import F, Rule, RuleSet
+
+rules = RuleSet(
+    [
+        Rule(&quot;vip&quot;, (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000),
+             {&quot;discount&quot;: Decimal(&quot;0.15&quot;)}, priority=10),
+        Rule(&quot;loyal&quot;, (F.customer.years &gt; 2) | F.customer.newsletter,
+             {&quot;discount&quot;: Decimal(&quot;0.05&quot;)}, priority=5),
+        Rule(&quot;blocked&quot;, F.customer.blocked, {&quot;discount&quot;: 0}, priority=99),
+    ],
+    hit_policy=&quot;priority&quot;,
+)
+rules</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">RuleSet([vip, loyal, blocked], hit_policy=&#x27;priority&#x27;)</pre>
+</div>
+<p>Note <code>blocked</code>: its condition is a bare field, <code>F.customer.blocked</code>, so it fires when that field is <code>True</code>.</p>
+
+<h2 id="evaluate">Evaluate an input<a class="h-anchor" href="#evaluate" aria-label="Link to this section">#</a></h2>
+<p>Inputs are Python data: dicts and lists here, but also dataclasses, Pydantic models, namedtuples or pandas rows (<a href="evaluating.html#data">reading Python objects</a>). Only the fields the rules read are read, and the input is never modified.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">data = {&quot;customer&quot;: {&quot;years&quot;: 3, &quot;newsletter&quot;: False}, &quot;order&quot;: {&quot;total&quot;: 800}}
+decision = rules.evaluate(data)
+decision</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Decision priority: selected [loyal]&gt;</pre>
+</div>
+<p><code>output</code> is the winner's payload, read-only. Payload values that were <code>Decimal</code>s stay <code>Decimal</code>s:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">decision.output</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">mappingproxy({&#x27;discount&#x27;: Decimal(&#x27;0.05&#x27;)})</pre>
+</div>
+<p>Every rule has a result, in rule order. <code>truth</code> is a value of three-valued logic:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">for result in decision.results:
+    print(f&quot;{result.rule.name:&lt;8} fired={result.fired!s:&lt;5} truth={result.truth}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">vip      fired=False truth=false
+loyal    fired=True  truth=true
+blocked  fired=False truth=unknown</pre>
+</div>
+<p><code>blocked</code> is <code>unknown</code>, not <code>false</code>: the input has no <code>customer.blocked</code>, and cleanrules does not guess. A rule only fires when its condition is true, so an unknown rule never fires. With <code>strict=True</code> the rule set would raise <code>MissingFieldError</code> instead (<a href="evaluating.html#strict">strict mode</a>).</p>
+
+<h2 id="explain">Ask why, and why not<a class="h-anchor" href="#explain" aria-label="Link to this section">#</a></h2>
+<p><code>explain()</code> explains every rule. <code>why_not(name)</code> picks one, typically one that did not fire:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">explanation = decision.explain()
+explanation</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Explanation: vip: not_fired, loyal: selected, blocked: unknown&gt;</pre>
+</div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">why = decision.why_not(&quot;vip&quot;)
+print(why.status, why.achievable)
+for cause in why.causes:
+    print(cause.node, &quot;-&gt;&quot;, cause.truth, &quot;| values:&quot;, cause.values)
+    print(&quot;   needs&quot;, cause.counterfactual)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">not_fired True
+F.customer.years &gt; 5 -&gt; false | values: (((&#x27;customer&#x27;, &#x27;years&#x27;), 3),)
+   needs Counterfactual(path=(&#x27;customer&#x27;, &#x27;years&#x27;), op=&#x27;gt&#x27;, target=5, gap=2)
+F.order.total &gt; 1000 -&gt; false | values: (((&#x27;order&#x27;, &#x27;total&#x27;), 800),)
+   needs Counterfactual(path=(&#x27;order&#x27;, &#x27;total&#x27;), op=&#x27;gt&#x27;, target=1000, gap=200)</pre>
+</div>
+<p>Each cause is one comparison of the rule's condition, with the value it read and a <strong>counterfactual</strong>: what the field would need (<code>customer.years &gt; 5</code>) and how far it was (a gap of 2 years; the order was 200 short). <code>achievable</code> says that changing those values could make the rule fire. The unknown rule carries a structured reason:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">blocked = explanation.for_rule(&quot;blocked&quot;)
+print(blocked.status, blocked.causes[0].reason)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">unknown Reason(code=&#x27;missing_field&#x27;, paths=((&#x27;customer&#x27;, &#x27;blocked&#x27;),), types=(), detail=None)</pre>
+</div>
+
+<h2 id="summary">Summarize the rule set<a class="h-anchor" href="#summary" aria-label="Link to this section">#</a></h2>
+<p>A summary describes a rule set without evaluating it: the fields it reads, where, and the outputs it produces.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">summary = rules.summary()
+for usage in summary.fields:
+    print(usage.path, &quot;read by&quot;, usage.conditions)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">(&#x27;customer&#x27;, &#x27;years&#x27;) read by (&#x27;vip&#x27;, &#x27;loyal&#x27;)
+(&#x27;order&#x27;, &#x27;total&#x27;) read by (&#x27;vip&#x27;,)
+(&#x27;customer&#x27;, &#x27;newsletter&#x27;) read by (&#x27;loyal&#x27;,)
+(&#x27;customer&#x27;, &#x27;blocked&#x27;) read by (&#x27;blocked&#x27;,)</pre>
+</div>
+
+<h2 id="json">The same, as JSON<a class="h-anchor" href="#json" aria-label="Link to this section">#</a></h2>
+<p>Decisions, explanations and summaries have a JSON form defined by the <a href="../format.html">format specification</a>; the core writes it, so it is the same in every language.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">import json
+
+doc = decision.explain().to_dict()
+print(doc[&quot;version&quot;], doc[&quot;explanation&quot;][&quot;selected&quot;])
+vip_doc = doc[&quot;explanation&quot;][&quot;rules&quot;][0]
+print(json.dumps(vip_doc[&quot;requirement&quot;][&quot;all&quot;][0][&quot;counterfactual&quot;]))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">1 [&#x27;loyal&#x27;]
+{&quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;op&quot;: &quot;gt&quot;, &quot;target&quot;: 5, &quot;gap&quot;: 2}</pre>
+</div>
+
+<h2 id="rust">The same program in Rust<a class="h-anchor" href="#rust" aria-label="Link to this section">#</a></h2>
+<p>Rust cannot overload <code>&gt;</code> to build nodes, so comparisons are methods (<code>gt</code>, <code>le</code>, …) while <code>&amp;</code>, <code>|</code> and <code>!</code> are operators. An expression is a <code>Build</code>, which carries the first construction error and is checked once by <code>.build()</code>. Inputs here are written in the JSON format and read with <code>read_value</code>.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>quickstart.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! Quick start: build rules, evaluate, explain and summarize.
+use cleanrules::build::{Build, constant, field};
+use cleanrules::explain::{Requirement, explain, summary};
+use cleanrules::format::{ValueContext, read_value, write_explanation, write_path, write_value};
+use cleanrules::json::{Limits, parse, to_string};
+use cleanrules::rules::{Config, HitPolicy, Rule, RuleSet};
+use cleanrules::{Decimal, Value};
+
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn std::error::Error&gt;&gt;;
+
+fn rule(name: &amp;str, when: Build, discount: Build, priority: i64) -&gt; Result&lt;Rule&gt; {
+    let then = vec![(&quot;discount&quot;.to_owned(), discount.build()?)];
+    Ok(Rule::with_payload(name, when.build()?, then)?.priority(priority))
+}
+
+fn main() -&gt; Result&lt;()&gt; {
+    let customer = || field(&quot;customer&quot;);
+    let rules = RuleSet::new(
+        vec![
+            rule(
+                &quot;vip&quot;,
+                customer().get(&quot;years&quot;).gt(5) &amp; field(&quot;order&quot;).get(&quot;total&quot;).gt(1000),
+                constant(Decimal::parse(&quot;0.15&quot;)?),
+                10,
+            )?,
+            rule(
+                &quot;loyal&quot;,
+                customer().get(&quot;years&quot;).gt(2) | customer().get(&quot;newsletter&quot;),
+                constant(Decimal::parse(&quot;0.05&quot;)?),
+                5,
+            )?,
+            rule(&quot;blocked&quot;, customer().get(&quot;blocked&quot;), constant(0), 99)?,
+        ],
+        Config {
+            hit_policy: HitPolicy::Priority,
+            ..Config::default()
+        },
+    )?;
+
+    let text = r#&quot;{&quot;customer&quot;: {&quot;years&quot;: 3, &quot;newsletter&quot;: false}, &quot;order&quot;: {&quot;total&quot;: 800}}&quot;#;
+    let data: Value = read_value(&amp;parse(text, &amp;Limits::default())?, &quot;&quot;, ValueContext::Data)?;
+    let decision = rules.evaluate(&amp;data)?;
+
+    if let Some(output) = decision.output()? {
+        println!(&quot;output: {}&quot;, to_string(&amp;write_value(&amp;output)));
+    }
+    let explanation = explain(&amp;decision);
+    for entry in &amp;explanation.rules {
+        println!(&quot;{:&lt;8} {}&quot;, entry.rule, entry.status.as_str());
+    }
+    if let Requirement::Group(kind, items) = &amp;explanation.rules[0].requirement {
+        println!(&quot;vip needs {kind:?} of {} conditions&quot;, items.len());
+    }
+    for usage in summary(&amp;rules).fields {
+        println!(
+            &quot;{} read by {:?}&quot;,
+            to_string(&amp;write_path(&amp;usage.path)),
+            usage.conditions
+        );
+    }
+    let json = to_string(&amp;write_explanation(&amp;explanation));
+    println!(&quot;explanation JSON: {} bytes&quot;, json.len());
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">output: {&quot;discount&quot;:{&quot;$decimal&quot;:&quot;0.05&quot;}}
+vip      not_fired
+loyal    selected
+blocked  unknown
+vip needs All of 2 conditions
+[&quot;customer&quot;,&quot;years&quot;] read by [&quot;vip&quot;, &quot;loyal&quot;]
+[&quot;order&quot;,&quot;total&quot;] read by [&quot;vip&quot;]
+[&quot;customer&quot;,&quot;newsletter&quot;] read by [&quot;loyal&quot;]
+[&quot;customer&quot;,&quot;blocked&quot;] read by [&quot;blocked&quot;]
+explanation JSON: 1323 bytes</pre>
+</div>
+<p>The decision is the same as in Python: the binding is a thin layer over this crate.</p>
+
+<h2 id="next">Where next<a class="h-anchor" href="#next" aria-label="Link to this section">#</a></h2>
+<ul>
+  <li><a href="conditions.html">Writing conditions</a>: every operator and method, constants, dates, decimals and regular expressions.</li>
+  <li><a href="hit-policies.html">Hit policies</a>: the five other ways to turn fired rules into a decision.</li>
+  <li><a href="../examples/index.html">Worked examples</a>: complete problems such as loan approval or an AI-agent guardrail.</li>
+</ul>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="installation.html"><small>← Previous</small>Installation</a><a class="next" href="conditions.html"><small>Next →</small>Writing conditions</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#define">Define the rules</a></li><li><a href="#evaluate">Evaluate an input</a></li><li><a href="#explain">Ask why, and why not</a></li><li><a href="#summary">Summarize the rule set</a></li><li><a href="#json">The same, as JSON</a></li><li><a href="#rust">The same program in Rust</a></li><li><a href="#next">Where next</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

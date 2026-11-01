@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loan approval — cleanrules examples</title>
+  <meta name="description" content="Decline, refer or approve an applicant, with hard stops that override everything, and tell a near miss exactly how far it was.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/examples/loan.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Loan approval — cleanrules examples">
+  <meta property="og:description" content="Decline, refer or approve an applicant, with hard stops that override everything, and tell a near miss exactly how far it was.">
+  <meta property="og:url" content="https://cleanrules.github.io/examples/loan.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html" aria-current="page">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="page-hero">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="crumbs muted"><a href="index.html">Examples</a> / 01</p>
+        <div class="ex-meta"><span class="chip dom">Finance</span><span class="chip pol">PRIORITY</span></div>
+        <h1>Loan approval</h1>
+        <p class="lead">A lender screens applicants with six rules. Some are hard stops (sanctions, age) that must win whatever else fires; others grant an approval with an interest rate; a fallback refers everything else to a person.</p>
+        <ul class="toc">
+          <li><a href="#problem">The problem</a></li><li><a href="#rules">The rules in every language</a></li>
+          <li><a href="#decision">The decision</a></li><li><a href="#explanation">The explanation</a></li>
+          <li><a href="#what-if">What happens if…</a></li><li><a href="#more">Learn more</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="problem">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The problem</p>
+          <h2>Loan approval, in words.</h2>
+
+<p>The rules, in words:</p>
+<ul>
+  <li><strong>sanctioned</strong>: an applicant from a sanctioned country is declined (priority 100);</li>
+  <li><strong>underage</strong>: under 18 is declined (90);</li>
+  <li><strong>over_indebted</strong>: debt above 45 % of income is referred to a person (50);</li>
+  <li><strong>prime</strong>: a score of 740 or more and an income of at least 40,000 is approved at 6.9 % APR (20);</li>
+  <li><strong>near_prime</strong>: a score from 660 up to (not including) 740 and an income of at least 30,000 is approved at 9.9 % (10);</li>
+  <li><strong>fallback</strong>: anything else is referred (0).</li>
+</ul>
+<p>Several rules can fire at once: an over-indebted applicant may also qualify as prime. The <code>priority</code> hit policy settles it: the rule that fired with the highest priority wins, so the order in which rules are written does not matter, and a hard stop always beats an approval.</p>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input.json</span></div>
+<pre class="code"><code class="language-json">{&quot;age&quot;: 34, &quot;country&quot;: &quot;ES&quot;, &quot;score&quot;: 728, &quot;income&quot;: 52000, &quot;debt&quot;: 14000}</code></pre>
+</div>
+          <p class="caption">One applicant: 34 years old, from Spain, a score of 728, an income of 52,000 and a debt of 14,000. The input in the JSON format, where decimals and dates have their own encoding; in Python it is the dict in the program below.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="rules">
+      <div class="wrap">
+        <p class="eyebrow">The rules in every language</p>
+        <h2>One rule set, ten ways to write it.</h2>
+        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
+<button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
+<button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
+<button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
+<button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
+<button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="pv"></span>C</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
+</div>
+<div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.py</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from decimal import Decimal
+
+from cleanrules import Const, F, Rule, RuleSet
+
+rules = RuleSet(
+    [
+        Rule(&quot;sanctioned&quot;, F.country.is_in([&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;]),
+             {&quot;decision&quot;: &quot;decline&quot;}, priority=100),
+        Rule(&quot;underage&quot;, F.age &lt; 18, {&quot;decision&quot;: &quot;decline&quot;}, priority=90),
+        Rule(&quot;over_indebted&quot;, F.debt / F.income &gt; 0.45,
+             {&quot;decision&quot;: &quot;refer&quot;}, priority=50),
+        Rule(&quot;prime&quot;, (F.score &gt;= 740) &amp; (F.income &gt;= 40_000),
+             {&quot;decision&quot;: &quot;approve&quot;, &quot;apr&quot;: Decimal(&quot;6.9&quot;)}, priority=20),
+        Rule(&quot;near_prime&quot;, F.score.between(660, 740, closed=&quot;left&quot;) &amp; (F.income &gt;= 30_000),
+             {&quot;decision&quot;: &quot;approve&quot;, &quot;apr&quot;: Decimal(&quot;9.9&quot;)}, priority=10),
+        Rule(&quot;fallback&quot;, Const(True), {&quot;decision&quot;: &quot;refer&quot;}),
+    ],
+    hit_policy=&quot;priority&quot;,
+)
+
+applicant = {&quot;age&quot;: 34, &quot;country&quot;: &quot;ES&quot;, &quot;score&quot;: 728, &quot;income&quot;: 52_000, &quot;debt&quot;: 14_000}
+decision = rules.evaluate(applicant)
+print(decision)
+print(dict(decision.output))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Decision priority: selected [near_prime]&gt;
+{&#x27;decision&#x27;: &#x27;approve&#x27;, &#x27;apr&#x27;: Decimal(&#x27;9.9&#x27;)}</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-rs" aria-labelledby="tab-rules-rs" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! Loan approval: the PRIORITY hit policy.
+use cleanrules::ast::Closed;
+use cleanrules::build::{Build, constant, field};
+use cleanrules::explain::{Cause, Gap, Requirement, explain};
+use cleanrules::format::{ValueContext, read_value, write_path, write_value};
+use cleanrules::json::{Limits, parse, to_string};
+use cleanrules::rules::{Config, HitPolicy, Rule, RuleSet};
+use cleanrules::{Decimal, Value};
+
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn std::error::Error&gt;&gt;;
+
+fn rule(name: &amp;str, when: Build, then: Vec&lt;(&amp;str, Build)&gt;, priority: i64) -&gt; Result&lt;Rule&gt; {
+    let then = then
+        .into_iter()
+        .map(|(key, value)| Ok((key.to_owned(), value.build()?)))
+        .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;
+    Ok(Rule::with_payload(name, when.build()?, then)?.priority(priority))
+}
+
+fn rules() -&gt; Result&lt;RuleSet&gt; {
+    let decide = |what: &amp;str| vec![(&quot;decision&quot;, constant(what))];
+    let approve = |apr: Decimal| vec![(&quot;decision&quot;, constant(&quot;approve&quot;)), (&quot;apr&quot;, constant(apr))];
+    let rules = vec![
+        rule(
+            &quot;sanctioned&quot;,
+            field(&quot;country&quot;).is_in([&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;]),
+            decide(&quot;decline&quot;),
+            100,
+        )?,
+        rule(&quot;underage&quot;, field(&quot;age&quot;).lt(18), decide(&quot;decline&quot;), 90)?,
+        rule(
+            &quot;over_indebted&quot;,
+            (field(&quot;debt&quot;) / field(&quot;income&quot;)).gt(0.45),
+            decide(&quot;refer&quot;),
+            50,
+        )?,
+        rule(
+            &quot;prime&quot;,
+            field(&quot;score&quot;).ge(740) &amp; field(&quot;income&quot;).ge(40_000),
+            approve(Decimal::parse(&quot;6.9&quot;)?),
+            20,
+        )?,
+        rule(
+            &quot;near_prime&quot;,
+            field(&quot;score&quot;).between_closed(660, 740, Closed::Left) &amp; field(&quot;income&quot;).ge(30_000),
+            approve(Decimal::parse(&quot;9.9&quot;)?),
+            10,
+        )?,
+        rule(&quot;fallback&quot;, constant(true), decide(&quot;refer&quot;), 0)?,
+    ];
+    let config = Config {
+        hit_policy: HitPolicy::Priority,
+        ..Config::default()
+    };
+    Ok(RuleSet::new(rules, config)?)
+}
+
+fn input(json: &amp;str) -&gt; Result&lt;Value&gt; {
+    Ok(read_value(
+        &amp;parse(json, &amp;Limits::default())?,
+        &quot;&quot;,
+        ValueContext::Data,
+    )?)
+}
+
+fn causes&lt;&#x27;r, &#x27;d, &#x27;a&gt;(requirement: &amp;&#x27;r Requirement&lt;&#x27;d, &#x27;a&gt;) -&gt; Vec&lt;&amp;&#x27;r Cause&lt;&#x27;d, &#x27;a&gt;&gt; {
+    match requirement {
+        Requirement::Cause(cause) =&gt; vec![cause],
+        Requirement::Group(_, items) =&gt; items.iter().flat_map(|item| causes(item)).collect(),
+    }
+}
+
+fn main() -&gt; Result&lt;()&gt; {
+    let rules = rules()?;
+    let applicant =
+        input(r#&quot;{&quot;age&quot;: 34, &quot;country&quot;: &quot;ES&quot;, &quot;score&quot;: 728, &quot;income&quot;: 52000, &quot;debt&quot;: 14000}&quot;#)?;
+    let decision = rules.evaluate(&amp;applicant)?;
+
+    let selected: Vec&lt;&amp;str&gt; = decision.selected().map(|r| r.rule.name()).collect();
+    println!(&quot;selected: {selected:?}&quot;);
+    if let Some(output) = decision.output()? {
+        println!(&quot;output:   {}&quot;, to_string(&amp;write_value(&amp;output)));
+    }
+
+    let explanation = explain(&amp;decision);
+    for entry in &amp;explanation.rules {
+        println!(&quot;{:&lt;14} {}&quot;, entry.rule, entry.status.as_str());
+    }
+    let prime = explanation
+        .rules
+        .iter()
+        .find(|e| e.rule == &quot;prime&quot;)
+        .ok_or(&quot;no rule prime&quot;)?;
+    for cause in causes(&amp;prime.requirement) {
+        if let Some(cf) = &amp;cause.counterfactual {
+            let gap = match &amp;cf.gap {
+                Some(Gap::Number(n)) =&gt; to_string(&amp;write_value(n)),
+                other =&gt; format!(&quot;{other:?}&quot;),
+            };
+            println!(
+                &quot;prime needs {} {} {}: gap {gap}&quot;,
+                to_string(&amp;write_path(&amp;cf.path)),
+                cf.op.tag(),
+                to_string(&amp;write_value(&amp;cf.target))
+            );
+        }
+    }
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">selected: [&quot;near_prime&quot;]
+output:   {&quot;decision&quot;:&quot;approve&quot;,&quot;apr&quot;:{&quot;$decimal&quot;:&quot;9.9&quot;}}
+sanctioned     not_fired
+underage       not_fired
+over_indebted  not_fired
+prime          not_fired
+near_prime     selected
+fallback       fired
+prime needs [&quot;score&quot;] ge 740: gap 12</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-json" aria-labelledby="tab-rules-json" hidden>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>loan.ruleset.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;sanctioned&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;in&quot;,
+          &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;country&quot;]},
+          &quot;values&quot;: [&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;]
+        },
+        &quot;then&quot;: {&quot;decision&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;decline&quot;}},
+        &quot;priority&quot;: 100
+      },
+      {
+        &quot;name&quot;: &quot;underage&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;lt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+        },
+        &quot;then&quot;: {&quot;decision&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;decline&quot;}},
+        &quot;priority&quot;: 90
+      },
+      {
+        &quot;name&quot;: &quot;over_indebted&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {
+            &quot;op&quot;: &quot;div&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;debt&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;]}
+          },
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.45}
+        },
+        &quot;then&quot;: {&quot;decision&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;refer&quot;}},
+        &quot;priority&quot;: 50
+      },
+      {
+        &quot;name&quot;: &quot;prime&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;ge&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 740}
+            },
+            {
+              &quot;op&quot;: &quot;ge&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 40000}
+            }
+          ]
+        },
+        &quot;then&quot;: {
+          &quot;decision&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;approve&quot;},
+          &quot;apr&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;6.9&quot;}}
+        },
+        &quot;priority&quot;: 20
+      },
+      {
+        &quot;name&quot;: &quot;near_prime&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;between&quot;,
+              &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;]},
+              &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 660},
+              &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 740},
+              &quot;closed&quot;: &quot;left&quot;
+            },
+            {
+              &quot;op&quot;: &quot;ge&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 30000}
+            }
+          ]
+        },
+        &quot;then&quot;: {
+          &quot;decision&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;approve&quot;},
+          &quot;apr&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;9.9&quot;}}
+        },
+        &quot;priority&quot;: 10
+      },
+      {
+        &quot;name&quot;: &quot;fallback&quot;,
+        &quot;when&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+        &quot;then&quot;: {&quot;decision&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;refer&quot;}}
+      }
+    ]
+  }
+}</code></pre>
+</div>
+<p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
+</div>
+<div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.ts</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
+import { F, Const, Rule, RuleSet, decimal } from &quot;cleanrules&quot;;
+
+const decline = { decision: &quot;decline&quot; };
+const rules = new RuleSet(
+  [
+    new Rule(&quot;sanctioned&quot;, F.country.isIn([&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;]), decline, { priority: 100 }),
+    new Rule(&quot;underage&quot;, F.age.lt(18), decline, { priority: 90 }),
+    new Rule(&quot;over_indebted&quot;, F.debt.div(F.income).gt(0.45), { decision: &quot;refer&quot; }, { priority: 50 }),
+    new Rule(
+      &quot;prime&quot;,
+      F.score.ge(740).and(F.income.ge(40_000)),
+      { decision: &quot;approve&quot;, apr: decimal(&quot;6.9&quot;) },
+      { priority: 20 },
+    ),
+    new Rule(
+      &quot;near_prime&quot;,
+      F.score.between(660, 740, &quot;left&quot;).and(F.income.ge(30_000)),
+      { decision: &quot;approve&quot;, apr: decimal(&quot;9.9&quot;) },
+      { priority: 10 },
+    ),
+    new Rule(&quot;fallback&quot;, Const(true), { decision: &quot;refer&quot; }),
+  ],
+  { hitPolicy: &quot;priority&quot; },
+);
+
+const applicant = { age: 34, country: &quot;ES&quot;, score: 728, income: 52_000, debt: 14_000 };
+const decision = rules.evaluate(applicant);
+console.log(decision.fired);
+console.log(decision.output);</code></pre>
+</div>
+<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.java</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+import io.github.cleanrules.*;
+import java.math.BigDecimal;
+
+import static io.github.cleanrules.Conditions.*;
+
+public class Loan {
+    record Applicant(int age, String country, int score, int income, int debt) {}
+
+    public static void main(String[] args) {
+        var rules = RuleSet.builder()
+            .hitPolicy(HitPolicy.PRIORITY)
+            .add(Rule.named(&quot;sanctioned&quot;).when(field(&quot;country&quot;).isIn(&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;))
+                .then(&quot;decision&quot;, &quot;decline&quot;).priority(100))
+            .add(Rule.named(&quot;underage&quot;).when(field(&quot;age&quot;).lt(18))
+                .then(&quot;decision&quot;, &quot;decline&quot;).priority(90))
+            .add(Rule.named(&quot;over_indebted&quot;).when(field(&quot;debt&quot;).div(field(&quot;income&quot;)).gt(0.45))
+                .then(&quot;decision&quot;, &quot;refer&quot;).priority(50))
+            .add(Rule.named(&quot;prime&quot;).when(field(&quot;score&quot;).ge(740).and(field(&quot;income&quot;).ge(40_000)))
+                .then(&quot;decision&quot;, &quot;approve&quot;).then(&quot;apr&quot;, new BigDecimal(&quot;6.9&quot;)).priority(20))
+            .add(Rule.named(&quot;near_prime&quot;)
+                .when(field(&quot;score&quot;).between(660, 740, Closed.LEFT).and(field(&quot;income&quot;).ge(30_000)))
+                .then(&quot;decision&quot;, &quot;approve&quot;).then(&quot;apr&quot;, new BigDecimal(&quot;9.9&quot;)).priority(10))
+            .add(Rule.named(&quot;fallback&quot;).when(constant(true)).then(&quot;decision&quot;, &quot;refer&quot;))
+            .build();
+
+        var decision = rules.evaluate(new Applicant(34, &quot;ES&quot;, 728, 52_000, 14_000));
+        System.out.println(decision.fired());
+        System.out.println(decision.output().orElseThrow());
+    }
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.scala</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
+import io.github.cleanrules.scala.*
+
+case class Applicant(age: Int, country: String, score: Int, income: Int, debt: Int)
+
+@main def loan(): Unit =
+    val decline = Map(&quot;decision&quot; -&gt; &quot;decline&quot;)
+    val rules = RuleSet(
+        Seq(
+            Rule(&quot;sanctioned&quot;, F.country.isIn(&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;), decline, priority = 100),
+            Rule(&quot;underage&quot;, F.age &lt; 18, decline, priority = 90),
+            Rule(&quot;over_indebted&quot;, F.debt / F.income &gt; 0.45, Map(&quot;decision&quot; -&gt; &quot;refer&quot;), priority = 50),
+            Rule(&quot;prime&quot;, F.score &gt;= 740 &amp; F.income &gt;= 40000,
+                Map(&quot;decision&quot; -&gt; &quot;approve&quot;, &quot;apr&quot; -&gt; BigDecimal(&quot;6.9&quot;)), priority = 20),
+            Rule(&quot;near_prime&quot;, F.score.between(660, 740, Closed.Left) &amp; F.income &gt;= 30000,
+                Map(&quot;decision&quot; -&gt; &quot;approve&quot;, &quot;apr&quot; -&gt; BigDecimal(&quot;9.9&quot;)), priority = 10),
+            Rule(&quot;fallback&quot;, Const(true), Map(&quot;decision&quot; -&gt; &quot;refer&quot;)),
+        ),
+        hitPolicy = HitPolicy.Priority,
+    )
+
+    val decision = rules.evaluate(Applicant(34, &quot;ES&quot;, 728, 52000, 14000))
+    println(decision.fired)
+    println(decision.output)</code></pre>
+</div>
+<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.go</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-go">// Design preview: the Go binding does not exist yet (phase H).
+package main
+
+import (
+	&quot;fmt&quot;
+	&quot;log&quot;
+
+	cr &quot;github.com/cleanrules/cleanrules/bindings/go&quot;
+)
+
+type Applicant struct {
+	Age     int    `json:&quot;age&quot;`
+	Country string `json:&quot;country&quot;`
+	Score   int    `json:&quot;score&quot;`
+	Income  int    `json:&quot;income&quot;`
+	Debt    int    `json:&quot;debt&quot;`
+}
+
+func main() {
+	rules, err := cr.NewRuleSet([]*cr.Rule{
+		cr.NewRule(&quot;sanctioned&quot;, cr.Field(&quot;country&quot;).In(&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;)).
+			Then(&quot;decision&quot;, &quot;decline&quot;).Priority(100),
+		cr.NewRule(&quot;underage&quot;, cr.Field(&quot;age&quot;).Lt(18)).Then(&quot;decision&quot;, &quot;decline&quot;).Priority(90),
+		cr.NewRule(&quot;over_indebted&quot;, cr.Field(&quot;debt&quot;).Div(cr.Field(&quot;income&quot;)).Gt(0.45)).
+			Then(&quot;decision&quot;, &quot;refer&quot;).Priority(50),
+		cr.NewRule(&quot;prime&quot;, cr.And(cr.Field(&quot;score&quot;).Ge(740), cr.Field(&quot;income&quot;).Ge(40000))).
+			Then(&quot;decision&quot;, &quot;approve&quot;).Then(&quot;apr&quot;, cr.MustDecimal(&quot;6.9&quot;)).Priority(20),
+		cr.NewRule(&quot;near_prime&quot;, cr.And(
+			cr.Field(&quot;score&quot;).BetweenClosed(660, 740, cr.Left),
+			cr.Field(&quot;income&quot;).Ge(30000),
+		)).Then(&quot;decision&quot;, &quot;approve&quot;).Then(&quot;apr&quot;, cr.MustDecimal(&quot;9.9&quot;)).Priority(10),
+		cr.NewRule(&quot;fallback&quot;, cr.Const(true)).Then(&quot;decision&quot;, &quot;refer&quot;),
+	}, cr.WithHitPolicy(cr.Priority))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	decision, err := rules.Evaluate(Applicant{Age: 34, Country: &quot;ES&quot;, Score: 728, Income: 52000, Debt: 14000})
+	if err != nil {
+		log.Fatal(err)
+	}
+	output, err := decision.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(decision.Fired())
+	fmt.Println(output)
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-c" aria-labelledby="tab-rules-c" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.c</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-c">// Design preview: the C binding does not exist yet (phase E).
+#include &lt;stdio.h&gt;
+#include &lt;cleanrules.h&gt;
+
+static int fail(cr_status status) {
+    fprintf(stderr, &quot;%s: %s\n&quot;, cr_status_name(status), cr_error_message(cr_last_error()));
+    return 1;
+}
+
+int main(void) {
+    cr_ruleset *rules = NULL;
+    cr_decision *decision = NULL;
+    char *output = NULL;
+
+    /* The rule set document shown in the JSON tab. */
+    cr_status status = cr_ruleset_read_file(&quot;loan.ruleset.json&quot;, &amp;rules);
+    if (status != CR_OK) return fail(status);
+
+    const char *applicant =
+        &quot;{\&quot;age\&quot;: 34, \&quot;country\&quot;: \&quot;ES\&quot;, \&quot;score\&quot;: 728, &quot;
+        &quot;\&quot;income\&quot;: 52000, \&quot;debt\&quot;: 14000}&quot;;
+    status = cr_ruleset_evaluate_json(rules, applicant, &amp;decision);
+    if (status == CR_OK) status = cr_decision_output_json(decision, &amp;output);
+    if (status == CR_OK) puts(output);  /* a JSON object, or null */
+    else fail(status);
+
+    cr_string_free(output);
+    cr_decision_free(decision);
+    cr_ruleset_free(rules);
+    return status == CR_OK ? 0 : 1;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.cpp</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
+#include &lt;cleanrules.hpp&gt;
+#include &lt;iostream&gt;
+
+namespace cr = cleanrules;
+using cr::F;
+
+int main() {
+    const cr::Value decline = {{&quot;decision&quot;, &quot;decline&quot;}};
+    cr::RuleSet rules({
+        cr::Rule(&quot;sanctioned&quot;, F(&quot;country&quot;).is_in({&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;})).then(decline).priority(100),
+        cr::Rule(&quot;underage&quot;, F(&quot;age&quot;) &lt; 18).then(decline).priority(90),
+        cr::Rule(&quot;over_indebted&quot;, F(&quot;debt&quot;) / F(&quot;income&quot;) &gt; 0.45)
+            .then({{&quot;decision&quot;, &quot;refer&quot;}}).priority(50),
+        cr::Rule(&quot;prime&quot;, (F(&quot;score&quot;) &gt;= 740) &amp; (F(&quot;income&quot;) &gt;= 40000))
+            .then({{&quot;decision&quot;, &quot;approve&quot;}, {&quot;apr&quot;, cr::Decimal(&quot;6.9&quot;)}}).priority(20),
+        cr::Rule(&quot;near_prime&quot;,
+                 F(&quot;score&quot;).between(660, 740, cr::Closed::left) &amp; (F(&quot;income&quot;) &gt;= 30000))
+            .then({{&quot;decision&quot;, &quot;approve&quot;}, {&quot;apr&quot;, cr::Decimal(&quot;9.9&quot;)}}).priority(10),
+        cr::Rule(&quot;fallback&quot;, cr::Const(true)).then({{&quot;decision&quot;, &quot;refer&quot;}}),
+    }, {.hit_policy = cr::HitPolicy::priority});
+
+    auto decision = rules.evaluate(cr::Value::from_json(
+        R&quot;({&quot;age&quot;: 34, &quot;country&quot;: &quot;ES&quot;, &quot;score&quot;: 728, &quot;income&quot;: 52000, &quot;debt&quot;: 14000})&quot;));
+    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
+    std::cout &lt;&lt; &#x27;\n&#x27;;
+    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.erl</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-erlang">%% Design preview: the Erlang binding does not exist yet (phase N).
+-module(loan).
+-export([main/0]).
+
+main() -&gt;
+    C = cleanrules,
+    Decline = #{decision =&gt; &lt;&lt;&quot;decline&quot;&gt;&gt;},
+    {ok, Rules} = C:ruleset([
+        C:rule(&lt;&lt;&quot;sanctioned&quot;&gt;&gt;, C:is_in([country], [&lt;&lt;&quot;IR&quot;&gt;&gt;, &lt;&lt;&quot;KP&quot;&gt;&gt;, &lt;&lt;&quot;SY&quot;&gt;&gt;]),
+               Decline, #{priority =&gt; 100}),
+        C:rule(&lt;&lt;&quot;underage&quot;&gt;&gt;, C:lt([age], 18), Decline, #{priority =&gt; 90}),
+        C:rule(&lt;&lt;&quot;over_indebted&quot;&gt;&gt;, C:gt(C:divide([debt], [income]), 0.45),
+               #{decision =&gt; &lt;&lt;&quot;refer&quot;&gt;&gt;}, #{priority =&gt; 50}),
+        C:rule(&lt;&lt;&quot;prime&quot;&gt;&gt;, C:all([C:ge([score], 740), C:ge([income], 40000)]),
+               [{decision, &lt;&lt;&quot;approve&quot;&gt;&gt;}, {apr, {decimal, &lt;&lt;&quot;6.9&quot;&gt;&gt;}}], #{priority =&gt; 20}),
+        C:rule(&lt;&lt;&quot;near_prime&quot;&gt;&gt;,
+               C:all([C:between([score], 660, 740, left), C:ge([income], 30000)]),
+               [{decision, &lt;&lt;&quot;approve&quot;&gt;&gt;}, {apr, {decimal, &lt;&lt;&quot;9.9&quot;&gt;&gt;}}], #{priority =&gt; 10}),
+        C:rule(&lt;&lt;&quot;fallback&quot;&gt;&gt;, true, #{decision =&gt; &lt;&lt;&quot;refer&quot;&gt;&gt;})
+    ], #{hit_policy =&gt; priority}),
+    {ok, Decision} = C:evaluate(Rules, #{age =&gt; 34, country =&gt; &lt;&lt;&quot;ES&quot;&gt;&gt;, score =&gt; 728,
+                                         income =&gt; 52000, debt =&gt; 14000}),
+    io:format(&quot;fired: ~p~n&quot;, [cleanrules:fired(Decision)]),
+    {ok, Output} = cleanrules:output(Decision),
+    io:format(&quot;~p~n&quot;, [Output]).</code></pre>
+</div>
+<p class="panel-note">Design preview: the Erlang binding does not exist yet (phase N); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="decision">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The decision</p>
+          <h2>What the engine decided.</h2>
+<p><code>near_prime</code> wins: <code>prime</code> missed on the score, and <code>fallback</code> also fired but has a lower priority. The APR is a <code>Decimal</code>, so it is exactly 9.9.</p>
+          <div class="table-wrap"><table class="data"><caption>Each rule's status, from the explanation the core wrote</caption><thead><tr><th>Rule</th><th>Status</th><th>Note</th></tr></thead><tbody><tr><td><code>sanctioned</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr><tr><td><code>underage</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr><tr><td><code>over_indebted</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr><tr><td><code>prime</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr><tr><td><code>near_prime</code></td><td><span class="st selected">selected</span></td><td></td></tr><tr><td><code>fallback</code></td><td><span class="st fired">fired</span></td><td>lower_priority: <code>near_prime</code> won (10 &gt; 0)</td></tr></tbody></table></div>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.output</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{&quot;decision&quot;: &quot;approve&quot;, &quot;apr&quot;: {&quot;$decimal&quot;: &quot;9.9&quot;}}</code></pre>
+</div>
+          <div class="window scroll short"><div class="window-bar"><i></i><i></i><i></i><span>decision.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;decision&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;results&quot;: [
+      {
+        &quot;rule&quot;: &quot;sanctioned&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;in&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [{&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;country&quot;], &quot;value&quot;: &quot;ES&quot;}]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;underage&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;lt&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;], &quot;value&quot;: 34},
+            {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;over_indebted&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;div&quot;,
+              &quot;value&quot;: 0.2692307692307692,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;debt&quot;], &quot;value&quot;: 14000},
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;], &quot;value&quot;: 52000}
+              ]
+            },
+            {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.45}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;prime&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;ge&quot;,
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;], &quot;value&quot;: 728},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 740}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;ge&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;], &quot;value&quot;: 52000},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 40000}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;near_prime&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;between&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;ge&quot;,
+                  &quot;truth&quot;: true,
+                  &quot;children&quot;: [
+                    {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;], &quot;value&quot;: 728},
+                    {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 660}
+                  ]
+                },
+                {
+                  &quot;op&quot;: &quot;lt&quot;,
+                  &quot;truth&quot;: true,
+                  &quot;children&quot;: [
+                    {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;], &quot;value&quot;: 728},
+                    {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 740}
+                  ]
+                }
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;ge&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;], &quot;value&quot;: 52000},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 30000}
+              ]
+            }
+          ]
+        },
+        &quot;then&quot;: {
+          &quot;decision&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;approve&quot;},
+          &quot;apr&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;9.9&quot;}}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;fallback&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;const&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [{&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true}]
+        }
+      }
+    ],
+    &quot;selected&quot;: [&quot;near_prime&quot;]
+  }
+}</code></pre>
+</div>
+          <p class="caption">The decision document records every rule's result tree, with each value read; its outputs are derived from it. It equals <code>decision.to_dict()</code> in Python.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="explanation">
+      <div class="wrap">
+        <p class="eyebrow">The explanation</p>
+        <h2>Why, and why not.</h2>
+        <div class="prose"><p>The explanation answers the applicant's obvious question, "why not prime?": the score of 728 is 12 points short of 740, and nothing else was missing (the income condition held). <code>achievable</code> is <code>True</code>: raising the score alone would make <code>prime</code> fire. The note on <code>fallback</code> says why it lost.</p></div>
+        <div class="stack">
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">for rule in decision.explain().rules:
+    print(f&quot;{rule.rule:&lt;14} {rule.status:&lt;10} {rule.note or &#x27;&#x27;}&quot;)
+
+why = decision.why_not(&quot;prime&quot;)
+print(&quot;prime is&quot;, why.status, &quot;- achievable:&quot;, why.achievable)
+for cause in why.causes:
+    print(&quot; &quot;, cause.node, &quot;is&quot;, cause.truth, dict(cause.values), cause.counterfactual)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">sanctioned     not_fired  
+underage       not_fired  
+over_indebted  not_fired  
+prime          not_fired  
+near_prime     selected   
+fallback       fired      Note(kind=&#x27;lower_priority&#x27;, winner=&#x27;near_prime&#x27;, priority=0, winner_priority=10)
+prime is not_fired - achievable: True
+  F.score &gt;= 740 is false {(&#x27;score&#x27;,): 728} Counterfactual(path=(&#x27;score&#x27;,), op=&#x27;ge&#x27;, target=740, gap=12)</pre>
+</div>
+            <p class="caption">The cells of this page run in order in one Python session.</p>
+          </div>
+          <div class="stack">
+            <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;near_prime&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;sanctioned&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;in&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;country&quot;]},
+            &quot;values&quot;: [&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;]
+          },
+          &quot;at&quot;: &quot;/decision/results/0/when&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;country&quot;], &quot;value&quot;: &quot;ES&quot;}]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;underage&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;lt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+          },
+          &quot;at&quot;: &quot;/decision/results/1/when&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;age&quot;], &quot;value&quot;: 34}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;age&quot;], &quot;op&quot;: &quot;lt&quot;, &quot;target&quot;: 18, &quot;gap&quot;: 16}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;over_indebted&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {
+              &quot;op&quot;: &quot;div&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;debt&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;]}
+            },
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.45}
+          },
+          &quot;at&quot;: &quot;/decision/results/2/when&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [
+            {&quot;path&quot;: [&quot;debt&quot;], &quot;value&quot;: 14000},
+            {&quot;path&quot;: [&quot;income&quot;], &quot;value&quot;: 52000}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;prime&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;ge&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 740}
+          },
+          &quot;at&quot;: &quot;/decision/results/3/when/children/0&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;score&quot;], &quot;value&quot;: 728}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;score&quot;], &quot;op&quot;: &quot;ge&quot;, &quot;target&quot;: 740, &quot;gap&quot;: 12}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;near_prime&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 660}
+              },
+              &quot;at&quot;: &quot;/decision/results/4/when/children/0/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;score&quot;], &quot;value&quot;: 728}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;lt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 740}
+              },
+              &quot;at&quot;: &quot;/decision/results/4/when/children/0/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;score&quot;], &quot;value&quot;: 728}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 30000}
+              },
+              &quot;at&quot;: &quot;/decision/results/4/when/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;income&quot;], &quot;value&quot;: 52000}]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;fallback&quot;,
+        &quot;status&quot;: &quot;fired&quot;,
+        &quot;note&quot;: {
+          &quot;kind&quot;: &quot;lower_priority&quot;,
+          &quot;winner&quot;: &quot;near_prime&quot;,
+          &quot;priority&quot;: 0,
+          &quot;winner_priority&quot;: 10
+        },
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+          &quot;at&quot;: &quot;/decision/results/5/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: []
+        }
+      }
+    ]
+  }
+}</code></pre>
+</div>
+            <p class="caption">The same explanation as a JSON document, written by the core; it equals <code>decision.explain().to_dict()</code> in Python. Each <code>at</code> points into the decision document.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="what-if">
+      <div class="wrap">
+        <p class="eyebrow">What happens if…</p>
+        <h2>Change the input, see the outcome move.</h2>
+        <div class="prose">
+<p><strong>More debt.</strong> With a debt of 30,000 the ratio is 0.58, so <code>over_indebted</code> fires. <code>near_prime</code> still fires too, but priority 50 beats 10, and the applicant is referred.</p>
+<p><strong>No score.</strong> Without a score, <code>prime</code> and <code>near_prime</code> are <em>unknown</em>, not false, and neither fires: cleanrules never approves on missing data. The fallback refers the applicant, and the explanation says exactly which field was missing.</p></div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">more_debt = {**applicant, &quot;debt&quot;: 30_000}
+no_score = {&quot;age&quot;: 34, &quot;country&quot;: &quot;ES&quot;, &quot;income&quot;: 52_000, &quot;debt&quot;: 14_000}
+
+for data in (more_debt, no_score):
+    d = rules.evaluate(data)
+    print(d, dict(d.output))
+    for rule in d.explain().rules:
+        if rule.status == &quot;unknown&quot;:
+            print(&quot;  unknown:&quot;, rule.rule, &quot;-&quot;, rule.causes[0].reason)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Decision priority: selected [over_indebted]&gt; {&#x27;decision&#x27;: &#x27;refer&#x27;}
+&lt;Decision priority: selected [fallback]&gt; {&#x27;decision&#x27;: &#x27;refer&#x27;}
+  unknown: prime - Reason(code=&#x27;missing_field&#x27;, paths=((&#x27;score&#x27;,),), types=(), detail=None)
+  unknown: near_prime - Reason(code=&#x27;missing_field&#x27;, paths=((&#x27;score&#x27;,),), types=(), detail=None)</pre>
+</div>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="more">
+      <div class="wrap">
+        <p class="eyebrow">Learn more</p>
+        <h2>The manual chapters this example uses.</h2>
+        <ul class="manual-links"><li><a href="../manual/hit-policies.html#single">Hit policies</a></li><li><a href="../manual/explanations.html#counterfactuals">Counterfactuals and gaps</a></li><li><a href="../manual/evaluating.html#reasons">Unknown, and why</a></li><li><a href="../manual/conditions.html#methods">between and is_in</a></li></ul>
+        <nav class="pager" aria-label="Examples"><a class="next" href="insurance.html"><small>Next example →</small>Insurance premium</a></nav>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

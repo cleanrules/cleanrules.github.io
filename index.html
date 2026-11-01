@@ -6,6 +6,7 @@
   <title>cleanrules — an explainable rules engine with a Rust core</title>
   <meta name="description" content="cleanrules is an explainable rules engine with one Rust core and bindings for Rust, C/C++, Python, JavaScript, Java/Scala, Go and Erlang: business rules, expert systems, data validation, ML explanations and guardrails for AI agents.">
   <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
   <link rel="canonical" href="https://cleanrules.github.io/">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icon-180.png">
@@ -36,11 +37,22 @@
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Main">
         <a href="index.html" aria-current="page">Overview</a>
-        <a href="guide.html">Guide</a>
-        <a href="format.html">Format</a>
-        <a href="benchmarks.html">Benchmarks</a>
+        <a href="manual/index.html">Manual</a>
+        <a href="examples/index.html">Examples</a>
+        <a href="guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="format.html">JSON format v1</a>
+            <a href="manual/api-python.html">Python API</a>
+            <a href="manual/api-rust.html">Rust API</a>
+            <a href="manual/errors.html">Error codes</a>
+            <a href="benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
         <a href="agents.html">Agents</a>
         <a href="compare.html">Compare</a>
+        <a href="about.html">About</a>
       </nav>
       <div class="nav-actions">
         <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
@@ -72,8 +84,8 @@
             data validation, ML explanations and guardrails for AI agents — and every decision tells you why.
           </p>
           <div class="cta">
-            <a class="btn btn-primary" href="guide.html">Read the guide</a>
-            <a class="btn btn-ghost" href="#explain">See an explanation</a>
+            <a class="btn btn-primary" href="manual/index.html">Read the manual</a>
+            <a class="btn btn-ghost" href="examples/index.html">Worked examples</a>
             <a class="btn btn-ghost" href="#status">Status</a>
           </div>
           <ul class="truth-legend" aria-label="Three-valued logic">
@@ -85,28 +97,59 @@
         </div>
 
         <div class="hero-demo">
-          <div class="window">
-            <div class="window-bar"><i></i><i></i><i></i><span>pricing.py</span></div>
-<pre class="code"><code class="language-python">from rulepy import F, Rule, RuleSet
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.py</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F, Rule, RuleSet
 
-vip = Rule(
-    "vip",
-    when=(F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000),
-    then={"discount": 0.15},
-)
+rules = RuleSet([
+    Rule(&quot;vip&quot;, (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000), {&quot;discount&quot;: 0.15}),
+    Rule(&quot;loyal&quot;, F.customer.years &gt; 2, {&quot;discount&quot;: 0.05}),
+])
 
-decision = RuleSet([vip]).evaluate(data)
-print(decision.explain())</code></pre>
-          </div>
+decision = rules.evaluate({&quot;customer&quot;: {&quot;years&quot;: 3}, &quot;order&quot;: {&quot;total&quot;: 1500}})
+print(dict(decision.output))
+
+why = decision.why_not(&quot;vip&quot;)
+cause = why.causes[0]
+print(why.status, &quot;because&quot;, cause.node, &quot;is&quot;, cause.truth, &quot;- short by&quot;, cause.counterfactual.gap)</code></pre>
+</div>
           <div class="window output">
-            <div class="window-bar"><i></i><i></i><i></i><span>output</span></div>
-<pre class="term" id="hero-term" aria-live="polite"><span class="hd">FIRST decision: selected 'vip'</span>
-<span class="t">[x]</span> vip (selected): (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000)
-    because all of these hold:
-    - F.customer.years &gt; 5 is <b class="t">true</b> (customer.years = 7)
-    - F.order.total &gt; 1000 is <b class="t">true</b> (order.total = 1500)</pre>
+            <div class="window-bar"><i></i><i></i><i></i><span>output</span><span class="src">real output</span></div>
+<pre class="term" id="hero-term">{&#x27;discount&#x27;: 0.05}
+not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
           </div>
-          <p class="caption">Real output of the Python reference implementation, whose semantics the Rust core now reproduces.</p>
+          <p class="caption">Real output of the Python binding, built from source and running on the Rust core. <a href="manual/quickstart.html">Quick start →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Start here -->
+    <section class="section no-reveal" id="start">
+      <div class="wrap">
+        <p class="eyebrow">Start here</p>
+        <h2>A manual, worked examples and the reference.</h2>
+        <p class="sub">Every Python and Rust snippet on this site was run, and its output is pasted as printed. The planned languages are shown as clearly labelled design previews.</p>
+        <div class="funnel">
+          <a class="card" href="manual/index.html">
+            <span class="ex-num">15 chapters</span>
+            <span class="big">The manual</span>
+            <p>Install from source, write conditions and rules, choose a hit policy, handle missing data, read explanations and errors. Python and Rust, with real output.</p>
+            <ul><li><span>Quick start</span></li><li><span>Writing conditions</span></li><li><span>Explanations and counterfactuals</span></li><li><span>Python and Rust API reference</span></li></ul>
+            <span class="more">Open the manual →</span>
+          </a>
+          <a class="card" href="examples/index.html">
+            <span class="ex-num">8 problems · 10 languages</span>
+            <span class="big">Worked examples</span>
+            <p>Loan approval, insurance premiums, shipping tables, fraud flags, order validation, eligibility deadlines, discount agreement and an AI-agent guardrail.</p>
+            <ul><li><span>Python, Rust and JSON that run</span></li><li><span>TypeScript, Java, Scala, Go, C, C++, Erlang previews</span></li></ul>
+            <span class="more">Browse the examples →</span>
+          </a>
+          <a class="card" href="guide.html">
+            <span class="ex-num">concepts &amp; reference</span>
+            <span class="big">How it works</span>
+            <p>The semantics in depth: conditions as data, three-valued logic, hit policies and explanations; the JSON format v1; benchmarks with their caveats.</p>
+            <ul><li><span>Concepts guide</span></li><li><span>JSON format v1</span></li><li><span>Benchmarks</span></li></ul>
+            <span class="more">Read the concepts →</span>
+          </a>
         </div>
       </div>
     </section>
@@ -115,10 +158,10 @@ print(decision.explain())</code></pre>
     <section class="section alt" id="status">
       <div class="wrap">
         <p class="eyebrow">Status at a glance</p>
-        <h2>The Rust core is done. The bindings come next.</h2>
-        <p class="sub">Phases A (the contract between languages) and B (the Rust core) are complete. Nothing is published yet: the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
+        <h2>The Rust core and the Python binding are done.</h2>
+        <p class="sub">Phases A (the contract between languages) and B (the Rust core) are complete, and phase C, the Python binding, is complete: its API, data reading and actions are done, and it passes every conformance vector. It builds from source today; next comes phase D, rules as data. Nothing is published yet: the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
         <div class="stats">
-          <div class="stat"><b>2,135</b><span>conformance vectors, all passing</span><small>1,948 through the core's runner (1,150 condition, 176 value, 302 evaluation, 317 explanation, 3 summary) and 187 document-reading cases. Every binding will run the same files.</small></div>
+          <div class="stat"><b>2,135</b><span>conformance vectors, all passing</span><small>1,948 through the core's runner (1,150 condition, 176 value, 302 evaluation, 317 explanation, 3 summary) and 187 document-reading cases. The Python binding passes them too: all 2,135 through JSON and 1,948 with native Python data.</small></div>
           <div class="stat"><b>6 &times; 512</b><span>property tests</span><small><code>proptest</code>: evaluation never fails and gives reasons exactly for unknowns, De Morgan, strict mode, JSON round trips, decisions read back, explanation causes point the right way.</small></div>
           <div class="stat"><b>7.2&nbsp;&micro;s</b><span>per input, 12 rules</span><small>One input under <code>first</code>, with every result tree kept for <code>explain()</code>. Apple M5, rustc 1.97.1, criterion. <a href="benchmarks.html">Method and caveats</a></small></div>
           <div class="stat"><b>6.4&times; / 6.7&times;</b><span>vs zen-engine 2.1.6</span><small>1,000 evaluations under <code>first</code> / <code>collect</code>, on one workload and one machine, after checking both engines select the same rules. <a href="benchmarks.html#zen">Read the caveats</a></small></div>
@@ -126,8 +169,8 @@ print(decision.explain())</code></pre>
         <ul class="phase-strip" aria-label="Roadmap phases">
           <li class="done">A · contract ✓</li>
           <li class="done">B · Rust core ✓</li>
-          <li class="now">C · Python binding (C.1 wheels done; C.2 API under way)</li>
-          <li>D · rules as data</li>
+          <li class="done">C · Python binding ✓</li>
+          <li class="now">D · rules as data (next)</li>
           <li>E–H · C/C++, JS, JVM, Go</li>
           <li>I–L · validation, fuzzy &amp; audit, expert system, ML</li>
           <li>N · Erlang</li>
@@ -376,7 +419,7 @@ Outputs: discount</pre>
   }
 }</code></pre>
             </div>
-            <p class="caption">The text outputs were captured from the Python reference implementation (<code>rulepy</code>, the predecessor of the Python binding). The last tab is real output of the Rust core for the first scenario: the same explanation as a JSON document. The core's text rendering arrives with the text DSL (task D.2). <a href="guide.html#explanations">How explanations work →</a></p>
+            <p class="caption">The text outputs were captured from the Python reference implementation (<code>rulepy</code>, v1), whose semantics the core reproduces; the core's text rendering arrives with the text DSL (task D.2). The Python binding returns the same explanation as objects (<a href="manual/explanations.html">manual</a>). The last tab is real output of the Rust core for the first scenario. <a href="guide.html#explanations">How explanations work →</a></p>
           </div>
         </div>
       </div>
@@ -439,7 +482,7 @@ Outputs: discount</pre>
 
         <div class="lang-grid">
           <div class="lang"><span class="lang-name">Rust</span><span class="chip ref">core done</span><code>cargo add cleanrules</code></div>
-          <div class="lang"><span class="lang-name">Python</span><span class="chip planned">in progress</span><code>pip install cleanrules</code></div>
+          <div class="lang"><span class="lang-name">Python</span><span class="chip ref">runs from source</span><code>pip install cleanrules</code></div>
           <div class="lang"><span class="lang-name">C / C++</span><span class="chip planned">planned</span><code>find_package(cleanrules)</code></div>
           <div class="lang"><span class="lang-name">JavaScript / TS</span><span class="chip planned">planned</span><code>npm i cleanrules</code></div>
           <div class="lang"><span class="lang-name">Java / Scala</span><span class="chip planned">planned</span><code>io.github.cleanrules</code></div>
@@ -447,72 +490,157 @@ Outputs: discount</pre>
           <div class="lang"><span class="lang-name">Erlang</span><span class="chip planned">planned</span><code>{deps, [cleanrules]}</code></div>
           <div class="lang"><span class="lang-name">AI agents</span><span class="chip planned">planned</span><code>cleanrules-mcp</code></div>
         </div>
-        <p class="caption center">Nothing is published yet: these are the intended package names for the first releases.</p>
+        <p class="caption center">Nothing is published yet: these are the intended package names for the first releases. Today, build from source (<a href="manual/installation.html">installation</a>).</p>
 
         <div class="preview">
-          <div class="tabs code-tabs" role="tablist" aria-label="API preview">
-            <button role="tab" aria-selected="true" data-lang="rust" tabindex="0">Rust</button>
-            <button role="tab" aria-selected="false" data-lang="ts" tabindex="-1">TypeScript</button>
-            <button role="tab" aria-selected="false" data-lang="java" tabindex="-1">Java</button>
-            <button role="tab" aria-selected="false" data-lang="go" tabindex="-1">Go</button>
-            <button role="tab" aria-selected="false" data-lang="cpp" tabindex="-1">C++</button>
-            <button role="tab" aria-selected="false" data-lang="erlang" tabindex="-1">Erlang</button>
-            <span class="preview-badge">API preview · subject to change</span>
-          </div>
-          <div class="window">
-<pre class="code" data-lang="rust"><code class="language-rust">use cleanrules::{field, Rule, RuleSet};
+<p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+<div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
+<button role="tab" id="tab-ov-py" data-lang="py" aria-controls="ov-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
+<button role="tab" id="tab-ov-rs" data-lang="rs" aria-controls="ov-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
+<button role="tab" id="tab-ov-ts" data-lang="ts" aria-controls="ov-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-ov-java" data-lang="java" aria-controls="ov-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-ov-go" data-lang="go" aria-controls="ov-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
+<button role="tab" id="tab-ov-cpp" data-lang="cpp" aria-controls="ov-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-ov-erl" data-lang="erl" aria-controls="ov-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
+</div>
+<div role="tabpanel" id="ov-py" aria-labelledby="tab-ov-py">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.py</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F, Rule, RuleSet
 
-let vip = Rule::new("vip")
-    .when(field("customer.years").gt(5) &amp; field("order.total").gt(1000))
-    .then([("discount", 0.15)]);
+rules = RuleSet([
+    Rule(&quot;vip&quot;, (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000), {&quot;discount&quot;: 0.15}),
+    Rule(&quot;loyal&quot;, F.customer.years &gt; 2, {&quot;discount&quot;: 0.05}),
+])
 
-let decision = RuleSet::new([vip]).evaluate(&amp;data)?;
-println!("{}", decision.explain());</code></pre>
-<pre class="code" data-lang="ts" hidden><code class="language-typescript">import { F, Rule, RuleSet } from "cleanrules";
+decision = rules.evaluate({&quot;customer&quot;: {&quot;years&quot;: 3}, &quot;order&quot;: {&quot;total&quot;: 1500}})
+print(dict(decision.output))
 
-const vip = new Rule("vip", {
-  when: F.customer.years.gt(5).and(F.order.total.gt(1000)),
-  then: { discount: 0.15 },
-});
+why = decision.why_not(&quot;vip&quot;)
+cause = why.causes[0]
+print(why.status, &quot;because&quot;, cause.node, &quot;is&quot;, cause.truth, &quot;- short by&quot;, cause.counterfactual.gap)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&#x27;discount&#x27;: 0.05}
+not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
+</div>
+</div>
+<div role="tabpanel" id="ov-rs" aria-labelledby="tab-ov-rs" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>main.rs (excerpt)</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">let years = || field(&quot;customer&quot;).get(&quot;years&quot;);
+let discount = |d: f64| -&gt; cleanrules::Result&lt;_&gt; {
+    Ok(vec![(&quot;discount&quot;.to_owned(), constant(d).build()?)])
+};
+let vip = Rule::with_payload(
+    &quot;vip&quot;,
+    (years().gt(5) &amp; field(&quot;order&quot;).get(&quot;total&quot;).gt(1000)).build()?,
+    discount(0.15)?,
+)?;
+let loyal = Rule::with_payload(&quot;loyal&quot;, years().gt(2).build()?, discount(0.05)?)?;
+let rules = RuleSet::new(vec![vip, loyal], Config::default())?;
 
-const decision = new RuleSet([vip]).evaluate(data);
-console.log(decision.explain());</code></pre>
-<pre class="code" data-lang="java" hidden><code class="language-java">import static io.github.cleanrules.Fields.field;
+let decision = rules.evaluate(&amp;data)?;
+if let Some(output) = decision.output()? {
+    println!(&quot;{}&quot;, to_string(&amp;write_value(&amp;output)));
+}
+for entry in explain(&amp;decision).rules {
+    println!(&quot;{}: {}&quot;, entry.rule, entry.status.as_str());
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;discount&quot;:0.05}
+vip: not_fired
+loyal: selected</pre>
+</div>
+<p class="panel-note">An excerpt of a complete program that was compiled and run against the core; its output is shown.</p>
+</div>
+<div role="tabpanel" id="ov-ts" aria-labelledby="tab-ov-ts" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.ts</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
+import { F, Rule, RuleSet } from &quot;cleanrules&quot;;
 
-var vip = Rule.named("vip")
-    .when(field("customer.years").gt(5).and(field("order.total").gt(1000)))
-    .then(Map.of("discount", new BigDecimal("0.15")));
+const rules = new RuleSet([
+  new Rule(&quot;vip&quot;, F.customer.years.gt(5).and(F.order.total.gt(1000)), { discount: 0.15 }),
+  new Rule(&quot;loyal&quot;, F.customer.years.gt(2), { discount: 0.05 }),
+]);
 
-var decision = RuleSet.of(vip).evaluate(data);
-System.out.println(decision.explain());</code></pre>
-<pre class="code" data-lang="go" hidden><code class="language-go">import cr "github.com/cleanrules/cleanrules/bindings/go"
+const decision = rules.evaluate({ customer: { years: 3 }, order: { total: 1500 } });
+console.log(decision.output);
+const cause = decision.whyNot(&quot;vip&quot;).causes[0];
+console.log(decision.whyNot(&quot;vip&quot;).status, cause.counterfactual?.gap);</code></pre>
+</div>
+<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="ov-java" aria-labelledby="tab-ov-java" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.java</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+import static io.github.cleanrules.Conditions.*;
 
-vip := cr.NewRule("vip").
-	When(cr.Field("customer.years").Gt(5).And(cr.Field("order.total").Gt(1000))).
-	Then(map[string]any{"discount": 0.15})
+var rules = RuleSet.builder()
+    .add(Rule.named(&quot;vip&quot;)
+        .when(field(&quot;customer&quot;, &quot;years&quot;).gt(5).and(field(&quot;order&quot;, &quot;total&quot;).gt(1000)))
+        .then(&quot;discount&quot;, 0.15))
+    .add(Rule.named(&quot;loyal&quot;).when(field(&quot;customer&quot;, &quot;years&quot;).gt(2)).then(&quot;discount&quot;, 0.05))
+    .build();
 
-decision, err := cr.NewRuleSet(vip).Evaluate(data)
+var decision = rules.evaluate(Map.of(&quot;customer&quot;, Map.of(&quot;years&quot;, 3), &quot;order&quot;, Map.of(&quot;total&quot;, 1500)));
+System.out.println(decision.output().orElseThrow());
+System.out.println(decision.whyNot(&quot;vip&quot;).causes().get(0).counterfactual());</code></pre>
+</div>
+<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="ov-go" aria-labelledby="tab-ov-go" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.go</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-go">// Design preview: the Go binding does not exist yet (phase H).
+years := cr.Field(&quot;customer&quot;, &quot;years&quot;)
+rules, err := cr.NewRuleSet([]*cr.Rule{
+	cr.NewRule(&quot;vip&quot;, cr.And(years.Gt(5), cr.Field(&quot;order&quot;, &quot;total&quot;).Gt(1000))).Then(&quot;discount&quot;, 0.15),
+	cr.NewRule(&quot;loyal&quot;, years.Gt(2)).Then(&quot;discount&quot;, 0.05),
+})
 if err != nil {
 	return err
 }
-fmt.Println(decision.Explain())</code></pre>
-<pre class="code" data-lang="cpp" hidden><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
-using cleanrules::F;
+decision, err := rules.Evaluate(map[string]any{
+	&quot;customer&quot;: map[string]any{&quot;years&quot;: 3},
+	&quot;order&quot;:    map[string]any{&quot;total&quot;: 1500},
+})
+if err != nil {
+	return err
+}
+output, _ := decision.Output()
+fmt.Println(output, decision.WhyNot(&quot;vip&quot;).Causes[0].Counterfactual)</code></pre>
+</div>
+<p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="ov-cpp" aria-labelledby="tab-ov-cpp" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.cpp</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
+#include &lt;cleanrules.hpp&gt;
+#include &lt;iostream&gt;
+namespace cr = cleanrules;
+using cr::F;
 
-auto vip = cleanrules::Rule("vip")
-    .when((F("customer.years") &gt; 5) &amp; (F("order.total") &gt; 1000))
-    .then({{"discount", 0.15}});
-
-auto decision = cleanrules::RuleSet({vip}).evaluate(data);
-std::cout &lt;&lt; decision.explain() &lt;&lt; '\n';</code></pre>
-<pre class="code" data-lang="erlang" hidden><code class="language-erlang">Vip = cleanrules:rule(&lt;&lt;"vip"&gt;&gt;, #{
-    'when' =&gt; cleanrules:all([cleanrules:gt([customer, years], 5),
-                              cleanrules:gt([order, total], 1000)]),
-    then =&gt; #{discount =&gt; 0.15}}),
-
-{ok, Decision} = cleanrules:evaluate(cleanrules:ruleset([Vip]), Data),
-io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
-          </div>
+cr::RuleSet rules({
+    cr::Rule(&quot;vip&quot;, (F(&quot;customer&quot;)[&quot;years&quot;] &gt; 5) &amp; (F(&quot;order&quot;)[&quot;total&quot;] &gt; 1000))
+        .then({{&quot;discount&quot;, 0.15}}),
+    cr::Rule(&quot;loyal&quot;, F(&quot;customer&quot;)[&quot;years&quot;] &gt; 2).then({{&quot;discount&quot;, 0.05}}),
+});
+auto decision = rules.evaluate(cr::Value::from_json(R&quot;({&quot;customer&quot;: {&quot;years&quot;: 3}, &quot;order&quot;: {&quot;total&quot;: 1500}})&quot;));
+if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;</code></pre>
+</div>
+<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="ov-erl" aria-labelledby="tab-ov-erl" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.erl</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-erlang">%% Design preview: the Erlang binding does not exist yet (phase N).
+{ok, Rules} = cleanrules:ruleset([
+    cleanrules:rule(&lt;&lt;&quot;vip&quot;&gt;&gt;, cleanrules:all([cleanrules:gt([customer, years], 5),
+                                               cleanrules:gt([order, total], 1000)]),
+                    #{discount =&gt; 0.15}),
+    cleanrules:rule(&lt;&lt;&quot;loyal&quot;&gt;&gt;, cleanrules:gt([customer, years], 2), #{discount =&gt; 0.05})
+], #{}),
+{ok, Decision} = cleanrules:evaluate(Rules, #{customer =&gt; #{years =&gt; 3}, order =&gt; #{total =&gt; 1500}}),
+{ok, Output} = cleanrules:output(Decision).</code></pre>
+</div>
+<p class="panel-note">Design preview: the Erlang binding does not exist yet (phase N); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
         </div>
       </div>
     </section>
@@ -521,14 +649,14 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
     <section class="section alt" id="docs">
       <div class="wrap">
         <p class="eyebrow">Go deeper</p>
-        <h2>Real examples, real numbers, plans labelled as plans.</h2>
-        <p class="sub">The pages below explain the semantics with examples run through the Rust core, quote the benchmarks with their caveats, and describe what is still planned as planned.</p>
+        <h2>Real numbers, and plans labelled as plans.</h2>
+        <p class="sub">The reference pages quote the benchmarks with their caveats and describe what is still planned as planned.</p>
         <div class="cards five">
-          <a class="card" href="guide.html"><h3>Concepts guide</h3><p>Conditions as data, Kleene logic, unknowns and their reasons, strict mode, the six hit policies, explanations with counterfactuals, summaries.</p><span class="more">Read the guide →</span></a>
           <a class="card" href="format.html"><h3>JSON format v1</h3><p>The contract between languages: value encoding, conditions, rules, decisions that are read back and verified, limits and error codes.</p><span class="more">See the format →</span></a>
           <a class="card" href="benchmarks.html"><h3>Benchmarks</h3><p>Criterion measurements of the core and the comparison with zen-engine, with the workload, the machine and what the numbers do not say.</p><span class="more">See the numbers →</span></a>
           <a class="card" href="agents.html"><h3>AI agents <span class="chip planned">planned</span></h3><p>MCP server, guardrails that allow, deny or ask, adapters, and LLM-proposed rules that are validated and approved before use.</p><span class="more">See the design →</span></a>
           <a class="card" href="compare.html"><h3>Compare &amp; FAQ</h3><p>Where cleanrules sits next to Drools, zen-engine, CLIPS, OPA, Cedar, pandera, imodels and NeMo Guardrails, and common questions.</p><span class="more">Compare →</span></a>
+          <a class="card" href="about.html"><h3>About</h3><p>The author, the project's principles, how to cite it, and where the facts on this site come from.</p><span class="more">About the project →</span></a>
         </div>
       </div>
     </section>
@@ -542,8 +670,8 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
         <ol class="timeline">
           <li class="done"><span class="step">A</span><div><h3>Contract between languages</h3><p>JSON format and schemas, neutral data model, and conformance vectors harvested from the Python reference implementation.</p></div></li>
           <li class="done"><span class="step">B</span><div><h3>Rust core</h3><p>Everything above in Rust, passing 100% of the vectors. Property tests and benchmarks.</p></div></li>
-          <li class="now"><span class="step">C</span><div><h3>Python binding</h3><p>PyO3 wheels (<code>abi3</code>, free-threaded <code>cp314t</code> and <code>abi3t</code>) are built and tested; next, the API with the ergonomics of the reference: <code>F</code>, operators, pitfall protection. First public release.</p></div></li>
-          <li><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text DSL aligned with fuzzytool, decision tables.</p></div></li>
+          <li class="done"><span class="step">C</span><div><h3>Python binding</h3><p>Wheels (<code>abi3</code>, free-threaded <code>cp314t</code> and <code>abi3t</code>), the API (<code>F</code>, rules, decisions, explanations, errors), reading of dataclasses, Pydantic models and pandas rows, actions, and a conformance runner that passes every vector. It will be the first public release.</p></div></li>
+          <li class="now"><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text DSL aligned with fuzzytool, decision tables.</p></div></li>
           <li><span class="step">E–H, N</span><div><h3>C/C++, JavaScript, JVM, Go, Erlang</h3><p>The C ABI first, then each binding with its own conformance runner; Erlang through a rustler NIF.</p></div></li>
           <li><span class="step">I–L</span><div><h3>Validation, fuzzy &amp; audit, expert system, ML</h3><p>Arrow batches, fuzzy norms, static audit, Rete, rule extraction from models.</p></div></li>
           <li><span class="step">O</span><div><h3>AI agents</h3><p>An MCP server, guardrails for agent tool calls, adapters for agent frameworks, and verified rules proposed by LLMs.</p></div></li>
@@ -563,7 +691,7 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
         <div>
           <p class="eyebrow">Citing</p>
           <h2>Using it in research?</h2>
-          <p>If you use cleanrules in academic work, please cite it. GitHub's <strong>&ldquo;Cite this repository&rdquo;</strong> button (from <a href="https://github.com/cleanrules/cleanrules/blob/main/CITATION.cff" rel="noopener"><code>CITATION.cff</code></a>) gives ready-made APA and BibTeX entries. A Zenodo DOI will come with the first release; until then, cite the repository:</p>
+          <p>If you use cleanrules in academic work, please cite it. The author is Jose L. Salmeron (<a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a>), CUNEF Universidad. GitHub's <strong>&ldquo;Cite this repository&rdquo;</strong> button (from <a href="https://github.com/cleanrules/cleanrules/blob/main/CITATION.cff" rel="noopener"><code>CITATION.cff</code></a>) gives ready-made APA and BibTeX entries. A Zenodo DOI will come with the first release; until then, cite the repository:</p>
           <div class="window">
             <div class="window-bar"><i></i><i></i><i></i><span>cleanrules.bib</span><button class="copy" type="button" data-copy="bib">Copy</button></div>
 <pre class="code" id="bib"><code class="language-latex">@software{salmeron_cleanrules,
@@ -577,36 +705,89 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
         </div>
       </div>
     </section>
+    <!-- Author -->
+    <section class="section" id="author">
+      <div class="wrap">
+        <p class="eyebrow">About the author</p>
+        <div class="author">
+          <div class="author-mark" aria-hidden="true">JLS</div>
+          <div>
+            <h3>Jose L. Salmeron</h3>
+            <p>Professor at CUNEF Universidad (Madrid), working on explainable artificial intelligence, fuzzy systems and decision support. Author of cleanrules and of <a href="https://fuzzytool.github.io/" rel="noopener">fuzzytool</a>.</p>
+            <ul class="author-links">
+              <li><a class="btn btn-ghost btn-sm" href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+              <li><a class="btn btn-ghost btn-sm" href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+              <li><a class="btn btn-ghost btn-sm" href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
-    <div class="wrap footer-inner">
-      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-      <ul class="footer-links" aria-label="Site">
-        <li><a href="index.html">Overview</a></li>
-        <li><a href="guide.html">Guide</a></li>
-        <li><a href="format.html">Format</a></li>
-        <li><a href="benchmarks.html">Benchmarks</a></li>
-        <li><a href="agents.html">Agents</a></li>
-        <li><a href="compare.html">Compare</a></li>
-        <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
-        <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
-      </ul>
-      <p>MIT licensed · © 2026 Jose L. Salmeron · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="manual/index.html">Manual</a></li>
+            <li><a href="manual/quickstart.html">Quick start</a></li>
+            <li><a href="examples/index.html">Worked examples</a></li>
+            <li><a href="guide.html">Concepts</a></li>
+            <li><a href="manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="format.html">JSON format v1</a></li>
+            <li><a href="manual/api-python.html">Python API</a></li>
+            <li><a href="manual/api-rust.html">Rust API</a></li>
+            <li><a href="manual/errors.html">Errors</a></li>
+            <li><a href="benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="index.html#status">Status and roadmap</a></li>
+            <li><a href="agents.html">AI agents (planned)</a></li>
+            <li><a href="compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
     </div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-latex.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
   <script src="assets/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python API — cleanrules manual</title>
+  <meta name="description" content="Every exported name, with its signature and docstring.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/api-python.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Python API — cleanrules manual">
+  <meta property="og:description" content="Every exported name, with its signature and docstring.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/api-python.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop on">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html" aria-current="page">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">14 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html" aria-current="page">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 14</p>
+        <h1>Python API</h1>
+<p class="lead">Every name the <code>cleanrules</code> package exports, with its signature and the description from its docstring. The listing is generated from the installed package, so it matches the code this manual ran (commit <code>29b1ca3</code>). <code>evaluate_tree</code> and <code>evaluate_value_tree</code>, added with the conformance runner (task C.5), are not in that commit yet and are not listed.</p>
+
+<div class="callout">
+  <p>Signatures and descriptions are read from the package by introspection (<code>inspect.signature</code> and the docstrings). Operators are listed under <a href="#Expr"><code>Expr</code></a>. Errors are described in the <a href="errors.html">Errors</a> chapter.</p>
+</div>
+
+<h2 id="building-conditions">Building conditions<a class="h-anchor" href="#building-conditions" aria-label="Link to this section">#</a></h2>
+<section class="api" id="F"><h3><span class="kind">object</span>F</h3>
+<p>The start of every field path: F.customer.age &gt;= 18, F[&quot;a key&quot;], F.items[0].</p></section>
+<section class="api" id="Field"><h3><span class="kind">class</span>Field<span class="muted">(*path: str | int) -&gt; None</span></h3>
+<p>A value looked up in the input data by path, e.g. <code>Field(&quot;orders&quot;, 0, &quot;total&quot;)</code>.</p>
+<p class="muted">Arguments</p><dl><dt>*path</dt><dd>Keys or attribute names (<code>str</code>) and sequence indices (<code>int</code> &gt;= 0), outermost first.</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>path</code> <span class="muted">(property)</span></dt><dd>The keys and indices of the path, outermost first.</dd></dl></section>
+<section class="api" id="Const"><h3><span class="kind">class</span>Const<span class="muted">(value: object) -&gt; None</span></h3>
+<p>A constant: <code>None</code>, <code>bool</code>, <code>int</code>, <code>float</code>, <code>Decimal</code>, <code>str</code>, <code>date</code> or <code>datetime</code>.</p>
+<p class="muted">Arguments</p><dl><dt>value</dt><dd>The constant.</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>value</code> <span class="muted">(property)</span></dt><dd>The constant, as a Python value.</dd></dl></section>
+<section class="api" id="Expr"><h3><span class="kind">class</span>Expr</h3>
+<p>A node of a condition tree, immutable.</p>
+<p>Operators: <code>==</code> <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code> build comparisons; <code>&amp;</code> <code>|</code> <code>~</code> build <em>and</em>, <em>or</em> and <em>not</em>; <code>+</code> <code>-</code> <code>*</code> <code>/</code>, unary <code>-</code> and <code>abs()</code> build arithmetic. Using a node as a Python <code>bool</code>, iterating it or testing <code>in</code> raises <code>ExpressionError</code>. Nodes are built with <code>F</code>, <code>Field</code>, <code>Const</code>, operators and methods, never directly.</p>
+<p class="muted">Methods and properties</p><dl><dt><code>tag</code> <span class="muted">(property)</span></dt><dd>The node&#x27;s tag, such as <code>&quot;gt&quot;</code> or <code>&quot;and&quot;</code> (<code>spec/ast.md</code>, *Catalogue*).</dd><dt><code>kind</code> <span class="muted">(property)</span></dt><dd>Whether the node is a <code>condition</code>, a <code>value</code>, or <code>any</code> (depends on the data).</dd><dt><code>children</code><span class="muted">(self) -&gt; tuple[Expr, ...]</span></dt><dd>Return the direct child nodes, in order.</dd><dt><code>walk</code><span class="muted">(self) -&gt; Iterator[Expr]</span></dt><dd>Yield this node and all its descendants in pre-order (parents first).</dd><dt><code>field_paths</code><span class="muted">(self) -&gt; tuple[tuple[str | int, ...], ...]</span></dt><dd>Return the paths of every field this node reads, in first-appearance order.</dd><dt><code>same_as</code><span class="muted">(self, other: object) -&gt; bool</span></dt><dd>Return whether <code>other</code> is a node with the same structure and constants.</dd><dt><code>structural_key</code><span class="muted">(self) -&gt; StructuralKey</span></dt><dd>Return a hashable key that is equal for nodes that are <code>same_as</code> each other.</dd><dt><code>is_in</code><span class="muted">(self, values: Iterable[object]) -&gt; Expr</span></dt><dd>Test membership in a set of constants, e.g. <code>F.country.is_in({&quot;ES&quot;, &quot;PT&quot;})</code>.</dd><dt><code>between</code><span class="muted">(self, low: object, high: object, closed: Closed = &#x27;both&#x27;) -&gt; Expr</span></dt><dd>Test a range, e.g. <code>F.age.between(18, 65)</code> or <code>F.x.between(F.lo, F.hi)</code>.</dd><dt><code>is_null</code><span class="muted">(self) -&gt; Expr</span></dt><dd>Test whether the value is missing or null; never unknown.</dd><dt><code>matches</code><span class="muted">(self, pattern: str) -&gt; Expr</span></dt><dd>Search a string with a regular expression, e.g. <code>F.email.matches(r&quot;.+@.+&quot;)</code>.</dd><dt><code>starts_with</code><span class="muted">(self, text: str) -&gt; Expr</span></dt><dd>Test that a string starts with the literal <code>text</code> (not a pattern).</dd><dt><code>ends_with</code><span class="muted">(self, text: str) -&gt; Expr</span></dt><dd>Test that a string ends with the literal <code>text</code> (not a pattern).</dd><dt><code>contains</code><span class="muted">(self, text: str) -&gt; Expr</span></dt><dd>Test that a string contains the literal <code>text</code>.</dd><dt><code>abs</code><span class="muted">(self) -&gt; Expr</span></dt><dd>Return the absolute value of a number; the same as <code>abs(node)</code>.</dd></dl></section>
+<section class="api" id="StructuralKey"><h3><span class="kind">class</span>StructuralKey<span class="muted">(node: Expr) -&gt; None</span></h3>
+<p>A hashable stand-in for a node, equal for nodes that are <code>same_as</code> each other.</p></section>
+<section class="api" id="Kind"><h3><span class="kind">type alias</span>Kind</h3>
+<p>Where a node may appear: &quot;condition&quot;, &quot;value&quot;, or &quot;any&quot; (depends on the data).</p>
+<p><code>Literal[&#x27;condition&#x27;, &#x27;value&#x27;, &#x27;any&#x27;]</code></p></section>
+<section class="api" id="Closed"><h3><span class="kind">type alias</span>Closed</h3>
+<p>Which ends of between are included: &quot;both&quot;, &quot;left&quot;, &quot;right&quot; or &quot;none&quot; (the same names as polars).</p>
+<p><code>Literal[&#x27;both&#x27;, &#x27;left&#x27;, &#x27;right&#x27;, &#x27;none&#x27;]</code></p></section>
+<h2 id="rules-and-rule-sets">Rules and rule sets<a class="h-anchor" href="#rules-and-rule-sets" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Rule"><h3><span class="kind">class</span>Rule<span class="muted">(name: str, when: Expr, then: Mapping[str, object] | None = None, *, priority: int = 0, tags: Iterable[str] = (), description: str | None = None, metadata: Mapping[str, object] | None = None, do: Action | None = None) -&gt; None</span></h3>
+<p>A named condition and its payload.</p>
+<p class="muted">Arguments</p><dl><dt>name</dt><dd>Unique within a rule set; appears in decisions and errors.</dd><dt>when</dt><dd>The condition; the rule fires when it is true.</dd><dt>then</dt><dd>The payload: string keys whose values are constants or value expressions such as <code>F.total * 0.1</code>. Its order is kept.</dd><dt>priority</dt><dd>Used by the <code>PRIORITY</code> hit policy; higher wins.</dd><dt>tags</dt><dd>Labels for grouping and filtering.</dd><dt>description</dt><dd>A human-readable description.</dd><dt>metadata</dt><dd>Free-form data (owner, ticket, version, ...).</dd><dt>do</dt><dd>An action: a callable that <code>RuleSet.run</code> calls with an <code>ActionContext</code> when the rule is selected (never <code>evaluate</code>).</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>when</code> <span class="muted">(property)</span></dt><dd>The condition.</dd><dt><code>then</code> <span class="muted">(property)</span></dt><dd>The payload, in order; empty when the rule has none.</dd><dt><code>priority</code> <span class="muted">(property)</span></dt><dd>The priority, for the <code>PRIORITY</code> hit policy.</dd><dt><code>tags</code> <span class="muted">(property)</span></dt><dd>The tags, in order and without repeats. <em>The core keeps tags sorted, without repeats (see the output in Rules and rule sets).</em></dd><dt><code>description</code> <span class="muted">(property)</span></dt><dd>The description, if any.</dd><dt><code>metadata</code> <span class="muted">(property)</span></dt><dd>The metadata, as the core holds it (read-only).</dd><dt><code>do</code> <span class="muted">(property)</span></dt><dd>The action, if any.</dd></dl></section>
+<section class="api" id="RuleSet"><h3><span class="kind">class</span>RuleSet<span class="muted">(rules: Iterable[Rule], *, hit_policy: HitPolicy | str = &#x27;first&#x27;, aggregate: Aggregate | str | None = None, logic: str = &#x27;boolean&#x27;, strict: bool = False) -&gt; None</span></h3>
+<p>Rules evaluated together under a hit policy.</p>
+<p class="muted">Arguments</p><dl><dt>rules</dt><dd>The rules, in order; names must be unique.</dd><dt>hit_policy</dt><dd>How the rules that fired become a decision (<code>HitPolicy</code> or its name).</dd><dt>aggregate</dt><dd>With <code>COLLECT</code>, combine the outputs: <code>&quot;sum&quot;</code>, <code>&quot;min&quot;</code>, <code>&quot;max&quot;</code> or <code>&quot;count&quot;</code>.</dd><dt>logic</dt><dd>The logic, by name; <code>&quot;boolean&quot;</code> is Kleene&#x27;s three-valued logic.</dd><dt>strict</dt><dd>Raise an <code>EvaluationError</code> instead of returning unknown for missing fields and type mismatches.</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>rules</code> <span class="muted">(property)</span></dt><dd>The rules, in order.</dd><dt><code>hit_policy</code> <span class="muted">(property)</span></dt><dd>The hit policy.</dd><dt><code>aggregate</code> <span class="muted">(property)</span></dt><dd>The <code>COLLECT</code> aggregate, if any.</dd><dt><code>logic</code> <span class="muted">(property)</span></dt><dd>The logic&#x27;s name.</dd><dt><code>strict</code> <span class="muted">(property)</span></dt><dd>Whether evaluation raises instead of returning unknown.</dd><dt><code>evaluate</code><span class="muted">(self, data: object) -&gt; Decision</span></dt><dd>Evaluate the rule set on one input.</dd><dt><code>run</code><span class="muted">(self, data: object) -&gt; Decision</span></dt><dd>Evaluate like <code>evaluate</code>, then run the actions of the selected rules.</dd><dt><code>evaluate_many</code><span class="muted">(self, rows: Iterable[object]) -&gt; list[Decision]</span></dt><dd>Evaluate the rule set on each input of a batch, in order.</dd><dt><code>summary</code><span class="muted">(self) -&gt; Summary</span></dt><dd>Describe the rule set without evaluating it: rules, fields read, outputs, tags.</dd><dt><code>get</code><span class="muted">(self, name: str, default: Rule | None = None) -&gt; Rule | None</span></dt><dd>Return the rule with that name, or <code>default</code>.</dd></dl></section>
+<section class="api" id="HitPolicy"><h3><span class="kind">enum</span>HitPolicy</h3>
+<p>How a rule set turns the rules that fired into a decision (<code>spec/rules.md</code>).</p>
+<p class="muted">Members</p><dl><dt><code>HitPolicy.FIRST</code> = <code>&#x27;first&#x27;</code></dt><dd>The first rule that fired, in rule order.</dd><dt><code>HitPolicy.PRIORITY</code> = <code>&#x27;priority&#x27;</code></dt><dd>The rule that fired with the highest priority; ties go to rule order.</dd><dt><code>HitPolicy.UNIQUE</code> = <code>&#x27;unique&#x27;</code></dt><dd>The only rule that fired; more than one is a <code>HitPolicyError</code>.</dd><dt><code>HitPolicy.ANY</code> = <code>&#x27;any&#x27;</code></dt><dd>The first rule that fired; the rules that fired must agree on their outputs.</dd><dt><code>HitPolicy.RULE_ORDER</code> = <code>&#x27;rule_order&#x27;</code></dt><dd>Every rule that fired, in rule order.</dd><dt><code>HitPolicy.COLLECT</code> = <code>&#x27;collect&#x27;</code></dt><dd>Every rule that fired, in rule order, optionally combined by an aggregate.</dd></dl>
+<p class="muted">Properties</p><dl><dt><code>single_hit</code></dt><dd>Whether at most one rule is selected.</dd></dl></section>
+<section class="api" id="Aggregate"><h3><span class="kind">enum</span>Aggregate</h3>
+<p>How <code>COLLECT</code> combines the outputs of the rules that fired.</p>
+<p class="muted">Members</p><dl><dt><code>Aggregate.SUM</code> = <code>&#x27;sum&#x27;</code></dt><dd>The sum of the non-null values (decimals are added as floats).</dd><dt><code>Aggregate.MIN</code> = <code>&#x27;min&#x27;</code></dt><dd>The smallest non-null value.</dd><dt><code>Aggregate.MAX</code> = <code>&#x27;max&#x27;</code></dt><dd>The largest non-null value.</dd><dt><code>Aggregate.COUNT</code> = <code>&#x27;count&#x27;</code></dt><dd>The number of non-null values.</dd></dl></section>
+<section class="api" id="Action"><h3><span class="kind">function</span>Action<span class="muted">(*args, **kwargs)</span></h3>
+<p></p></section>
+<section class="api" id="ActionContext"><h3><span class="kind">dataclass</span>ActionContext</h3>
+<p>What an action receives (<code>spec/rules.md</code>, *Actions*).</p>
+<p class="muted">Attributes</p><dl><dt><code>rule</code> <span class="muted">: Rule</span></dt><dd>The rule whose action runs.</dd><dt><code>data</code> <span class="muted">: object</span></dt><dd>The input, as given to <code>RuleSet.run</code>.</dd><dt><code>result</code> <span class="muted">: RuleResult</span></dt><dd>The rule&#x27;s result in the decision: its truth and its output.</dd><dt><code>output</code> <span class="muted">: Mapping[str, object]</span></dt><dd>The rule&#x27;s evaluated payload (empty when it has none).</dd><dt><code>decision</code> <span class="muted">: Decision</span></dt><dd>The whole decision.</dd></dl></section>
+<h2 id="decisions">Decisions<a class="h-anchor" href="#decisions" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Decision"><h3><span class="kind">class</span>Decision</h3>
+<p>The outcome of evaluating a rule set on one input. Immutable.</p>
+<p class="muted">Attributes</p><dl><dt><code>ruleset</code></dt><dd>The rule set that decided.</dd><dt><code>results</code></dt><dd>Every rule&#x27;s result, in rule order.</dd><dt><code>selected</code></dt><dd>The results the hit policy selected, in rule order.</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>hit_policy</code> <span class="muted">(property)</span></dt><dd>The hit policy that decided.</dd><dt><code>fired</code> <span class="muted">(property)</span></dt><dd>The names of the rules that fired, in rule order (selected or not).</dd><dt><code>outputs</code> <span class="muted">(property)</span></dt><dd>The payloads of the selected rules, in rule order (read-only).</dd><dt><code>output</code> <span class="muted">(property)</span></dt><dd>The single output: the winner&#x27;s payload or the aggregate; <code>None</code> if none.</dd><dt><code>aggregated</code> <span class="muted">(property)</span></dt><dd>With <code>COLLECT</code> and an aggregate, its values; <code>None</code> when nothing was selected.</dd><dt><code>explain</code><span class="muted">(self) -&gt; Explanation</span></dt><dd>Explain every rule: selected, fired but not selected, not fired, or unknown.</dd><dt><code>why_not</code><span class="muted">(self, name: str) -&gt; RuleExplanation</span></dt><dd>Explain one rule, typically one that did not fire or was not selected.</dd><dt><code>to_dict</code><span class="muted">(self) -&gt; dict[str, Any]</span></dt><dd>The decision document of the JSON format (<code>spec/json-format.md</code>, *Decisions*).</dd></dl></section>
+<section class="api" id="RuleResult"><h3><span class="kind">dataclass</span>RuleResult</h3>
+<p>One rule&#x27;s result in a decision.</p>
+<p class="muted">Attributes</p><dl><dt><code>rule</code> <span class="muted">: Rule</span></dt><dd>The rule.</dd><dt><code>fired</code> <span class="muted">: bool</span></dt><dd>Whether its condition was true.</dd><dt><code>truth</code> <span class="muted">: Truth</span></dt><dd>Its condition&#x27;s truth value.</dd><dt><code>output</code> <span class="muted">: Mapping[str, object] | None</span></dt><dd>Its evaluated payload (read-only), when the hit policy needed it; else <code>None</code>.</dd></dl></section>
+<section class="api" id="Truth"><h3><span class="kind">enum</span>Truth</h3>
+<p>A truth value of Kleene&#x27;s three-valued logic.</p>
+<p class="muted">Members</p><dl><dt><code>Truth.TRUE</code> = <code>&#x27;true&#x27;</code></dt><dd>&nbsp;</dd><dt><code>Truth.FALSE</code> = <code>&#x27;false&#x27;</code></dt><dd>&nbsp;</dd><dt><code>Truth.UNKNOWN</code> = <code>&#x27;unknown&#x27;</code></dt><dd>&nbsp;</dd></dl></section>
+<h2 id="explanations">Explanations<a class="h-anchor" href="#explanations" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Explanation"><h3><span class="kind">class</span>Explanation</h3>
+<p>The explanation of a decision (<code>spec/explain.md</code>).</p>
+<p class="muted">Attributes</p><dl><dt><code>rules</code></dt><dd>Each rule&#x27;s explanation, in rule order.</dd><dt><code>selected</code></dt><dd>The names of the selected rules.</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>for_rule</code><span class="muted">(self, name: str) -&gt; RuleExplanation</span></dt><dd>Return one rule&#x27;s explanation.</dd><dt><code>to_dict</code><span class="muted">(self) -&gt; dict[str, Any]</span></dt><dd>The explanation document of the JSON format (<code>spec/json-format.md</code>).</dd></dl></section>
+<section class="api" id="RuleExplanation"><h3><span class="kind">dataclass</span>RuleExplanation</h3>
+<p>The explanation of one rule.</p>
+<p class="muted">Attributes</p><dl><dt><code>rule</code> <span class="muted">: str</span></dt><dd>The rule&#x27;s name.</dd><dt><code>status</code> <span class="muted">: Status</span></dt><dd>What happened to it.</dd><dt><code>requirement</code> <span class="muted">: Cause | CauseGroup</span></dt><dd>What it needed: a cause, or a group of them.</dd><dt><code>note</code> <span class="muted">: Note | None</span></dt><dd>Why it was not selected, when it fired.</dd><dt><code>achievable</code> <span class="muted">: bool | None</span></dt><dd>When it did not fire, whether some option could make it fire.</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>causes</code> <span class="muted">(property)</span></dt><dd>The causes of the requirement, in order, without their grouping.</dd></dl></section>
+<section class="api" id="Status"><h3><span class="kind">enum</span>Status</h3>
+<p>What happened to a rule in a decision (<code>spec/explain.md</code>).</p>
+<p class="muted">Members</p><dl><dt><code>Status.SELECTED</code> = <code>&#x27;selected&#x27;</code></dt><dd>The rule fired and the hit policy selected it.</dd><dt><code>Status.FIRED</code> = <code>&#x27;fired&#x27;</code></dt><dd>The rule fired but was not selected; its <code>note</code> says why.</dd><dt><code>Status.NOT_FIRED</code> = <code>&#x27;not_fired&#x27;</code></dt><dd>The rule&#x27;s condition was false.</dd><dt><code>Status.UNKNOWN</code> = <code>&#x27;unknown&#x27;</code></dt><dd>The rule&#x27;s condition was unknown: data was missing or of the wrong type.</dd></dl></section>
+<section class="api" id="Cause"><h3><span class="kind">dataclass</span>Cause</h3>
+<p>A condition in a rule&#x27;s requirement, with what was read (<code>spec/explain.md</code>).</p>
+<p class="muted">Attributes</p><dl><dt><code>node</code> <span class="muted">: Expr</span></dt><dd>The condition.</dd><dt><code>truth</code> <span class="muted">: Truth</span></dt><dd>Its truth value.</dd><dt><code>negated</code> <span class="muted">: bool</span></dt><dd>Whether it appears under a negation, so it had to be false.</dd><dt><code>holds</code> <span class="muted">: bool</span></dt><dd>Whether it went the way the rule needed.</dd><dt><code>values</code> <span class="muted">: tuple[tuple[tuple[str | int, ...], object], ...]</span></dt><dd>The fields it read and their values, in order.</dd><dt><code>reason</code> <span class="muted">: Reason | None</span></dt><dd>Why it is unknown, if it is.</dd><dt><code>counterfactual</code> <span class="muted">: Counterfactual | None</span></dt><dd>For a comparison that did not hold, what it needed.</dd></dl></section>
+<section class="api" id="CauseGroup"><h3><span class="kind">dataclass</span>CauseGroup</h3>
+<p>Requirements that must all hold (<code>kind == &quot;all&quot;</code>) or any of which suffices.</p>
+<p class="muted">Attributes</p><dl><dt><code>kind</code> <span class="muted">: str</span></dt><dd>&nbsp;</dd><dt><code>items</code> <span class="muted">: tuple[Cause | CauseGroup, ...]</span></dt><dd>&nbsp;</dd></dl></section>
+<section class="api" id="Reason"><h3><span class="kind">dataclass</span>Reason</h3>
+<p>Why a result is unknown or null (<code>spec/ast.md</code>, *Results and reasons*).</p>
+<p class="muted">Attributes</p><dl><dt><code>code</code> <span class="muted">: str</span></dt><dd>The reason, such as <code>&quot;missing_field&quot;</code> or <code>&quot;type_mismatch&quot;</code>.</dd><dt><code>paths</code> <span class="muted">: tuple[tuple[str | int, ...], ...]</span></dt><dd>The field paths involved.</dd><dt><code>types</code> <span class="muted">: tuple[str, ...]</span></dt><dd>The type groups involved, for type mismatches.</dd><dt><code>detail</code> <span class="muted">: str | None</span></dt><dd>Informative text, if any.</dd></dl></section>
+<section class="api" id="Counterfactual"><h3><span class="kind">dataclass</span>Counterfactual</h3>
+<p>What a comparison needed: <code>path op target</code>, and how far the value was.</p>
+<p class="muted">Attributes</p><dl><dt><code>path</code> <span class="muted">: tuple[str | int, ...]</span></dt><dd>The field compared.</dd><dt><code>op</code> <span class="muted">: str</span></dt><dd>The comparison it needed, such as <code>&quot;gt&quot;</code>.</dd><dt><code>target</code> <span class="muted">: object</span></dt><dd>The value it was compared with.</dd><dt><code>gap</code> <span class="muted">: object | None</span></dt><dd>How far the value was from the target: a number, a <code>timedelta</code> for dates and datetimes, or <code>None</code> when there is no exact gap.</dd></dl></section>
+<section class="api" id="Note"><h3><span class="kind">dataclass</span>Note</h3>
+<p>Why a rule that fired was not selected.</p>
+<p class="muted">Attributes</p><dl><dt><code>kind</code> <span class="muted">: str</span></dt><dd><code>&quot;lower_priority&quot;</code>, <code>&quot;same_priority&quot;</code>, <code>&quot;any_agrees&quot;</code> or <code>&quot;earlier_rule&quot;</code>.</dd><dt><code>winner</code> <span class="muted">: str</span></dt><dd>The rule selected instead.</dd><dt><code>priority</code> <span class="muted">: int | None</span></dt><dd>This rule&#x27;s priority, under <code>PRIORITY</code>.</dd><dt><code>winner_priority</code> <span class="muted">: int | None</span></dt><dd>The winner&#x27;s priority, under <code>PRIORITY</code>.</dd></dl></section>
+<h2 id="summaries">Summaries<a class="h-anchor" href="#summaries" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Summary"><h3><span class="kind">class</span>Summary</h3>
+<p>What a rule set reads and produces, without evaluating it (<code>spec/explain.md</code>).</p>
+<p class="muted">Attributes</p><dl><dt><code>hit_policy</code></dt><dd>The hit policy.</dd><dt><code>aggregate</code></dt><dd>The <code>COLLECT</code> aggregate, if any.</dd><dt><code>logic</code></dt><dd>The logic&#x27;s name.</dd><dt><code>strict</code></dt><dd>Whether evaluation is strict.</dd><dt><code>rules</code></dt><dd>Each rule&#x27;s name, priority and payload keys, in rule order.</dd><dt><code>fields</code></dt><dd>Every field read, in first-appearance order, with where it is read.</dd><dt><code>outputs</code></dt><dd>The payload keys, in first-appearance order.</dd><dt><code>tags</code></dt><dd>Each tag with the names of its rules.</dd></dl>
+<p class="muted">Methods and properties</p><dl><dt><code>to_dict</code><span class="muted">(self) -&gt; dict[str, Any]</span></dt><dd>The summary document of the JSON format (<code>spec/json-format.md</code>).</dd></dl></section>
+<section class="api" id="FieldUsage"><h3><span class="kind">dataclass</span>FieldUsage</h3>
+<p>A field a rule set reads, and where.</p>
+<p class="muted">Attributes</p><dl><dt><code>path</code> <span class="muted">: tuple[str | int, ...]</span></dt><dd>The field&#x27;s path.</dd><dt><code>conditions</code> <span class="muted">: tuple[str, ...]</span></dt><dd>The rules whose conditions read it, in rule order.</dd><dt><code>payloads</code> <span class="muted">: tuple[tuple[str, str], ...]</span></dt><dd>The <code>(rule, key)</code> payload values that read it, in order.</dd></dl></section>
+<section class="api" id="RuleSummary"><h3><span class="kind">dataclass</span>RuleSummary</h3>
+<p>A rule in a summary: its name, priority and payload keys.</p>
+<p class="muted">Attributes</p><dl><dt><code>name</code> <span class="muted">: str</span></dt><dd>&nbsp;</dd><dt><code>priority</code> <span class="muted">: int</span></dt><dd>&nbsp;</dd><dt><code>outputs</code> <span class="muted">: tuple[str, ...]</span></dt><dd>&nbsp;</dd></dl></section>
+<h2 id="errors">Errors<a class="h-anchor" href="#errors" aria-label="Link to this section">#</a></h2>
+<section class="api" id="CleanRulesError"><h3><span class="kind">exception</span>CleanRulesError</h3>
+<p>Base class of every error raised by cleanrules.</p>
+<p>Code <code>—</code>; bases: <code>Exception</code>.</p></section>
+<section class="api" id="FormatError"><h3><span class="kind">exception</span>FormatError</h3>
+<p>A document is invalid.</p>
+<p>Code <code>format_error</code>; bases: <code>CleanRulesError</code>.</p></section>
+<section class="api" id="ExpressionError"><h3><span class="kind">exception</span>ExpressionError</h3>
+<p>A condition node breaks a construction rule (<code>expression_error</code>).</p>
+<p>Code <code>expression_error</code>; bases: <code>CleanRulesError</code>, <code>TypeError</code>, <code>ValueError</code>.</p></section>
+<section class="api" id="RuleDefinitionError"><h3><span class="kind">exception</span>RuleDefinitionError</h3>
+<p>A rule or rule set breaks a construction rule (<code>rule_definition_error</code>).</p>
+<p>Code <code>rule_definition_error</code>; bases: <code>CleanRulesError</code>, <code>ValueError</code>.</p></section>
+<section class="api" id="RuleSyntaxError"><h3><span class="kind">exception</span>RuleSyntaxError</h3>
+<p>The text DSL cannot be parsed (<code>rule_syntax_error</code>).</p>
+<p>Code <code>rule_syntax_error</code>; bases: <code>CleanRulesError</code>, <code>ValueError</code>.</p></section>
+<section class="api" id="RegistryError"><h3><span class="kind">exception</span>RegistryError</h3>
+<p>A name is not registered (<code>registry_error</code>).</p>
+<p>Code <code>registry_error</code>; bases: <code>CleanRulesError</code>, <code>LookupError</code>.</p></section>
+<section class="api" id="RuleNotFoundError"><h3><span class="kind">exception</span>RuleNotFoundError</h3>
+<p>A rule set has no rule by that name (<code>rule_not_found</code>).</p>
+<p>Code <code>rule_not_found</code>; bases: <code>CleanRulesError</code>, <code>KeyError</code>.</p></section>
+<section class="api" id="EvaluationError"><h3><span class="kind">exception</span>EvaluationError</h3>
+<p>Strict evaluation cannot go on (<code>evaluation_error</code> and its children).</p>
+<p>Code <code>evaluation_error</code>; bases: <code>CleanRulesError</code>.</p></section>
+<section class="api" id="MissingFieldError"><h3><span class="kind">exception</span>MissingFieldError</h3>
+<p>Strict mode met a field that cannot be resolved (<code>missing_field</code>).</p>
+<p>Code <code>missing_field</code>; bases: <code>EvaluationError</code>.</p></section>
+<section class="api" id="TypeMismatchError"><h3><span class="kind">exception</span>TypeMismatchError</h3>
+<p>Strict mode met values of incompatible types (<code>type_mismatch</code>).</p>
+<p>Code <code>type_mismatch</code>; bases: <code>EvaluationError</code>.</p></section>
+<section class="api" id="HitPolicyError"><h3><span class="kind">exception</span>HitPolicyError</h3>
+<p>The hit policy cannot decide (<code>hit_policy_error</code>).</p>
+<p>Code <code>hit_policy_error</code>; bases: <code>EvaluationError</code>.</p></section>
+<section class="api" id="ActionError"><h3><span class="kind">exception</span>ActionError</h3>
+<p>An action raised while running a decision (<code>action_error</code>).</p>
+<p>Code <code>action_error</code>; bases: <code>CleanRulesError</code>.</p></section>
+<section class="api" id="UnsupportedError"><h3><span class="kind">exception</span>UnsupportedError</h3>
+<p>This build, logic or format version cannot do the operation (<code>unsupported</code>).</p>
+<p>Code <code>unsupported</code>; bases: <code>CleanRulesError</code>, <code>NotImplementedError</code>.</p></section>
+<h2 id="module">Module<a class="h-anchor" href="#module" aria-label="Link to this section">#</a></h2>
+<section class="api" id="__version__"><h3><span class="kind">constant</span>__version__</h3>
+<p>The package version (PEP 440).</p></section>
+<section class="api" id="FORMAT_VERSION"><h3><span class="kind">constant</span>FORMAT_VERSION</h3>
+<p>The version of the JSON format the core reads and writes.</p></section>
+<section class="api" id="errors-module"><h3><span class="kind">module</span>errors</h3>
+<p>The exceptions of cleanrules (<code>spec/errors.md</code>).</p></section>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="performance.html"><small>← Previous</small>Performance</a><a class="next" href="api-rust.html"><small>Next →</small>Rust API</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#building-conditions">Building conditions</a></li><li><a href="#rules-and-rule-sets">Rules and rule sets</a></li><li><a href="#decisions">Decisions</a></li><li><a href="#explanations">Explanations</a></li><li><a href="#summaries">Summaries</a></li><li><a href="#errors">Errors</a></li><li><a href="#module">Module</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

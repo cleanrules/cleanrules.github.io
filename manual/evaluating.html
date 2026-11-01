@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evaluating data — cleanrules manual</title>
+  <meta name="description" content="Missing data, three-valued logic, reasons, strict mode, batches, threads and Python objects.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/evaluating.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Evaluating data — cleanrules manual">
+  <meta property="og:description" content="Missing data, three-valued logic, reasons, strict mode, batches, threads and Python objects.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/evaluating.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html" aria-current="page">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">07 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html" aria-current="page">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 07</p>
+        <h1>Evaluating data</h1>
+<p class="lead">Real data has holes: missing keys, nulls, strings where numbers should be. cleanrules never guesses and never crashes on them. A condition it cannot decide is <em>unknown</em>, with a reason you can read; and when you prefer errors, strict mode raises them. This chapter also covers batches and threads.</p>
+
+<h2 id="reasons">Unknown, and why<a class="h-anchor" href="#reasons" aria-label="Link to this section">#</a></h2>
+<p>The same rule on five inputs. Only the first is decided; each of the others is unknown for a different, structured reason:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F, Rule, RuleSet
+
+rules = RuleSet([Rule(&quot;adult&quot;, F.customer.age &gt;= 18)])
+for data in ({&quot;customer&quot;: {&quot;age&quot;: 42}}, {&quot;customer&quot;: {}}, {&quot;customer&quot;: None},
+             {&quot;customer&quot;: {&quot;age&quot;: &quot;42&quot;}}, {&quot;customer&quot;: {&quot;age&quot;: True}}):
+    d = rules.evaluate(data)
+    cause = d.why_not(&quot;adult&quot;).causes[0] if not d.results[0].fired else None
+    reason = cause.reason if cause else None
+    why = f&quot;{reason.code} at {reason.paths[0]} {reason.types}&quot; if reason else &quot;&quot;
+    print(f&quot;{str(data):&lt;29} {d.results[0].truth:&lt;8} {why}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&#x27;customer&#x27;: {&#x27;age&#x27;: 42}}     true     
+{&#x27;customer&#x27;: {}}              unknown  missing_field at (&#x27;customer&#x27;, &#x27;age&#x27;) ()
+{&#x27;customer&#x27;: None}            unknown  null at (&#x27;customer&#x27;,) ()
+{&#x27;customer&#x27;: {&#x27;age&#x27;: &#x27;42&#x27;}}   unknown  type_mismatch at (&#x27;customer&#x27;, &#x27;age&#x27;) (&#x27;string&#x27;, &#x27;number&#x27;)
+{&#x27;customer&#x27;: {&#x27;age&#x27;: True}}   unknown  type_mismatch at (&#x27;customer&#x27;, &#x27;age&#x27;) (&#x27;boolean&#x27;, &#x27;number&#x27;)</pre>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Reason</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>missing_field</code></td><td>the path cannot be resolved; the reason's path goes up to where it failed</td></tr>
+      <tr><td><code>null</code></td><td>a null (<code>None</code>) or NaN was met; the path says where, even in the middle of a path</td></tr>
+      <tr><td><code>type_mismatch</code></td><td>values of incompatible type groups (the reason lists both), or a non-boolean used as a condition</td></tr>
+      <tr><td><code>unorderable</code></td><td>booleans were ordered with <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code> or <code>&gt;=</code></td></tr>
+      <tr><td><code>division_by_zero</code></td><td>a division by zero</td></tr>
+      <tr><td><code>int_overflow</code>, <code>decimal_overflow</code></td><td>an integer outside 64 bits, or a decimal in the data beyond 38 digits</td></tr>
+      <tr><td><code>nan_result</code></td><td>an arithmetic result is NaN, such as <code>inf - inf</code></td></tr>
+      <tr><td><code>read_error</code></td><td>reading the data raised an error</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>A string <code>"42"</code> is not the number 42: cleanrules does not coerce types, so the comparison is a type mismatch rather than a guess. Reasons appear in explanations as <code>cause.reason</code> (<a href="explanations.html#unknown">explanations of unknown rules</a>).</p>
+
+<h2 id="kleene">Three-valued logic<a class="h-anchor" href="#kleene" aria-label="Link to this section">#</a></h2>
+<p>Under Kleene's logic, <code>&amp;</code> is false as soon as one operand is false, <code>|</code> is true as soon as one is true, and <code>~</code> of unknown is unknown. A rule fires only when its condition is true. This is how SQL treats <code>NULL</code>.</p>
+<div class="truth-grid">
+  <div class="truth-card"><h3>a &amp; b</h3><table class="truth"><tr><th></th><th>T</th><th>U</th><th>F</th></tr><tr><th>T</th><td class="T">T</td><td class="U">U</td><td class="F">F</td></tr><tr><th>U</th><td class="U">U</td><td class="U">U</td><td class="F">F</td></tr><tr><th>F</th><td class="F">F</td><td class="F">F</td><td class="F">F</td></tr></table></div>
+  <div class="truth-card"><h3>a | b</h3><table class="truth"><tr><th></th><th>T</th><th>U</th><th>F</th></tr><tr><th>T</th><td class="T">T</td><td class="T">T</td><td class="T">T</td></tr><tr><th>U</th><td class="T">T</td><td class="U">U</td><td class="U">U</td></tr><tr><th>F</th><td class="T">T</td><td class="U">U</td><td class="F">F</td></tr></table></div>
+  <div class="truth-card"><h3>~a</h3><table class="truth"><tr><th>a</th><th>~a</th></tr><tr><th>T</th><td class="F">F</td></tr><tr><th>U</th><td class="U">U</td></tr><tr><th>F</th><td class="T">T</td></tr></table></div>
+</div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import Const
+
+checks = RuleSet([
+    Rule(&quot;and_false&quot;, (F.missing &gt; 1) &amp; Const(False)),
+    Rule(&quot;or_true&quot;, (F.missing &gt; 1) | Const(True)),
+    Rule(&quot;not_unknown&quot;, ~(F.missing &gt; 1)),
+], hit_policy=&quot;rule_order&quot;)
+d = checks.evaluate({})
+print([(r.rule.name, r.truth.value) for r in d.results])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[(&#x27;and_false&#x27;, &#x27;false&#x27;), (&#x27;or_true&#x27;, &#x27;true&#x27;), (&#x27;not_unknown&#x27;, &#x27;unknown&#x27;)]</pre>
+</div>
+<p>One consequence: <code>~(F.x &gt; 5)</code> is not the same as <code>F.x &lt;= 5</code> when <code>x</code> is missing; both are unknown, and neither fires. To make missing data count, say so explicitly with <code>is_null()</code>:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">review = RuleSet([Rule(&quot;manual_review&quot;, F.score.is_null() | (F.score &lt; 500))])
+print(review.evaluate({}).fired, review.evaluate({&quot;score&quot;: None}).fired, review.evaluate({&quot;score&quot;: 640}).fired)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">(&#x27;manual_review&#x27;,) (&#x27;manual_review&#x27;,) ()</pre>
+</div>
+
+<h2 id="arithmetic">Arithmetic never raises<a class="h-anchor" href="#arithmetic" aria-label="Link to this section">#</a></h2>
+<p>A division by zero, an overflow or a NaN result gives null with its reason, and the comparison over it is unknown. Strict mode does not change that: it only raises for missing fields, type mismatches and read errors.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">ratio = RuleSet([Rule(&quot;high_debt&quot;, F.debt / F.income &gt; 0.6)])
+d = ratio.evaluate({&quot;debt&quot;: 1200, &quot;income&quot;: 0})
+print(d.results[0].truth, d.why_not(&quot;high_debt&quot;).causes[0].reason)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">unknown Reason(code=&#x27;division_by_zero&#x27;, paths=((&#x27;debt&#x27;,), (&#x27;income&#x27;,)), types=(), detail=None)</pre>
+</div>
+
+<h2 id="exact">Exact comparisons<a class="h-anchor" href="#exact" aria-label="Link to this section">#</a></h2>
+<p>Ints, floats and decimals compare by exact value. The decimal <code>0.10</code> equals the decimal <code>0.1</code>, but the float <code>0.1</code> is not exactly one tenth, so it does not:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from decimal import Decimal
+
+money = RuleSet([Rule(&quot;ten_percent&quot;, F.rate == Decimal(&quot;0.1&quot;))])
+print(money.evaluate({&quot;rate&quot;: Decimal(&quot;0.10&quot;)}).fired, money.evaluate({&quot;rate&quot;: 0.1}).fired)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">(&#x27;ten_percent&#x27;,) ()</pre>
+</div>
+<p>Keep money in <code>Decimal</code>s, in the data and in the rules.</p>
+
+<h2 id="strict">Strict mode<a class="h-anchor" href="#strict" aria-label="Link to this section">#</a></h2>
+<p>With <code>strict=True</code>, a missing field or a type mismatch raises instead of becoming unknown. The error is a <code>MissingFieldError</code> or a <code>TypeMismatchError</code>, both <code>EvaluationError</code>s, and names the rule, the full path and the types:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import MissingFieldError, TypeMismatchError
+
+strict = RuleSet([Rule(&quot;adult&quot;, F.customer.age &gt;= 18)], strict=True)
+for data in ({&quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;}}, {&quot;customer&quot;: {&quot;age&quot;: &quot;42&quot;}}, {&quot;customer&quot;: None}):
+    try:
+        print(strict.evaluate(data).fired)
+    except (MissingFieldError, TypeMismatchError) as err:
+        print(f&quot;{type(err).__name__}: rule={err.rule} path={err.path} types={err.types}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">MissingFieldError: rule=adult path=(&#x27;customer&#x27;, &#x27;age&#x27;) types=()
+TypeMismatchError: rule=adult path=(&#x27;customer&#x27;, &#x27;age&#x27;) types=(&#x27;string&#x27;, &#x27;number&#x27;)
+()</pre>
+</div>
+<p>A null in the middle of a path is not an error, even in strict mode: the path exists up to a null, so the last input above simply does not fire. Strict mode raises the first error in rule order, and within a condition the first in left-to-right order, so the same input always produces the same error.</p>
+
+<h3 id="strict-null">Strict mode and <code>is_null</code><a class="h-anchor" href="#strict-null" aria-label="Link to this section">#</a></h3>
+<p><code>is_null()</code> is true for a null, but in strict mode a <em>missing</em> key is still an error, because strict mode is for data whose shape you control. Send an explicit <code>None</code> for "no value":</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">lenient_null = RuleSet([Rule(&quot;no_email&quot;, F.email.is_null())], strict=True)
+print(lenient_null.evaluate({&quot;email&quot;: None}).fired)
+try:
+    lenient_null.evaluate({})
+except MissingFieldError as err:
+    print(err)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">(&#x27;no_email&#x27;,)
+rule &#x27;no_email&#x27;: missing field email, in `F.email`</pre>
+</div>
+<p>The <a href="../examples/orders.html">order validation example</a> shows both modes side by side on a messy record.</p>
+
+<h2 id="batches">Batches<a class="h-anchor" href="#batches" aria-label="Link to this section">#</a></h2>
+<p><code>evaluate_many(rows)</code> evaluates each input in order and returns a list of decisions. In strict mode, the error of the first failing input carries its position as <code>row</code>:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">rows = [{&quot;customer&quot;: {&quot;age&quot;: 30}}, {&quot;customer&quot;: {&quot;age&quot;: 12}}, {&quot;customer&quot;: {}}]
+print([d.fired for d in rules.evaluate_many(rows)])
+try:
+    strict.evaluate_many(rows)
+except MissingFieldError as err:
+    print(err.row, &quot;|&quot;, err)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[(&#x27;adult&#x27;,), (), ()]
+2 | rule &#x27;adult&#x27;: missing field customer.age, in `F.customer.age` (input 2)</pre>
+</div>
+<p>A string, a mapping or a data frame is not a collection of inputs, and is rejected at once rather than iterated by mistake:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import EvaluationError
+
+try:
+    rules.evaluate_many({&quot;customer&quot;: {&quot;age&quot;: 30}})
+except EvaluationError as err:
+    print(err)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">evaluate_many takes an iterable of inputs, got dict
+hint: for a single input use evaluate(data); for several pass a list of them</pre>
+</div>
+<p>For pandas, pass <code>df.to_dict("records")</code>; for polars, <code>df.iter_rows(named=True)</code>. Vectorized evaluation over Arrow batches, with the same nulls, types and reasons, is planned (phase I).</p>
+
+<h2 id="threads">Threads and free threading<a class="h-anchor" href="#threads" aria-label="Link to this section">#</a></h2>
+<p>Rule sets and decisions are immutable, so one rule set can be shared by any number of threads. On Python builds with a GIL, evaluation releases it while the core works. On free-threaded builds there is no GIL at all, and the module does not re-enable it. The cell below ran on such a build:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">import sys
+from concurrent.futures import ThreadPoolExecutor
+
+batch = [{&quot;customer&quot;: {&quot;age&quot;: age}} for age in range(10, 30)]
+with ThreadPoolExecutor(max_workers=8) as pool:
+    fired = list(pool.map(lambda row: rules.evaluate(row).fired, batch))
+print(sum(1 for f in fired if f), &quot;adults of&quot;, len(fired))
+print(&quot;GIL enabled:&quot;, getattr(sys, &quot;_is_gil_enabled&quot;, lambda: True)())</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">12 adults of 20
+GIL enabled: False</pre>
+</div>
+
+<h2 id="data">Reading Python objects<a class="h-anchor" href="#data" aria-label="Link to this section">#</a></h2>
+<p>The input does not have to be a dict. When a rule set is built, the binding works out the tree of paths its conditions and payloads read, and reads <strong>only those paths</strong>, each object once. A path segment reads:</p>
+<ul>
+  <li>a key of a mapping (checked with <code>in</code> first, so <code>__missing__</code> is never triggered);</li>
+  <li>a key of a record: a namedtuple, or an object with <code>keys()</code> such as a pandas row;</li>
+  <li>an index of a sequence (never of a string or a mapping);</li>
+  <li>a public data attribute of any other object, properties included: dataclasses, attrs classes and Pydantic models (by field name, not alias). Never a name starting with <code>_</code>, a method, a class, a module, or an attribute of a scalar.</li>
+</ul>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from dataclasses import dataclass
+from typing import NamedTuple
+
+from pydantic import BaseModel
+
+
+@dataclass
+class Customer:
+    name: str
+    age: int
+
+
+class Order(NamedTuple):
+    total: float
+    country: str
+
+
+class Applicant(BaseModel):
+    customer: Customer
+    order: Order
+
+
+spain = RuleSet([Rule(&quot;adult_es&quot;, (F.customer.age &gt;= 18) &amp; (F.order.country == &quot;ES&quot;))])
+print(spain.evaluate({&quot;customer&quot;: Customer(&quot;Ana&quot;, 42), &quot;order&quot;: Order(120.0, &quot;ES&quot;)}).fired)
+print(spain.evaluate(Applicant(customer=Customer(&quot;Bo&quot;, 17), order=Order(80.0, &quot;ES&quot;))).fired)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">(&#x27;adult_es&#x27;,)
+()</pre>
+</div>
+<p>pandas rows work whichever way you iterate, and a missing value in a column (NaN, <code>NaT</code>, <code>pandas.NA</code>) is null, so the third row is unknown rather than "not low":</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">import pandas as pd
+
+low = RuleSet([Rule(&quot;low_score&quot;, F.score &lt; 500)])
+df = pd.DataFrame({&quot;name&quot;: [&quot;Ana&quot;, &quot;Bo&quot;, &quot;Cy&quot;], &quot;score&quot;: [420, 610, None]})
+print([d.fired for d in low.evaluate_many(df.to_dict(&quot;records&quot;))])
+print([low.evaluate(row).results[0].truth.value for _, row in df.iterrows()])
+print([low.evaluate(row).fired for row in df.itertuples()])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[(&#x27;low_score&#x27;,), (), ()]
+[&#x27;true&#x27;, &#x27;false&#x27;, &#x27;unknown&#x27;]
+[(&#x27;low_score&#x27;,), (), ()]</pre>
+</div>
+<p>numpy scalars, <code>datetime64</code> and arrays are converted too (arrays as lists). A getter that raises gives a null with the reason <code>read_error</code>; in strict mode, the <code>EvaluationError</code> keeps the original exception as its <code>__cause__</code>. An <code>AttributeError</code> means the attribute is missing.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">class Flaky:
+    @property
+    def age(self):
+        raise RuntimeError(&quot;database is down&quot;)
+
+
+d = rules.evaluate({&quot;customer&quot;: Flaky()})
+print(d.results[0].truth, d.why_not(&quot;adult&quot;).causes[0].reason.code)
+try:
+    strict.evaluate({&quot;customer&quot;: Flaky()})
+except EvaluationError as err:
+    print(type(err).__name__, err.code, &quot;| cause:&quot;, repr(err.__cause__))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">unknown read_error
+EvaluationError evaluation_error | cause: RuntimeError(&#x27;database is down&#x27;)</pre>
+</div>
+<p>Where a path ends, the value is converted whole, with a depth limit and cycle detection: an object becomes a map of its public data attributes. A value with no equivalent in the data model (bytes, a set, a function…) is <em>opaque</em>: rules cannot look inside it, and it comes back as the very same object.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">class Invoice:
+    def __init__(self, number):
+        self.number = number
+        self._internal = &quot;never read&quot;
+
+
+pdf = b&quot;%PDF-1.7 ...&quot;
+echo = RuleSet([Rule(&quot;echo&quot;, Const(True), {&quot;invoice&quot;: F.invoice, &quot;attachment&quot;: F.attachment})])
+out = echo.evaluate({&quot;invoice&quot;: Invoice(&quot;F-2026-118&quot;), &quot;attachment&quot;: pdf}).output
+print(out[&quot;invoice&quot;])
+print(out[&quot;attachment&quot;] is pdf)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&#x27;number&#x27;: &#x27;F-2026-118&#x27;}
+True</pre>
+</div>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="hit-policies.html"><small>← Previous</small>Hit policies and aggregates</a><a class="next" href="explanations.html"><small>Next →</small>Explanations and counterfactuals</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#reasons">Unknown, and why</a></li><li><a href="#kleene">Three-valued logic</a></li><li><a href="#arithmetic">Arithmetic never raises</a></li><li><a href="#exact">Exact comparisons</a></li><li><a href="#strict">Strict mode</a></li><li><a href="#batches">Batches</a></li><li><a href="#threads">Threads and free threading</a></li><li><a href="#data">Reading Python objects</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

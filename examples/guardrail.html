@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI-agent tool-call guardrail — cleanrules examples</title>
+  <meta name="description" content="Allow, ask a human or deny each tool call an agent wants to make, deterministically and with an explanation, before it runs.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/examples/guardrail.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="AI-agent tool-call guardrail — cleanrules examples">
+  <meta property="og:description" content="Allow, ask a human or deny each tool call an agent wants to make, deterministically and with an explanation, before it runs.">
+  <meta property="og:url" content="https://cleanrules.github.io/examples/guardrail.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html" aria-current="page">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="page-hero">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="crumbs muted"><a href="index.html">Examples</a> / 08</p>
+        <div class="ex-meta"><span class="chip dom">AI agents</span><span class="chip pol">PRIORITY</span></div>
+        <h1>AI-agent tool-call guardrail</h1>
+        <p class="lead">An AI agent can run shell commands, deploy and pay invoices. Before each tool call runs, a rule set decides: allow it, ask a human, or deny it. The decision must be deterministic and explainable, whatever the model was thinking.</p>
+        <ul class="toc">
+          <li><a href="#problem">The problem</a></li><li><a href="#rules">The rules in every language</a></li>
+          <li><a href="#decision">The decision</a></li><li><a href="#explanation">The explanation</a></li>
+          <li><a href="#what-if">What happens if…</a></li><li><a href="#more">Learn more</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="problem">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The problem</p>
+          <h2>AI-agent tool-call guardrail, in words.</h2>
+
+<ul>
+  <li><strong>deny_destructive_shell</strong>: a <code>bash</code> call whose command contains a recursive <code>rm</code> is denied (priority 100);</li>
+  <li><strong>deny_outside_hours</strong>: deployments and payments outside 08:00 to 20:00 are denied (80);</li>
+  <li><strong>ask_large_payment</strong>: a payment above 500.00 needs a human's approval (50);</li>
+  <li><strong>allow</strong>: anything else is allowed (0).</li>
+</ul>
+<p>The tool call is the input: the tool's name, its arguments and some context. <code>priority</code> makes deny beat ask beat allow. This is the shape of the planned guardrails (phase O); the rules themselves run today.</p>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;tool&quot;: {
+    &quot;name&quot;: &quot;pay_invoice&quot;,
+    &quot;args&quot;: {&quot;invoice&quot;: &quot;F-2026-118&quot;, &quot;amount&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}}
+  },
+  &quot;context&quot;: {&quot;hour&quot;: 14}
+}</code></pre>
+</div>
+          <p class="caption">The agent wants to pay invoice F-2026-118 for 1,250.00 at 14:00. The input in the JSON format, where decimals and dates have their own encoding; in Python it is the dict in the program below.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="rules">
+      <div class="wrap">
+        <p class="eyebrow">The rules in every language</p>
+        <h2>One rule set, ten ways to write it.</h2>
+        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
+<button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
+<button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
+<button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
+<button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
+<button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="pv"></span>C</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
+</div>
+<div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.py</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from decimal import Decimal
+
+from cleanrules import Const, F, Rule, RuleSet
+
+guard = RuleSet(
+    [
+        Rule(&quot;deny_destructive_shell&quot;,
+             (F.tool.name == &quot;bash&quot;) &amp; F.tool.args.command.matches(r&quot;\brm\s+-[a-zA-Z]*r&quot;),
+             {&quot;verdict&quot;: &quot;deny&quot;}, priority=100, tags=[&quot;safety&quot;],
+             description=&quot;Never let the agent delete recursively&quot;),
+        Rule(&quot;deny_outside_hours&quot;,
+             F.tool.name.is_in([&quot;deploy&quot;, &quot;pay_invoice&quot;])
+             &amp; ~F.context.hour.between(8, 20, closed=&quot;left&quot;),
+             {&quot;verdict&quot;: &quot;deny&quot;}, priority=80, tags=[&quot;safety&quot;]),
+        Rule(&quot;ask_large_payment&quot;,
+             (F.tool.name == &quot;pay_invoice&quot;) &amp; (F.tool.args.amount &gt; Decimal(&quot;500.00&quot;)),
+             {&quot;verdict&quot;: &quot;ask&quot;}, priority=50, tags=[&quot;money&quot;]),
+        Rule(&quot;allow&quot;, Const(True), {&quot;verdict&quot;: &quot;allow&quot;}),
+    ],
+    hit_policy=&quot;priority&quot;,
+)
+
+call = {&quot;tool&quot;: {&quot;name&quot;: &quot;pay_invoice&quot;,
+                 &quot;args&quot;: {&quot;invoice&quot;: &quot;F-2026-118&quot;, &quot;amount&quot;: Decimal(&quot;1250.00&quot;)}},
+        &quot;context&quot;: {&quot;hour&quot;: 14}}
+decision = guard.evaluate(call)
+print(decision, dict(decision.output))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Decision priority: selected [ask_large_payment]&gt; {&#x27;verdict&#x27;: &#x27;ask&#x27;}</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-rs" aria-labelledby="tab-rules-rs" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! A guardrail for an AI agent&#x27;s tool calls: allow, ask or deny.
+use cleanrules::ast::Closed;
+use cleanrules::build::{Build, constant, field};
+use cleanrules::format::{ValueContext, read_value, write_value};
+use cleanrules::json::{Limits, parse, to_string};
+use cleanrules::rules::{Config, HitPolicy, Rule, RuleSet};
+use cleanrules::{Decimal, Value};
+
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn std::error::Error&gt;&gt;;
+
+fn rule(name: &amp;str, when: Build, then: Vec&lt;(&amp;str, Build)&gt;) -&gt; Result&lt;Rule&gt; {
+    let then = then
+        .into_iter()
+        .map(|(key, value)| Ok((key.to_owned(), value.build()?)))
+        .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;
+    Ok(Rule::with_payload(name, when.build()?, then)?)
+}
+
+fn input(json: &amp;str) -&gt; Result&lt;Value&gt; {
+    Ok(read_value(
+        &amp;parse(json, &amp;Limits::default())?,
+        &quot;&quot;,
+        ValueContext::Data,
+    )?)
+}
+
+fn guard() -&gt; Result&lt;RuleSet&gt; {
+    let tool = || field(&quot;tool&quot;).get(&quot;name&quot;);
+    let args = || field(&quot;tool&quot;).get(&quot;args&quot;);
+    let verdict = |v: &amp;str| vec![(&quot;verdict&quot;, constant(v))];
+    let rules = vec![
+        rule(
+            &quot;deny_destructive_shell&quot;,
+            tool().eq(&quot;bash&quot;) &amp; args().get(&quot;command&quot;).matches(r&quot;\brm\s+-[a-zA-Z]*r&quot;),
+            verdict(&quot;deny&quot;),
+        )?
+        .priority(100)
+        .tags([&quot;safety&quot;])
+        .description(&quot;Never let the agent delete recursively&quot;),
+        rule(
+            &quot;deny_outside_hours&quot;,
+            tool().is_in([&quot;deploy&quot;, &quot;pay_invoice&quot;])
+                &amp; !field(&quot;context&quot;)
+                    .get(&quot;hour&quot;)
+                    .between_closed(8, 20, Closed::Left),
+            verdict(&quot;deny&quot;),
+        )?
+        .priority(80)
+        .tags([&quot;safety&quot;]),
+        rule(
+            &quot;ask_large_payment&quot;,
+            tool().eq(&quot;pay_invoice&quot;) &amp; args().get(&quot;amount&quot;).gt(Decimal::parse(&quot;500.00&quot;)?),
+            verdict(&quot;ask&quot;),
+        )?
+        .priority(50)
+        .tags([&quot;money&quot;]),
+        rule(&quot;allow&quot;, constant(true), verdict(&quot;allow&quot;))?,
+    ];
+    let config = Config {
+        hit_policy: HitPolicy::Priority,
+        ..Config::default()
+    };
+    Ok(RuleSet::new(rules, config)?)
+}
+
+fn main() -&gt; Result&lt;()&gt; {
+    let guard = guard()?;
+    let calls = [
+        r#&quot;{&quot;tool&quot;: {&quot;name&quot;: &quot;pay_invoice&quot;, &quot;args&quot;: {&quot;invoice&quot;: &quot;F-2026-118&quot;, &quot;amount&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}}}, &quot;context&quot;: {&quot;hour&quot;: 14}}&quot;#,
+        r#&quot;{&quot;tool&quot;: {&quot;name&quot;: &quot;pay_invoice&quot;, &quot;args&quot;: {&quot;amount&quot;: {&quot;$decimal&quot;: &quot;120.00&quot;}}}, &quot;context&quot;: {&quot;hour&quot;: 14}}&quot;#,
+        r#&quot;{&quot;tool&quot;: {&quot;name&quot;: &quot;bash&quot;, &quot;args&quot;: {&quot;command&quot;: &quot;rm -rf ./build&quot;}}, &quot;context&quot;: {&quot;hour&quot;: 23}}&quot;#,
+    ];
+    for call in calls {
+        let decision = guard.evaluate(&amp;input(call)?)?;
+        let winner = decision.selected().next().map_or(&quot;-&quot;, |r| r.rule.name());
+        let output = decision
+            .output()?
+            .map(|v| to_string(&amp;write_value(&amp;v)))
+            .unwrap_or_default();
+        println!(&quot;{output:&lt;20} by {winner}&quot;);
+    }
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;verdict&quot;:&quot;ask&quot;}    by ask_large_payment
+{&quot;verdict&quot;:&quot;allow&quot;}  by allow
+{&quot;verdict&quot;:&quot;deny&quot;}   by deny_destructive_shell</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-json" aria-labelledby="tab-rules-json" hidden>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.ruleset.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;eq&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;bash&quot;}
+            },
+            {
+              &quot;op&quot;: &quot;matches&quot;,
+              &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]},
+              &quot;pattern&quot;: &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;deny&quot;}},
+        &quot;priority&quot;: 100,
+        &quot;tags&quot;: [&quot;safety&quot;],
+        &quot;description&quot;: &quot;Never let the agent delete recursively&quot;
+      },
+      {
+        &quot;name&quot;: &quot;deny_outside_hours&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;in&quot;,
+              &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+              &quot;values&quot;: [&quot;deploy&quot;, &quot;pay_invoice&quot;]
+            },
+            {
+              &quot;op&quot;: &quot;not&quot;,
+              &quot;operand&quot;: {
+                &quot;op&quot;: &quot;between&quot;,
+                &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 8},
+                &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20},
+                &quot;closed&quot;: &quot;left&quot;
+              }
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;deny&quot;}},
+        &quot;priority&quot;: 80,
+        &quot;tags&quot;: [&quot;safety&quot;]
+      },
+      {
+        &quot;name&quot;: &quot;ask_large_payment&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;eq&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;pay_invoice&quot;}
+            },
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;}}
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;ask&quot;}},
+        &quot;priority&quot;: 50,
+        &quot;tags&quot;: [&quot;money&quot;]
+      },
+      {
+        &quot;name&quot;: &quot;allow&quot;,
+        &quot;when&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;allow&quot;}}
+      }
+    ]
+  }
+}</code></pre>
+</div>
+<p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
+</div>
+<div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.ts</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
+import { F, Const, Rule, RuleSet, decimal } from &quot;cleanrules&quot;;
+
+const guard = new RuleSet(
+  [
+    new Rule(
+      &quot;deny_destructive_shell&quot;,
+      F.tool.name.eq(&quot;bash&quot;).and(F.tool.args.command.matches(&quot;\\brm\\s+-[a-zA-Z]*r&quot;)),
+      { verdict: &quot;deny&quot; },
+      { priority: 100, tags: [&quot;safety&quot;], description: &quot;Never let the agent delete recursively&quot; },
+    ),
+    new Rule(
+      &quot;deny_outside_hours&quot;,
+      F.tool.name.isIn([&quot;deploy&quot;, &quot;pay_invoice&quot;]).and(F.context.hour.between(8, 20, &quot;left&quot;).not()),
+      { verdict: &quot;deny&quot; },
+      { priority: 80, tags: [&quot;safety&quot;] },
+    ),
+    new Rule(
+      &quot;ask_large_payment&quot;,
+      F.tool.name.eq(&quot;pay_invoice&quot;).and(F.tool.args.amount.gt(decimal(&quot;500.00&quot;))),
+      { verdict: &quot;ask&quot; },
+      { priority: 50, tags: [&quot;money&quot;] },
+    ),
+    new Rule(&quot;allow&quot;, Const(true), { verdict: &quot;allow&quot; }),
+  ],
+  { hitPolicy: &quot;priority&quot; },
+);
+
+const call = {
+  tool: { name: &quot;pay_invoice&quot;, args: { invoice: &quot;F-2026-118&quot;, amount: decimal(&quot;1250.00&quot;) } },
+  context: { hour: 14 },
+};
+const decision = guard.evaluate(call);
+console.log(decision.fired);
+console.log(decision.output);</code></pre>
+</div>
+<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.java</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+import io.github.cleanrules.*;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import static io.github.cleanrules.Conditions.*;
+
+public class Guardrail {
+    public static void main(String[] args) {
+        var tool = field(&quot;tool&quot;, &quot;name&quot;);
+        var guard = RuleSet.builder()
+            .hitPolicy(HitPolicy.PRIORITY)
+            .add(Rule.named(&quot;deny_destructive_shell&quot;)
+                .when(tool.eq(&quot;bash&quot;).and(field(&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;).matches(&quot;\\brm\\s+-[a-zA-Z]*r&quot;)))
+                .then(&quot;verdict&quot;, &quot;deny&quot;).priority(100).tags(&quot;safety&quot;)
+                .description(&quot;Never let the agent delete recursively&quot;))
+            .add(Rule.named(&quot;deny_outside_hours&quot;)
+                .when(tool.isIn(&quot;deploy&quot;, &quot;pay_invoice&quot;)
+                    .and(field(&quot;context&quot;, &quot;hour&quot;).between(8, 20, Closed.LEFT).not()))
+                .then(&quot;verdict&quot;, &quot;deny&quot;).priority(80).tags(&quot;safety&quot;))
+            .add(Rule.named(&quot;ask_large_payment&quot;)
+                .when(tool.eq(&quot;pay_invoice&quot;).and(field(&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;).gt(new BigDecimal(&quot;500.00&quot;))))
+                .then(&quot;verdict&quot;, &quot;ask&quot;).priority(50).tags(&quot;money&quot;))
+            .add(Rule.named(&quot;allow&quot;).when(constant(true)).then(&quot;verdict&quot;, &quot;allow&quot;))
+            .build();
+
+        var call = Map.of(
+            &quot;tool&quot;, Map.of(&quot;name&quot;, &quot;pay_invoice&quot;,
+                &quot;args&quot;, Map.of(&quot;invoice&quot;, &quot;F-2026-118&quot;, &quot;amount&quot;, new BigDecimal(&quot;1250.00&quot;))),
+            &quot;context&quot;, Map.of(&quot;hour&quot;, 14));
+        var decision = guard.evaluate(call);
+        System.out.println(decision.fired());
+        System.out.println(decision.output().orElseThrow());
+    }
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.scala</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
+import io.github.cleanrules.scala.*
+
+@main def guardrail(): Unit =
+    val guard = RuleSet(
+        Seq(
+            Rule(&quot;deny_destructive_shell&quot;,
+                F.tool.name === &quot;bash&quot; &amp; F.tool.args.command.matches(&quot;&quot;&quot;\brm\s+-[a-zA-Z]*r&quot;&quot;&quot;),
+                Map(&quot;verdict&quot; -&gt; &quot;deny&quot;), priority = 100, tags = Seq(&quot;safety&quot;),
+                description = &quot;Never let the agent delete recursively&quot;),
+            Rule(&quot;deny_outside_hours&quot;,
+                F.tool.name.isIn(&quot;deploy&quot;, &quot;pay_invoice&quot;) &amp; !F.context.hour.between(8, 20, Closed.Left),
+                Map(&quot;verdict&quot; -&gt; &quot;deny&quot;), priority = 80, tags = Seq(&quot;safety&quot;)),
+            Rule(&quot;ask_large_payment&quot;,
+                F.tool.name === &quot;pay_invoice&quot; &amp; F.tool.args.amount &gt; BigDecimal(&quot;500.00&quot;),
+                Map(&quot;verdict&quot; -&gt; &quot;ask&quot;), priority = 50, tags = Seq(&quot;money&quot;)),
+            Rule(&quot;allow&quot;, Const(true), Map(&quot;verdict&quot; -&gt; &quot;allow&quot;)),
+        ),
+        hitPolicy = HitPolicy.Priority,
+    )
+
+    val call = Map(
+        &quot;tool&quot; -&gt; Map(&quot;name&quot; -&gt; &quot;pay_invoice&quot;,
+            &quot;args&quot; -&gt; Map(&quot;invoice&quot; -&gt; &quot;F-2026-118&quot;, &quot;amount&quot; -&gt; BigDecimal(&quot;1250.00&quot;))),
+        &quot;context&quot; -&gt; Map(&quot;hour&quot; -&gt; 14),
+    )
+    val decision = guard.evaluate(call)
+    println(decision.fired)
+    println(decision.output)</code></pre>
+</div>
+<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.go</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-go">// Design preview: the Go binding does not exist yet (phase H).
+package main
+
+import (
+	&quot;fmt&quot;
+	&quot;log&quot;
+
+	cr &quot;github.com/cleanrules/cleanrules/bindings/go&quot;
+)
+
+func main() {
+	tool := cr.Field(&quot;tool&quot;, &quot;name&quot;)
+	guard, err := cr.NewRuleSet([]*cr.Rule{
+		cr.NewRule(&quot;deny_destructive_shell&quot;, cr.And(
+			tool.Eq(&quot;bash&quot;),
+			cr.Field(&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;).Matches(`\brm\s+-[a-zA-Z]*r`),
+		)).Then(&quot;verdict&quot;, &quot;deny&quot;).Priority(100).Tags(&quot;safety&quot;).
+			Description(&quot;Never let the agent delete recursively&quot;),
+		cr.NewRule(&quot;deny_outside_hours&quot;, cr.And(
+			tool.In(&quot;deploy&quot;, &quot;pay_invoice&quot;),
+			cr.Not(cr.Field(&quot;context&quot;, &quot;hour&quot;).BetweenClosed(8, 20, cr.Left)),
+		)).Then(&quot;verdict&quot;, &quot;deny&quot;).Priority(80).Tags(&quot;safety&quot;),
+		cr.NewRule(&quot;ask_large_payment&quot;, cr.And(
+			tool.Eq(&quot;pay_invoice&quot;),
+			cr.Field(&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;).Gt(cr.MustDecimal(&quot;500.00&quot;)),
+		)).Then(&quot;verdict&quot;, &quot;ask&quot;).Priority(50).Tags(&quot;money&quot;),
+		cr.NewRule(&quot;allow&quot;, cr.Const(true)).Then(&quot;verdict&quot;, &quot;allow&quot;),
+	}, cr.WithHitPolicy(cr.Priority))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	decision, err := guard.Evaluate(map[string]any{
+		&quot;tool&quot;: map[string]any{
+			&quot;name&quot;: &quot;pay_invoice&quot;,
+			&quot;args&quot;: map[string]any{&quot;invoice&quot;: &quot;F-2026-118&quot;, &quot;amount&quot;: cr.MustDecimal(&quot;1250.00&quot;)},
+		},
+		&quot;context&quot;: map[string]any{&quot;hour&quot;: 14},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	output, err := decision.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(decision.Fired())
+	fmt.Println(output)
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-c" aria-labelledby="tab-rules-c" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.c</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-c">// Design preview: the C binding does not exist yet (phase E).
+#include &lt;stdio.h&gt;
+#include &lt;cleanrules.h&gt;
+
+static int fail(cr_status status) {
+    fprintf(stderr, &quot;%s: %s\n&quot;, cr_status_name(status), cr_error_message(cr_last_error()));
+    return 1;
+}
+
+int main(void) {
+    cr_ruleset *rules = NULL;
+    cr_decision *decision = NULL;
+    char *output = NULL;
+
+    /* The rule set document shown in the JSON tab. */
+    cr_status status = cr_ruleset_read_file(&quot;guardrail.ruleset.json&quot;, &amp;rules);
+    if (status != CR_OK) return fail(status);
+
+    const char *call =
+        &quot;{\&quot;tool\&quot;: {\&quot;name\&quot;: \&quot;pay_invoice\&quot;, &quot;
+        &quot;\&quot;args\&quot;: {\&quot;invoice\&quot;: \&quot;F-2026-118\&quot;, \&quot;amount\&quot;: {\&quot;$decimal\&quot;: \&quot;1250.00\&quot;}}}, &quot;
+        &quot;\&quot;context\&quot;: {\&quot;hour\&quot;: 14}}&quot;;
+    status = cr_ruleset_evaluate_json(rules, call, &amp;decision);
+    if (status == CR_OK) status = cr_decision_output_json(decision, &amp;output);
+    if (status == CR_OK) puts(output);  /* a JSON object, or null */
+    else fail(status);
+
+    cr_string_free(output);
+    cr_decision_free(decision);
+    cr_ruleset_free(rules);
+    return status == CR_OK ? 0 : 1;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.cpp</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
+#include &lt;cleanrules.hpp&gt;
+#include &lt;iostream&gt;
+
+namespace cr = cleanrules;
+using cr::F;
+
+int main() {
+    auto tool = F(&quot;tool&quot;)[&quot;name&quot;];
+    auto args = F(&quot;tool&quot;)[&quot;args&quot;];
+    cr::RuleSet guard({
+        cr::Rule(&quot;deny_destructive_shell&quot;,
+                 (tool == &quot;bash&quot;) &amp; args[&quot;command&quot;].matches(R&quot;(\brm\s+-[a-zA-Z]*r)&quot;))
+            .then({{&quot;verdict&quot;, &quot;deny&quot;}}).priority(100).tags({&quot;safety&quot;})
+            .description(&quot;Never let the agent delete recursively&quot;),
+        cr::Rule(&quot;deny_outside_hours&quot;,
+                 tool.is_in({&quot;deploy&quot;, &quot;pay_invoice&quot;})
+                     &amp; !F(&quot;context&quot;)[&quot;hour&quot;].between(8, 20, cr::Closed::left))
+            .then({{&quot;verdict&quot;, &quot;deny&quot;}}).priority(80).tags({&quot;safety&quot;}),
+        cr::Rule(&quot;ask_large_payment&quot;,
+                 (tool == &quot;pay_invoice&quot;) &amp; (args[&quot;amount&quot;] &gt; cr::Decimal(&quot;500.00&quot;)))
+            .then({{&quot;verdict&quot;, &quot;ask&quot;}}).priority(50).tags({&quot;money&quot;}),
+        cr::Rule(&quot;allow&quot;, cr::Const(true)).then({{&quot;verdict&quot;, &quot;allow&quot;}}),
+    }, {.hit_policy = cr::HitPolicy::priority});
+
+    auto decision = guard.evaluate(cr::Value::from_json(R&quot;({
+        &quot;tool&quot;: {&quot;name&quot;: &quot;pay_invoice&quot;,
+                 &quot;args&quot;: {&quot;invoice&quot;: &quot;F-2026-118&quot;, &quot;amount&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}}},
+        &quot;context&quot;: {&quot;hour&quot;: 14}})&quot;));
+    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
+    std::cout &lt;&lt; &#x27;\n&#x27;;
+    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.erl</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-erlang">%% Design preview: the Erlang binding does not exist yet (phase N).
+-module(guardrail).
+-export([main/0]).
+
+main() -&gt;
+    C = cleanrules,
+    Tool = [tool, name],
+    {ok, Guard} = C:ruleset([
+        C:rule(&lt;&lt;&quot;deny_destructive_shell&quot;&gt;&gt;,
+               C:all([C:eq(Tool, &lt;&lt;&quot;bash&quot;&gt;&gt;),
+                      C:matches([tool, args, command], &lt;&lt;&quot;\\brm\\s+-[a-zA-Z]*r&quot;&gt;&gt;)]),
+               #{verdict =&gt; &lt;&lt;&quot;deny&quot;&gt;&gt;},
+               #{priority =&gt; 100, tags =&gt; [&lt;&lt;&quot;safety&quot;&gt;&gt;],
+                 description =&gt; &lt;&lt;&quot;Never let the agent delete recursively&quot;&gt;&gt;}),
+        C:rule(&lt;&lt;&quot;deny_outside_hours&quot;&gt;&gt;,
+               C:all([C:is_in(Tool, [&lt;&lt;&quot;deploy&quot;&gt;&gt;, &lt;&lt;&quot;pay_invoice&quot;&gt;&gt;]),
+                      C:negate(C:between([context, hour], 8, 20, left))]),
+               #{verdict =&gt; &lt;&lt;&quot;deny&quot;&gt;&gt;}, #{priority =&gt; 80, tags =&gt; [&lt;&lt;&quot;safety&quot;&gt;&gt;]}),
+        C:rule(&lt;&lt;&quot;ask_large_payment&quot;&gt;&gt;,
+               C:all([C:eq(Tool, &lt;&lt;&quot;pay_invoice&quot;&gt;&gt;),
+                      C:gt([tool, args, amount], {decimal, &lt;&lt;&quot;500.00&quot;&gt;&gt;})]),
+               #{verdict =&gt; &lt;&lt;&quot;ask&quot;&gt;&gt;}, #{priority =&gt; 50, tags =&gt; [&lt;&lt;&quot;money&quot;&gt;&gt;]}),
+        C:rule(&lt;&lt;&quot;allow&quot;&gt;&gt;, true, #{verdict =&gt; &lt;&lt;&quot;allow&quot;&gt;&gt;})
+    ], #{hit_policy =&gt; priority}),
+    Call = #{tool =&gt; #{name =&gt; &lt;&lt;&quot;pay_invoice&quot;&gt;&gt;,
+                       args =&gt; #{invoice =&gt; &lt;&lt;&quot;F-2026-118&quot;&gt;&gt;,
+                                 amount =&gt; {decimal, &lt;&lt;&quot;1250.00&quot;&gt;&gt;}}},
+             context =&gt; #{hour =&gt; 14}},
+    {ok, Decision} = C:evaluate(Guard, Call),
+    io:format(&quot;fired: ~p~n&quot;, [cleanrules:fired(Decision)]),
+    {ok, Output} = cleanrules:output(Decision),
+    io:format(&quot;~p~n&quot;, [Output]).</code></pre>
+</div>
+<p class="panel-note">Design preview: the Erlang binding does not exist yet (phase N); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="decision">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The decision</p>
+          <h2>What the engine decided.</h2>
+<p>The payment is large, so the verdict is <code>ask</code>: route the call to a human. <code>allow</code> also fired but has a lower priority.</p>
+          <div class="table-wrap"><table class="data"><caption>Each rule's status, from the explanation the core wrote</caption><thead><tr><th>Rule</th><th>Status</th><th>Note</th></tr></thead><tbody><tr><td><code>deny_destructive_shell</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr><tr><td><code>deny_outside_hours</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr><tr><td><code>ask_large_payment</code></td><td><span class="st selected">selected</span></td><td></td></tr><tr><td><code>allow</code></td><td><span class="st fired">fired</span></td><td>lower_priority: <code>ask_large_payment</code> won (50 &gt; 0)</td></tr></tbody></table></div>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.output</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{&quot;verdict&quot;: &quot;ask&quot;}</code></pre>
+</div>
+          <div class="window scroll short"><div class="window-bar"><i></i><i></i><i></i><span>decision.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;decision&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;results&quot;: [
+      {
+        &quot;rule&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;eq&quot;,
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;],
+                  &quot;value&quot;: &quot;pay_invoice&quot;
+                },
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;bash&quot;}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;matches&quot;,
+              &quot;truth&quot;: null,
+              &quot;reason&quot;: {
+                &quot;code&quot;: &quot;missing_field&quot;,
+                &quot;paths&quot;: [[&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]]
+              },
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;],
+                  &quot;value&quot;: null,
+                  &quot;reason&quot;: {
+                    &quot;code&quot;: &quot;missing_field&quot;,
+                    &quot;paths&quot;: [[&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;deny_outside_hours&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;in&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;],
+                  &quot;value&quot;: &quot;pay_invoice&quot;
+                }
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;not&quot;,
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;between&quot;,
+                  &quot;truth&quot;: true,
+                  &quot;children&quot;: [
+                    {
+                      &quot;op&quot;: &quot;ge&quot;,
+                      &quot;truth&quot;: true,
+                      &quot;children&quot;: [
+                        {
+                          &quot;op&quot;: &quot;field&quot;,
+                          &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;],
+                          &quot;value&quot;: 14
+                        },
+                        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 8}
+                      ]
+                    },
+                    {
+                      &quot;op&quot;: &quot;lt&quot;,
+                      &quot;truth&quot;: true,
+                      &quot;children&quot;: [
+                        {
+                          &quot;op&quot;: &quot;field&quot;,
+                          &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;],
+                          &quot;value&quot;: 14
+                        },
+                        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20}
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;ask_large_payment&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;eq&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;],
+                  &quot;value&quot;: &quot;pay_invoice&quot;
+                },
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;pay_invoice&quot;}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;],
+                  &quot;value&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}
+                },
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;}}
+              ]
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;ask&quot;}}
+      },
+      {
+        &quot;rule&quot;: &quot;allow&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;const&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [{&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true}]
+        }
+      }
+    ],
+    &quot;selected&quot;: [&quot;ask_large_payment&quot;]
+  }
+}</code></pre>
+</div>
+          <p class="caption">The decision document records every rule's result tree, with each value read; its outputs are derived from it. It equals <code>decision.to_dict()</code> in Python.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="explanation">
+      <div class="wrap">
+        <p class="eyebrow">The explanation</p>
+        <h2>Why, and why not.</h2>
+        <div class="prose"><p>The explanation is what the human sees: which rule asked, and that no deny rule applied. Amounts are <code>Decimal</code>s, compared exactly.</p></div>
+        <div class="stack">
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">for rule in decision.explain().rules:
+    print(f&quot;{rule.rule:&lt;23} {rule.status:&lt;10} {rule.note or &#x27;&#x27;}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">deny_destructive_shell  not_fired  
+deny_outside_hours      not_fired  
+ask_large_payment       selected   
+allow                   fired      Note(kind=&#x27;lower_priority&#x27;, winner=&#x27;ask_large_payment&#x27;, priority=0, winner_priority=50)</pre>
+</div>
+            <p class="caption">The cells of this page run in order in one Python session.</p>
+          </div>
+          <div class="stack">
+            <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;ask_large_payment&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;eq&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;bash&quot;}
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+              &quot;truth&quot;: false,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;pay_invoice&quot;}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;matches&quot;,
+                &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]},
+                &quot;pattern&quot;: &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/1&quot;,
+              &quot;truth&quot;: null,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [],
+              &quot;reason&quot;: {
+                &quot;code&quot;: &quot;missing_field&quot;,
+                &quot;paths&quot;: [[&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]]
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;deny_outside_hours&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;any&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 8}
+              },
+              &quot;at&quot;: &quot;/decision/results/1/when/children/1/children/0/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: true,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;value&quot;: 14}],
+              &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;op&quot;: &quot;lt&quot;, &quot;target&quot;: 8, &quot;gap&quot;: 6}
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;lt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20}
+              },
+              &quot;at&quot;: &quot;/decision/results/1/when/children/1/children/0/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: true,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;value&quot;: 14}],
+              &quot;counterfactual&quot;: {
+                &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;],
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;target&quot;: 20,
+                &quot;gap&quot;: 6
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;ask_large_payment&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;eq&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;pay_invoice&quot;}
+              },
+              &quot;at&quot;: &quot;/decision/results/2/when/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;pay_invoice&quot;}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;gt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;}}
+              },
+              &quot;at&quot;: &quot;/decision/results/2/when/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [
+                {
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;],
+                  &quot;value&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;allow&quot;,
+        &quot;status&quot;: &quot;fired&quot;,
+        &quot;note&quot;: {
+          &quot;kind&quot;: &quot;lower_priority&quot;,
+          &quot;winner&quot;: &quot;ask_large_payment&quot;,
+          &quot;priority&quot;: 0,
+          &quot;winner_priority&quot;: 50
+        },
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+          &quot;at&quot;: &quot;/decision/results/3/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: []
+        }
+      }
+    ]
+  }
+}</code></pre>
+</div>
+            <p class="caption">The same explanation as a JSON document, written by the core; it equals <code>decision.explain().to_dict()</code> in Python. Each <code>at</code> points into the decision document.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="what-if">
+      <div class="wrap">
+        <p class="eyebrow">What happens if…</p>
+        <h2>Change the input, see the outcome move.</h2>
+        <div class="prose">
+<p><strong>Three more calls.</strong> A small payment is allowed. <code>rm -rf ./build</code> is denied, and so is a payment at 21:00, even though it is small: the deny rule outranks <code>allow</code>, which fired for every call.</p>
+<p><strong>What the guardrail reads.</strong> The summary lists every field the rules read, which is what an agent framework must provide with each call; the planned MCP server will derive its input schema from it. Tags group the rules for review.</p></div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">calls = {
+    &quot;small payment&quot;: {&quot;tool&quot;: {&quot;name&quot;: &quot;pay_invoice&quot;, &quot;args&quot;: {&quot;amount&quot;: Decimal(&quot;120.00&quot;)}},
+                      &quot;context&quot;: {&quot;hour&quot;: 14}},
+    &quot;rm -rf at night&quot;: {&quot;tool&quot;: {&quot;name&quot;: &quot;bash&quot;, &quot;args&quot;: {&quot;command&quot;: &quot;rm -rf ./build&quot;}},
+                        &quot;context&quot;: {&quot;hour&quot;: 23}},
+    &quot;payment at 21:00&quot;: {&quot;tool&quot;: {&quot;name&quot;: &quot;pay_invoice&quot;, &quot;args&quot;: {&quot;amount&quot;: Decimal(&quot;80.00&quot;)}},
+                         &quot;context&quot;: {&quot;hour&quot;: 21}},
+}
+for label, c in calls.items():
+    d = guard.evaluate(c)
+    print(f&quot;{label:&lt;17} -&gt; {d.output[&#x27;verdict&#x27;]:&lt;5} by {d.selected[0].rule.name}, fired {d.fired}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">small payment     -&gt; allow by allow, fired (&#x27;allow&#x27;,)
+rm -rf at night   -&gt; deny  by deny_destructive_shell, fired (&#x27;deny_destructive_shell&#x27;, &#x27;allow&#x27;)
+payment at 21:00  -&gt; deny  by deny_outside_hours, fired (&#x27;deny_outside_hours&#x27;, &#x27;allow&#x27;)</pre>
+</div>
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">summary = guard.summary()
+for usage in summary.fields:
+    print(&quot;.&quot;.join(usage.path), &quot;read by&quot;, usage.conditions)
+print(dict(summary.tags))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">tool.name read by (&#x27;deny_destructive_shell&#x27;, &#x27;deny_outside_hours&#x27;, &#x27;ask_large_payment&#x27;)
+tool.args.command read by (&#x27;deny_destructive_shell&#x27;,)
+context.hour read by (&#x27;deny_outside_hours&#x27;,)
+tool.args.amount read by (&#x27;ask_large_payment&#x27;,)
+{&#x27;money&#x27;: (&#x27;ask_large_payment&#x27;,), &#x27;safety&#x27;: (&#x27;deny_destructive_shell&#x27;, &#x27;deny_outside_hours&#x27;)}</pre>
+</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="more">
+      <div class="wrap">
+        <p class="eyebrow">Learn more</p>
+        <h2>The manual chapters this example uses.</h2>
+        <ul class="manual-links"><li><a href="../manual/hit-policies.html#single">priority</a></li><li><a href="../manual/summaries.html#fields">Fields read</a></li><li><a href="../manual/conditions.html#regex">Regular expressions</a></li><li><a href="../agents.html">AI agents (planned)</a></li></ul>
+        <nav class="pager" aria-label="Examples"><a class="prev" href="discounts.html"><small>← Previous example</small>Discount agreement</a></nav>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

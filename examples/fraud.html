@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fraud flags — cleanrules examples</title>
+  <meta name="description" content="Raise every flag that applies to a card transaction, each with risk points, then total them with the same rules under COLLECT.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/examples/fraud.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Fraud flags — cleanrules examples">
+  <meta property="og:description" content="Raise every flag that applies to a card transaction, each with risk points, then total them with the same rules under COLLECT.">
+  <meta property="og:url" content="https://cleanrules.github.io/examples/fraud.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html" aria-current="page">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="page-hero">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="crumbs muted"><a href="index.html">Examples</a> / 04</p>
+        <div class="ex-meta"><span class="chip dom">Payments</span><span class="chip pol">RULE_ORDER</span></div>
+        <h1>Fraud flags</h1>
+        <p class="lead">A payment processor screens card transactions. Several signals can apply at once and an analyst wants all of them, not just the first: each rule is a flag with risk points.</p>
+        <ul class="toc">
+          <li><a href="#problem">The problem</a></li><li><a href="#rules">The rules in every language</a></li>
+          <li><a href="#decision">The decision</a></li><li><a href="#explanation">The explanation</a></li>
+          <li><a href="#what-if">What happens if…</a></li><li><a href="#more">Learn more</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="problem">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The problem</p>
+          <h2>Fraud flags, in words.</h2>
+
+<ul>
+  <li><strong>large_amount</strong>: more than three times the customer's average (a field compared with an expression of another field);</li>
+  <li><strong>country_mismatch</strong>: the IP's country differs from the card's (two fields compared);</li>
+  <li><strong>velocity</strong>: five or more transactions in the last hour;</li>
+  <li><strong>new_device_large</strong>: a new device and more than 500;</li>
+  <li><strong>disposable_email</strong>: an address at a throwaway mail service (a regular expression);</li>
+  <li><strong>night_time</strong>: between midnight and 5 a.m., local time.</li>
+</ul>
+<p><code>rule_order</code> selects every rule that fired, in rule order.</p>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;amount&quot;: 1890.0,
+  &quot;avg_amount&quot;: 240.0,
+  &quot;ip_country&quot;: &quot;NG&quot;,
+  &quot;card_country&quot;: &quot;ES&quot;,
+  &quot;tx_last_hour&quot;: 2,
+  &quot;new_device&quot;: true,
+  &quot;email&quot;: &quot;j.doe@mailinator.com&quot;,
+  &quot;local_hour&quot;: 14
+}</code></pre>
+</div>
+          <p class="caption">A 1,890 purchase from a new device, IP in Nigeria, card from Spain, average spend 240, two transactions in the last hour, at 14:00, from a mailinator.com address. The input in the JSON format, where decimals and dates have their own encoding; in Python it is the dict in the program below.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="rules">
+      <div class="wrap">
+        <p class="eyebrow">The rules in every language</p>
+        <h2>One rule set, ten ways to write it.</h2>
+        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
+<button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
+<button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
+<button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
+<button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
+<button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="pv"></span>C</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
+</div>
+<div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.py</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F, Rule, RuleSet
+
+flags = RuleSet(
+    [
+        Rule(&quot;large_amount&quot;, F.amount &gt; F.avg_amount * 3, {&quot;risk&quot;: 40}),
+        Rule(&quot;country_mismatch&quot;, F.ip_country != F.card_country, {&quot;risk&quot;: 25}),
+        Rule(&quot;velocity&quot;, F.tx_last_hour &gt;= 5, {&quot;risk&quot;: 30}),
+        Rule(&quot;new_device_large&quot;, F.new_device &amp; (F.amount &gt; 500), {&quot;risk&quot;: 20}),
+        Rule(&quot;disposable_email&quot;,
+             F.email.matches(r&quot;@(mailinator|guerrillamail|10minutemail)\.com$&quot;),
+             {&quot;risk&quot;: 35}),
+        Rule(&quot;night_time&quot;, F.local_hour.between(0, 5), {&quot;risk&quot;: 10}),
+    ],
+    hit_policy=&quot;rule_order&quot;,
+)
+
+tx = {&quot;amount&quot;: 1890.0, &quot;avg_amount&quot;: 240.0, &quot;ip_country&quot;: &quot;NG&quot;, &quot;card_country&quot;: &quot;ES&quot;,
+      &quot;tx_last_hour&quot;: 2, &quot;new_device&quot;: True, &quot;email&quot;: &quot;j.doe@mailinator.com&quot;,
+      &quot;local_hour&quot;: 14}
+decision = flags.evaluate(tx)
+print(decision)
+print(decision.fired)
+print([dict(out) for out in decision.outputs])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Decision rule_order: selected [large_amount, country_mismatch, new_device_large, disposable_email]&gt;
+(&#x27;large_amount&#x27;, &#x27;country_mismatch&#x27;, &#x27;new_device_large&#x27;, &#x27;disposable_email&#x27;)
+[{&#x27;risk&#x27;: 40}, {&#x27;risk&#x27;: 25}, {&#x27;risk&#x27;: 20}, {&#x27;risk&#x27;: 35}]</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-rs" aria-labelledby="tab-rules-rs" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! Fraud flags: every rule that fires, under the RULE_ORDER hit policy.
+use cleanrules::Value;
+use cleanrules::ast::Closed;
+use cleanrules::build::{Build, constant, field};
+use cleanrules::format::{ValueContext, read_value, write_value};
+use cleanrules::json::{Limits, parse, to_string};
+use cleanrules::rules::{Config, HitPolicy, Rule, RuleSet};
+
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn std::error::Error&gt;&gt;;
+
+fn rule(name: &amp;str, when: Build, then: Vec&lt;(&amp;str, Build)&gt;) -&gt; Result&lt;Rule&gt; {
+    let then = then
+        .into_iter()
+        .map(|(key, value)| Ok((key.to_owned(), value.build()?)))
+        .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;
+    Ok(Rule::with_payload(name, when.build()?, then)?)
+}
+
+fn input(json: &amp;str) -&gt; Result&lt;Value&gt; {
+    Ok(read_value(
+        &amp;parse(json, &amp;Limits::default())?,
+        &quot;&quot;,
+        ValueContext::Data,
+    )?)
+}
+
+fn flags() -&gt; Result&lt;RuleSet&gt; {
+    let risk = |points: i64| vec![(&quot;risk&quot;, constant(points))];
+    let rules = vec![
+        rule(
+            &quot;large_amount&quot;,
+            field(&quot;amount&quot;).gt(field(&quot;avg_amount&quot;) * 3),
+            risk(40),
+        )?,
+        rule(
+            &quot;country_mismatch&quot;,
+            field(&quot;ip_country&quot;).ne(field(&quot;card_country&quot;)),
+            risk(25),
+        )?,
+        rule(&quot;velocity&quot;, field(&quot;tx_last_hour&quot;).ge(5), risk(30))?,
+        rule(
+            &quot;new_device_large&quot;,
+            field(&quot;new_device&quot;) &amp; field(&quot;amount&quot;).gt(500),
+            risk(20),
+        )?,
+        rule(
+            &quot;disposable_email&quot;,
+            field(&quot;email&quot;).matches(r&quot;@(mailinator|guerrillamail|10minutemail)\.com$&quot;),
+            risk(35),
+        )?,
+        rule(
+            &quot;night_time&quot;,
+            field(&quot;local_hour&quot;).between_closed(0, 5, Closed::Both),
+            risk(10),
+        )?,
+    ];
+    let config = Config {
+        hit_policy: HitPolicy::RuleOrder,
+        ..Config::default()
+    };
+    Ok(RuleSet::new(rules, config)?)
+}
+
+fn main() -&gt; Result&lt;()&gt; {
+    let flags = flags()?;
+    let tx = input(
+        r#&quot;{&quot;amount&quot;: 1890.0, &quot;avg_amount&quot;: 240.0, &quot;ip_country&quot;: &quot;NG&quot;, &quot;card_country&quot;: &quot;ES&quot;,
+            &quot;tx_last_hour&quot;: 2, &quot;new_device&quot;: true, &quot;email&quot;: &quot;j.doe@mailinator.com&quot;,
+            &quot;local_hour&quot;: 14}&quot;#,
+    )?;
+    let decision = flags.evaluate(&amp;tx)?;
+    for result in decision.selected() {
+        let (_, risk) = &amp;result.output()[0];
+        println!(
+            &quot;{:&lt;17} risk {}&quot;,
+            result.rule.name(),
+            to_string(&amp;write_value(risk))
+        );
+    }
+    match decision.output() {
+        Ok(_) =&gt; println!(&quot;one output&quot;),
+        Err(error) =&gt; println!(&quot;output(): {} ({})&quot;, error, error.code()),
+    }
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">large_amount      risk 40
+country_mismatch  risk 25
+new_device_large  risk 20
+disposable_email  risk 35
+output(): rule_order decisions have several outputs (hit_policy_error)</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-json" aria-labelledby="tab-rules-json" hidden>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>fraud.ruleset.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;rule_order&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;large_amount&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;amount&quot;]},
+          &quot;right&quot;: {
+            &quot;op&quot;: &quot;mul&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;avg_amount&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 3}
+          }
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 40}}
+      },
+      {
+        &quot;name&quot;: &quot;country_mismatch&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;ne&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;ip_country&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;card_country&quot;]}
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 25}}
+      },
+      {
+        &quot;name&quot;: &quot;velocity&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;ge&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tx_last_hour&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 30}}
+      },
+      {
+        &quot;name&quot;: &quot;new_device_large&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;new_device&quot;]},
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;amount&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 500}
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20}}
+      },
+      {
+        &quot;name&quot;: &quot;disposable_email&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;matches&quot;,
+          &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;email&quot;]},
+          &quot;pattern&quot;: &quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 35}}
+      },
+      {
+        &quot;name&quot;: &quot;night_time&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;between&quot;,
+          &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;local_hour&quot;]},
+          &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0},
+          &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5},
+          &quot;closed&quot;: &quot;both&quot;
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 10}}
+      }
+    ]
+  }
+}</code></pre>
+</div>
+<p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
+</div>
+<div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.ts</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
+import { F, Rule, RuleSet } from &quot;cleanrules&quot;;
+
+const flags = new RuleSet(
+  [
+    new Rule(&quot;large_amount&quot;, F.amount.gt(F.avg_amount.mul(3)), { risk: 40 }),
+    new Rule(&quot;country_mismatch&quot;, F.ip_country.ne(F.card_country), { risk: 25 }),
+    new Rule(&quot;velocity&quot;, F.tx_last_hour.ge(5), { risk: 30 }),
+    new Rule(&quot;new_device_large&quot;, F.new_device.and(F.amount.gt(500)), { risk: 20 }),
+    new Rule(
+      &quot;disposable_email&quot;,
+      F.email.matches(&quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;),
+      { risk: 35 },
+    ),
+    new Rule(&quot;night_time&quot;, F.local_hour.between(0, 5), { risk: 10 }),
+  ],
+  { hitPolicy: &quot;rule_order&quot; },
+);
+
+const tx = {
+  amount: 1890.0,
+  avg_amount: 240.0,
+  ip_country: &quot;NG&quot;,
+  card_country: &quot;ES&quot;,
+  tx_last_hour: 2,
+  new_device: true,
+  email: &quot;j.doe@mailinator.com&quot;,
+  local_hour: 14,
+};
+const decision = flags.evaluate(tx);
+console.log(decision.fired);
+console.log(decision.outputs);</code></pre>
+</div>
+<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.java</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+import io.github.cleanrules.*;
+
+import static io.github.cleanrules.Conditions.*;
+
+public class Fraud {
+    record Transaction(double amount, double avg_amount, String ip_country, String card_country,
+                       int tx_last_hour, boolean new_device, String email, int local_hour) {}
+
+    public static void main(String[] args) {
+        var flags = RuleSet.builder()
+            .hitPolicy(HitPolicy.RULE_ORDER)
+            .add(Rule.named(&quot;large_amount&quot;).when(field(&quot;amount&quot;).gt(field(&quot;avg_amount&quot;).times(3)))
+                .then(&quot;risk&quot;, 40))
+            .add(Rule.named(&quot;country_mismatch&quot;).when(field(&quot;ip_country&quot;).ne(field(&quot;card_country&quot;)))
+                .then(&quot;risk&quot;, 25))
+            .add(Rule.named(&quot;velocity&quot;).when(field(&quot;tx_last_hour&quot;).ge(5)).then(&quot;risk&quot;, 30))
+            .add(Rule.named(&quot;new_device_large&quot;).when(field(&quot;new_device&quot;).and(field(&quot;amount&quot;).gt(500)))
+                .then(&quot;risk&quot;, 20))
+            .add(Rule.named(&quot;disposable_email&quot;)
+                .when(field(&quot;email&quot;).matches(&quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;))
+                .then(&quot;risk&quot;, 35))
+            .add(Rule.named(&quot;night_time&quot;).when(field(&quot;local_hour&quot;).between(0, 5)).then(&quot;risk&quot;, 10))
+            .build();
+
+        var tx = new Transaction(1890.0, 240.0, &quot;NG&quot;, &quot;ES&quot;, 2, true, &quot;j.doe@mailinator.com&quot;, 14);
+        var decision = flags.evaluate(tx);
+        System.out.println(decision.fired());
+        System.out.println(decision.outputs());
+    }
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.scala</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
+import io.github.cleanrules.scala.*
+
+case class Transaction(amount: Double, avg_amount: Double, ip_country: String, card_country: String,
+                       tx_last_hour: Int, new_device: Boolean, email: String, local_hour: Int)
+
+@main def fraud(): Unit =
+    val flags = RuleSet(
+        Seq(
+            Rule(&quot;large_amount&quot;, F.amount &gt; F.avg_amount * 3, Map(&quot;risk&quot; -&gt; 40)),
+            Rule(&quot;country_mismatch&quot;, F.ip_country =!= F.card_country, Map(&quot;risk&quot; -&gt; 25)),
+            Rule(&quot;velocity&quot;, F.tx_last_hour &gt;= 5, Map(&quot;risk&quot; -&gt; 30)),
+            Rule(&quot;new_device_large&quot;, F.new_device &amp; F.amount &gt; 500, Map(&quot;risk&quot; -&gt; 20)),
+            Rule(&quot;disposable_email&quot;,
+                F.email.matches(&quot;&quot;&quot;@(mailinator|guerrillamail|10minutemail)\.com$&quot;&quot;&quot;), Map(&quot;risk&quot; -&gt; 35)),
+            Rule(&quot;night_time&quot;, F.local_hour.between(0, 5), Map(&quot;risk&quot; -&gt; 10)),
+        ),
+        hitPolicy = HitPolicy.RuleOrder,
+    )
+
+    val tx = Transaction(1890.0, 240.0, &quot;NG&quot;, &quot;ES&quot;, 2, true, &quot;j.doe@mailinator.com&quot;, 14)
+    val decision = flags.evaluate(tx)
+    println(decision.fired)
+    println(decision.outputs)</code></pre>
+</div>
+<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.go</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-go">// Design preview: the Go binding does not exist yet (phase H).
+package main
+
+import (
+	&quot;fmt&quot;
+	&quot;log&quot;
+
+	cr &quot;github.com/cleanrules/cleanrules/bindings/go&quot;
+)
+
+type Transaction struct {
+	Amount      float64 `json:&quot;amount&quot;`
+	AvgAmount   float64 `json:&quot;avg_amount&quot;`
+	IPCountry   string  `json:&quot;ip_country&quot;`
+	CardCountry string  `json:&quot;card_country&quot;`
+	TxLastHour  int     `json:&quot;tx_last_hour&quot;`
+	NewDevice   bool    `json:&quot;new_device&quot;`
+	Email       string  `json:&quot;email&quot;`
+	LocalHour   int     `json:&quot;local_hour&quot;`
+}
+
+func main() {
+	risk := func(name string, when cr.Expr, points int) *cr.Rule {
+		return cr.NewRule(name, when).Then(&quot;risk&quot;, points)
+	}
+	flags, err := cr.NewRuleSet([]*cr.Rule{
+		risk(&quot;large_amount&quot;, cr.Field(&quot;amount&quot;).Gt(cr.Field(&quot;avg_amount&quot;).Mul(3)), 40),
+		risk(&quot;country_mismatch&quot;, cr.Field(&quot;ip_country&quot;).Ne(cr.Field(&quot;card_country&quot;)), 25),
+		risk(&quot;velocity&quot;, cr.Field(&quot;tx_last_hour&quot;).Ge(5), 30),
+		risk(&quot;new_device_large&quot;, cr.And(cr.Field(&quot;new_device&quot;), cr.Field(&quot;amount&quot;).Gt(500)), 20),
+		risk(&quot;disposable_email&quot;,
+			cr.Field(&quot;email&quot;).Matches(`@(mailinator|guerrillamail|10minutemail)\.com$`), 35),
+		risk(&quot;night_time&quot;, cr.Field(&quot;local_hour&quot;).Between(0, 5), 10),
+	}, cr.WithHitPolicy(cr.RuleOrder))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	decision, err := flags.Evaluate(Transaction{
+		Amount: 1890.0, AvgAmount: 240.0, IPCountry: &quot;NG&quot;, CardCountry: &quot;ES&quot;,
+		TxLastHour: 2, NewDevice: true, Email: &quot;j.doe@mailinator.com&quot;, LocalHour: 14,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(decision.Fired())
+	fmt.Println(decision.Outputs())
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-c" aria-labelledby="tab-rules-c" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.c</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-c">// Design preview: the C binding does not exist yet (phase E).
+#include &lt;stdio.h&gt;
+#include &lt;cleanrules.h&gt;
+
+static int fail(cr_status status) {
+    fprintf(stderr, &quot;%s: %s\n&quot;, cr_status_name(status), cr_error_message(cr_last_error()));
+    return 1;
+}
+
+int main(void) {
+    cr_ruleset *rules = NULL;
+    cr_decision *decision = NULL;
+    char *outputs = NULL;
+
+    /* The rule set document shown in the JSON tab. */
+    cr_status status = cr_ruleset_read_file(&quot;fraud.ruleset.json&quot;, &amp;rules);
+    if (status != CR_OK) return fail(status);
+
+    const char *tx =
+        &quot;{\&quot;amount\&quot;: 1890.0, \&quot;avg_amount\&quot;: 240.0, \&quot;ip_country\&quot;: \&quot;NG\&quot;, &quot;
+        &quot;\&quot;card_country\&quot;: \&quot;ES\&quot;, \&quot;tx_last_hour\&quot;: 2, \&quot;new_device\&quot;: true, &quot;
+        &quot;\&quot;email\&quot;: \&quot;j.doe@mailinator.com\&quot;, \&quot;local_hour\&quot;: 14}&quot;;
+    status = cr_ruleset_evaluate_json(rules, tx, &amp;decision);
+    if (status == CR_OK) status = cr_decision_outputs_json(decision, &amp;outputs);
+    if (status == CR_OK) puts(outputs);  /* a JSON array: one payload per selected rule */
+    else fail(status);
+
+    cr_string_free(outputs);
+    cr_decision_free(decision);
+    cr_ruleset_free(rules);
+    return status == CR_OK ? 0 : 1;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.cpp</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
+#include &lt;cleanrules.hpp&gt;
+#include &lt;iostream&gt;
+
+namespace cr = cleanrules;
+using cr::F;
+
+int main() {
+    auto risk = [](int points) { return cr::Value{{&quot;risk&quot;, points}}; };
+    cr::RuleSet flags({
+        cr::Rule(&quot;large_amount&quot;, F(&quot;amount&quot;) &gt; F(&quot;avg_amount&quot;) * 3).then(risk(40)),
+        cr::Rule(&quot;country_mismatch&quot;, F(&quot;ip_country&quot;) != F(&quot;card_country&quot;)).then(risk(25)),
+        cr::Rule(&quot;velocity&quot;, F(&quot;tx_last_hour&quot;) &gt;= 5).then(risk(30)),
+        cr::Rule(&quot;new_device_large&quot;, F(&quot;new_device&quot;) &amp; (F(&quot;amount&quot;) &gt; 500)).then(risk(20)),
+        cr::Rule(&quot;disposable_email&quot;,
+                 F(&quot;email&quot;).matches(R&quot;(@(mailinator|guerrillamail|10minutemail)\.com$)&quot;))
+            .then(risk(35)),
+        cr::Rule(&quot;night_time&quot;, F(&quot;local_hour&quot;).between(0, 5)).then(risk(10)),
+    }, {.hit_policy = cr::HitPolicy::rule_order});
+
+    auto decision = flags.evaluate(cr::Value::from_json(R&quot;({
+        &quot;amount&quot;: 1890.0, &quot;avg_amount&quot;: 240.0, &quot;ip_country&quot;: &quot;NG&quot;, &quot;card_country&quot;: &quot;ES&quot;,
+        &quot;tx_last_hour&quot;: 2, &quot;new_device&quot;: true, &quot;email&quot;: &quot;j.doe@mailinator.com&quot;,
+        &quot;local_hour&quot;: 14})&quot;));
+    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
+    std::cout &lt;&lt; &#x27;\n&#x27;;
+    for (const auto&amp; output : decision.outputs()) std::cout &lt;&lt; output.to_json() &lt;&lt; &#x27;\n&#x27;;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.erl</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-erlang">%% Design preview: the Erlang binding does not exist yet (phase N).
+-module(fraud).
+-export([main/0]).
+
+main() -&gt;
+    C = cleanrules,
+    Risk = fun(Points) -&gt; #{risk =&gt; Points} end,
+    {ok, Flags} = C:ruleset([
+        C:rule(&lt;&lt;&quot;large_amount&quot;&gt;&gt;, C:gt([amount], C:multiply([avg_amount], 3)), Risk(40)),
+        C:rule(&lt;&lt;&quot;country_mismatch&quot;&gt;&gt;, C:ne([ip_country], [card_country]), Risk(25)),
+        C:rule(&lt;&lt;&quot;velocity&quot;&gt;&gt;, C:ge([tx_last_hour], 5), Risk(30)),
+        C:rule(&lt;&lt;&quot;new_device_large&quot;&gt;&gt;, C:all([[new_device], C:gt([amount], 500)]), Risk(20)),
+        C:rule(&lt;&lt;&quot;disposable_email&quot;&gt;&gt;,
+               C:matches([email], &lt;&lt;&quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;&gt;&gt;), Risk(35)),
+        C:rule(&lt;&lt;&quot;night_time&quot;&gt;&gt;, C:between([local_hour], 0, 5), Risk(10))
+    ], #{hit_policy =&gt; rule_order}),
+    Tx = #{amount =&gt; 1890.0, avg_amount =&gt; 240.0, ip_country =&gt; &lt;&lt;&quot;NG&quot;&gt;&gt;,
+           card_country =&gt; &lt;&lt;&quot;ES&quot;&gt;&gt;, tx_last_hour =&gt; 2, new_device =&gt; true,
+           email =&gt; &lt;&lt;&quot;j.doe@mailinator.com&quot;&gt;&gt;, local_hour =&gt; 14},
+    {ok, Decision} = C:evaluate(Flags, Tx),
+    io:format(&quot;fired: ~p~n&quot;, [cleanrules:fired(Decision)]),
+    [io:format(&quot;~p~n&quot;, [Out]) || Out &lt;- cleanrules:outputs(Decision)],
+    ok.</code></pre>
+</div>
+<p class="panel-note">Design preview: the Erlang binding does not exist yet (phase N); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="decision">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The decision</p>
+          <h2>What the engine decided.</h2>
+<p>Four flags. A multi-hit decision has several outputs, so read <code>decision.outputs</code> (one payload per flag) and <code>decision.fired</code>.</p>
+          <div class="table-wrap"><table class="data"><caption>Each rule's status, from the explanation the core wrote</caption><thead><tr><th>Rule</th><th>Status</th><th>Note</th></tr></thead><tbody><tr><td><code>large_amount</code></td><td><span class="st selected">selected</span></td><td></td></tr><tr><td><code>country_mismatch</code></td><td><span class="st selected">selected</span></td><td></td></tr><tr><td><code>velocity</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr><tr><td><code>new_device_large</code></td><td><span class="st selected">selected</span></td><td></td></tr><tr><td><code>disposable_email</code></td><td><span class="st selected">selected</span></td><td></td></tr><tr><td><code>night_time</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr></tbody></table></div>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.outputs</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;outputs&quot;: [{&quot;risk&quot;: 40}, {&quot;risk&quot;: 25}, {&quot;risk&quot;: 20}, {&quot;risk&quot;: 35}]
+}</code></pre>
+</div>
+          <div class="window scroll short"><div class="window-bar"><i></i><i></i><i></i><span>decision.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;decision&quot;: {
+    &quot;hit_policy&quot;: &quot;rule_order&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;results&quot;: [
+      {
+        &quot;rule&quot;: &quot;large_amount&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;amount&quot;], &quot;value&quot;: 1890.0},
+            {
+              &quot;op&quot;: &quot;mul&quot;,
+              &quot;value&quot;: 720.0,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;avg_amount&quot;], &quot;value&quot;: 240.0},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 3}
+              ]
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 40}}
+      },
+      {
+        &quot;rule&quot;: &quot;country_mismatch&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;ne&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;ip_country&quot;], &quot;value&quot;: &quot;NG&quot;},
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;card_country&quot;], &quot;value&quot;: &quot;ES&quot;}
+          ]
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 25}}
+      },
+      {
+        &quot;rule&quot;: &quot;velocity&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;ge&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tx_last_hour&quot;], &quot;value&quot;: 2},
+            {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;new_device_large&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;field&quot;,
+              &quot;path&quot;: [&quot;new_device&quot;],
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [{&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;new_device&quot;], &quot;value&quot;: true}]
+            },
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;amount&quot;], &quot;value&quot;: 1890.0},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 500}
+              ]
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20}}
+      },
+      {
+        &quot;rule&quot;: &quot;disposable_email&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;matches&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;field&quot;,
+              &quot;path&quot;: [&quot;email&quot;],
+              &quot;value&quot;: &quot;j.doe@mailinator.com&quot;
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;risk&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 35}}
+      },
+      {
+        &quot;rule&quot;: &quot;night_time&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;between&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;ge&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;local_hour&quot;], &quot;value&quot;: 14},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;le&quot;,
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;local_hour&quot;], &quot;value&quot;: 14},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    &quot;selected&quot;: [
+      &quot;large_amount&quot;,
+      &quot;country_mismatch&quot;,
+      &quot;new_device_large&quot;,
+      &quot;disposable_email&quot;
+    ]
+  }
+}</code></pre>
+</div>
+          <p class="caption">The decision document records every rule's result tree, with each value read; its outputs are derived from it. It equals <code>decision.to_dict()</code> in Python.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="explanation">
+      <div class="wrap">
+        <p class="eyebrow">The explanation</p>
+        <h2>Why, and why not.</h2>
+        <div class="prose"><p>Asking a <code>rule_order</code> decision for a single <code>output</code> raises <code>HitPolicyError</code>, with a hint. To get a total risk score, reuse the very same rules under <code>collect</code> with the <code>sum</code> aggregate: 40 + 25 + 20 + 35 = 120.</p></div>
+        <div class="stack">
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import HitPolicyError
+
+try:
+    decision.output
+except HitPolicyError as err:
+    print(err)
+
+total = RuleSet(flags, hit_policy=&quot;collect&quot;, aggregate=&quot;sum&quot;)
+print(dict(total.evaluate(tx).output))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">rule_order decisions have several outputs
+hint: read the outputs, or use collect with an aggregate
+{&#x27;risk&#x27;: 120}</pre>
+</div>
+            <p class="caption">The cells of this page run in order in one Python session.</p>
+          </div>
+          <div class="stack">
+            <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;rule_order&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [
+      &quot;large_amount&quot;,
+      &quot;country_mismatch&quot;,
+      &quot;new_device_large&quot;,
+      &quot;disposable_email&quot;
+    ],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;large_amount&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;amount&quot;]},
+            &quot;right&quot;: {
+              &quot;op&quot;: &quot;mul&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;avg_amount&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 3}
+            }
+          },
+          &quot;at&quot;: &quot;/decision/results/0/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [
+            {&quot;path&quot;: [&quot;amount&quot;], &quot;value&quot;: 1890.0},
+            {&quot;path&quot;: [&quot;avg_amount&quot;], &quot;value&quot;: 240.0}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;country_mismatch&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;ne&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;ip_country&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;card_country&quot;]}
+          },
+          &quot;at&quot;: &quot;/decision/results/1/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [
+            {&quot;path&quot;: [&quot;ip_country&quot;], &quot;value&quot;: &quot;NG&quot;},
+            {&quot;path&quot;: [&quot;card_country&quot;], &quot;value&quot;: &quot;ES&quot;}
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;velocity&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;ge&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tx_last_hour&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+          },
+          &quot;at&quot;: &quot;/decision/results/2/when&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;tx_last_hour&quot;], &quot;value&quot;: 2}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;tx_last_hour&quot;], &quot;op&quot;: &quot;ge&quot;, &quot;target&quot;: 5, &quot;gap&quot;: 3}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;new_device_large&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;new_device&quot;]},
+              &quot;at&quot;: &quot;/decision/results/3/when/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;new_device&quot;], &quot;value&quot;: true}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;gt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;amount&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 500}
+              },
+              &quot;at&quot;: &quot;/decision/results/3/when/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;amount&quot;], &quot;value&quot;: 1890.0}]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;disposable_email&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;matches&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;email&quot;]},
+            &quot;pattern&quot;: &quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;
+          },
+          &quot;at&quot;: &quot;/decision/results/4/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;email&quot;], &quot;value&quot;: &quot;j.doe@mailinator.com&quot;}]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;night_time&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;le&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;local_hour&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+          },
+          &quot;at&quot;: &quot;/decision/results/5/when/children/1&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;local_hour&quot;], &quot;value&quot;: 14}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;local_hour&quot;], &quot;op&quot;: &quot;le&quot;, &quot;target&quot;: 5, &quot;gap&quot;: 9}
+        }
+      }
+    ]
+  }
+}</code></pre>
+</div>
+            <p class="caption">The same explanation as a JSON document, written by the core; it equals <code>decision.explain().to_dict()</code> in Python. Each <code>at</code> points into the decision document.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="what-if">
+      <div class="wrap">
+        <p class="eyebrow">What happens if…</p>
+        <h2>Change the input, see the outcome move.</h2>
+        <div class="prose">
+<p><strong>A normal purchase.</strong> 180 from a known device, in the same country, from an ordinary address: no flag fires, and <code>outputs</code> is empty. The explanation of <code>large_amount</code> shows both values it compared; there is no counterfactual, because the comparison is between two fields rather than a field and a constant.</p></div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">clean = {**tx, &quot;amount&quot;: 180.0, &quot;ip_country&quot;: &quot;ES&quot;, &quot;new_device&quot;: False,
+         &quot;email&quot;: &quot;jdoe@example.com&quot;}
+d = flags.evaluate(clean)
+print(d.fired, d.outputs)
+why = d.why_not(&quot;large_amount&quot;)
+print(why.causes[0].node, why.causes[0].truth, dict(why.causes[0].values))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">() ()
+F.amount &gt; F.avg_amount * 3 false {(&#x27;amount&#x27;,): 180.0, (&#x27;avg_amount&#x27;,): 240.0}</pre>
+</div>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="more">
+      <div class="wrap">
+        <p class="eyebrow">Learn more</p>
+        <h2>The manual chapters this example uses.</h2>
+        <ul class="manual-links"><li><a href="../manual/hit-policies.html#multi">rule_order and collect</a></li><li><a href="../manual/conditions.html#regex">Regular expressions</a></li><li><a href="../manual/conditions.html#comparisons">Comparing two fields</a></li><li><a href="../manual/explanations.html#counterfactuals">When there is a counterfactual</a></li></ul>
+        <nav class="pager" aria-label="Examples"><a class="prev" href="shipping.html"><small>← Previous example</small>Shipping rates</a><a class="next" href="orders.html"><small>Next example →</small>Order validation</a></nav>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

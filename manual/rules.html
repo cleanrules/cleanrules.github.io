@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rules and rule sets — cleanrules manual</title>
+  <meta name="description" content="Payloads, priorities, tags, metadata, and the checks run when you build them.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/rules.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Rules and rule sets — cleanrules manual">
+  <meta property="og:description" content="Payloads, priorities, tags, metadata, and the checks run when you build them.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/rules.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html" aria-current="page">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">05 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html" aria-current="page">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 05</p>
+        <h1>Rules and rule sets</h1>
+<p class="lead">A rule pairs a condition with what it produces, and optionally with an action to run. A rule set puts rules in order and decides how the rules that fire become one decision. This chapter covers both objects, the checks they run when you build them, and actions.</p>
+
+<h2 id="rule">Rules<a class="h-anchor" href="#rule" aria-label="Link to this section">#</a></h2>
+<p><code>Rule(name, when, then=None, *, priority=0, tags=(), description=None, metadata=None, do=None)</code>. Only the name and the condition are required.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from decimal import Decimal
+
+from cleanrules import F, Rule
+
+rule = Rule(
+    &quot;vip&quot;,
+    (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000),
+    {&quot;discount&quot;: Decimal(&quot;0.15&quot;), &quot;label&quot;: &quot;VIP&quot;, &quot;cashback&quot;: F.order.total * 0.02},
+    priority=10,
+    tags=[&quot;pricing&quot;, &quot;b2c&quot;, &quot;pricing&quot;],
+    description=&quot;Long-standing customers with a large order&quot;,
+    metadata={&quot;owner&quot;: &quot;pricing-team&quot;, &quot;ticket&quot;: &quot;PRC-142&quot;},
+)
+print(rule)
+print(rule.priority, rule.tags, rule.description)
+print(dict(rule.metadata))
+print(rule.then[&quot;cashback&quot;], rule.then[&quot;cashback&quot;].kind)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">Rule(&#x27;vip&#x27;, (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000), {&#x27;discount&#x27;: Const(Decimal(&#x27;0.15&#x27;)), &#x27;label&#x27;: Const(&#x27;VIP&#x27;), &#x27;cashback&#x27;: F.order.total * 0.02})
+10 (&#x27;b2c&#x27;, &#x27;pricing&#x27;) Long-standing customers with a large order
+{&#x27;owner&#x27;: &#x27;pricing-team&#x27;, &#x27;ticket&#x27;: &#x27;PRC-142&#x27;}
+F.order.total * 0.02 value</pre>
+</div>
+<dl>
+  <dt>name</dt><dd>Unique within a rule set, non-empty. It names the rule in decisions, explanations and errors.</dd>
+  <dt>when</dt><dd>The condition. The rule <strong>fires</strong> when it is true; unknown does not fire.</dd>
+  <dt>then</dt><dd>The payload: string keys mapped to constants or <strong>value expressions</strong>. <code>F.order.total * 0.02</code> above is computed from the input when the rule is selected. Key order is kept and is the order of the output's keys.</dd>
+  <dt>priority</dt><dd>A 64-bit integer used by the <code>priority</code> hit policy; higher wins. Other policies ignore it.</dd>
+  <dt>tags</dt><dd>Labels for grouping and filtering. They are a set: duplicates are dropped and they are kept sorted, as the output shows. <a href="summaries.html">Summaries</a> group rules by tag.</dd>
+  <dt>description, metadata</dt><dd>Free text and free-form data (owner, ticket, version…). Metadata must be data (no NaN, no arbitrary objects) so it can be written to JSON. Neither affects evaluation.</dd>
+  <dt>do</dt><dd>An action: a callable that <code>RuleSet.run</code> calls when the rule is selected (<a href="#actions">actions</a>).</dd>
+</dl>
+<p>A rule without a payload is useful as a flag: its output is empty, and whether it fired is the information.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">flag = Rule(&quot;blocked&quot;, F.customer.blocked)
+print(flag.then, flag.priority, flag.tags)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{} 0 ()</pre>
+</div>
+
+<h3 id="payload-evaluation">When payloads are evaluated<a class="h-anchor" href="#payload-evaluation" aria-label="Link to this section">#</a></h3>
+<p>Payload values are evaluated only for the rules the hit policy selects (and, under <code>any</code>, for every rule that fired, whose payloads must be compared). A rule that fired but was not selected never fails because of its payload. A payload value that cannot be computed, such as a division by zero, is null with its reason, like any other value.</p>
+
+<h2 id="checks">Checks when a rule is built<a class="h-anchor" href="#checks" aria-label="Link to this section">#</a></h2>
+<p>Mistakes are caught when the rule is built, not when it is first evaluated, and the error names the rule:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import RuleDefinitionError
+
+for build in (
+    lambda: Rule(&quot;&quot;, F.x &gt; 1),
+    lambda: Rule(&quot;r&quot;, F.x * 2),
+    lambda: Rule(&quot;r&quot;, F.x &gt; 1, {&quot;flag&quot;: F.y &gt; 2}),
+    lambda: Rule(&quot;r&quot;, F.x &gt; 1, priority=1.5),
+):
+    try:
+        build()
+    except RuleDefinitionError as err:
+        print(err.code, &quot;|&quot;, err)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">rule_definition_error | a rule name must be a non-empty string, got &#x27;&#x27;
+rule_definition_error | the condition of &quot;r&quot; is a value (&#x27;mul&#x27;), not a condition
+hint: compare it, for example `(a + b) &gt; 0`
+rule_definition_error | rule &#x27;r&#x27;: the payload value &quot;flag&quot; is a condition (&#x27;gt&#x27;)
+hint: payload values are constants or value expressions
+rule_definition_error | rule &#x27;r&#x27;: priority must be an int, got float 1.5</pre>
+</div>
+
+<h2 id="ruleset">Rule sets<a class="h-anchor" href="#ruleset" aria-label="Link to this section">#</a></h2>
+<p><code>RuleSet(rules, *, hit_policy="first", aggregate=None, logic="boolean", strict=False)</code>. A rule set is an immutable sequence of rules: index it by position or by name, iterate it, test membership by name.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import RuleSet
+
+rules = RuleSet([rule, flag, Rule(&quot;loyal&quot;, F.customer.years &gt; 2, {&quot;discount&quot;: Decimal(&quot;0.05&quot;)})],
+                hit_policy=&quot;priority&quot;)
+print(len(rules), [r.name for r in rules])
+print(rules[&quot;loyal&quot;])
+print(rules[0].name, &quot;vip&quot; in rules, rules.get(&quot;gold&quot;))
+print(rules.hit_policy, rules.aggregate, rules.logic, rules.strict)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">3 [&#x27;vip&#x27;, &#x27;blocked&#x27;, &#x27;loyal&#x27;]
+Rule(&#x27;loyal&#x27;, F.customer.years &gt; 2, {&#x27;discount&#x27;: Const(Decimal(&#x27;0.05&#x27;))})
+vip True None
+priority None boolean False</pre>
+</div>
+<dl>
+  <dt>hit_policy</dt><dd>How the rules that fired become a decision: <code>first</code>, <code>priority</code>, <code>unique</code>, <code>any</code>, <code>rule_order</code> or <code>collect</code>, as a string (any capitalization) or a <code>HitPolicy</code>. <a href="hit-policies.html">Hit policies</a></dd>
+  <dt>aggregate</dt><dd>With <code>collect</code> only: <code>sum</code>, <code>min</code>, <code>max</code> or <code>count</code>, applied per payload key.</dd>
+  <dt>logic</dt><dd>The logic, by name. <code>"boolean"</code> is Kleene's three-valued logic, the only one today; fuzzy logics with degrees of truth are planned (phase J).</dd>
+  <dt>strict</dt><dd>Raise an <code>EvaluationError</code> for a missing field or a type mismatch instead of making the condition unknown. <a href="evaluating.html#strict">Strict mode</a></dd>
+</dl>
+<p>Because a rule set is a sequence of rules, you can build a new one from an old one: <code>RuleSet(rules, hit_policy="collect", aggregate="sum")</code> reuses the same rules under another policy, and <code>RuleSet([*rules, extra])</code> adds one.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">try:
+    RuleSet([rule, rule])
+except RuleDefinitionError as err:
+    print(err)
+try:
+    RuleSet([rule], hit_policy=&quot;first&quot;, aggregate=&quot;sum&quot;)
+except RuleDefinitionError as err:
+    print(err)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">two rules are named &quot;vip&quot;
+hint: rule names must be unique
+an aggregate needs the collect hit policy</pre>
+</div>
+
+<h2 id="immutability">Immutability<a class="h-anchor" href="#immutability" aria-label="Link to this section">#</a></h2>
+<p>Rules, rule sets, nodes and decisions cannot be modified, so they can be shared freely, between threads too. To change a rule, build a new one.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">try:
+    rule.priority = 3
+except AttributeError as err:
+    print(err)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">rules are immutable: cannot set &#x27;priority&#x27;</pre>
+</div>
+<p>Rules compare by identity, because their conditions are nodes, whose <code>==</code> builds conditions. Rules and rule sets pickle (conditions travel in the JSON format), as long as their actions do:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">import pickle
+
+again = pickle.loads(pickle.dumps(rules))
+print(again, again[&quot;vip&quot;].when.same_as(rules[&quot;vip&quot;].when), dict(again[&quot;vip&quot;].metadata))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">RuleSet([vip, blocked, loyal], hit_policy=&#x27;priority&#x27;) True {&#x27;owner&#x27;: &#x27;pricing-team&#x27;, &#x27;ticket&#x27;: &#x27;PRC-142&#x27;}</pre>
+</div>
+
+<h2 id="actions">Actions<a class="h-anchor" href="#actions" aria-label="Link to this section">#</a></h2>
+<p>Conditions are data, but what a rule <em>does</em> is ordinary Python. Pass a callable as <code>do</code>. <code>evaluate</code> never calls it, so a decision can be computed any number of times, for explanations or what-if questions, without side effects. <code>run</code> evaluates and then calls the actions of the <strong>selected</strong> rules, in rule order, each with an <code>ActionContext</code>: the <code>rule</code>, the input <code>data</code>, the rule's <code>result</code>, its evaluated <code>output</code> and the whole <code>decision</code>.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import ActionContext
+
+sent = []
+
+
+def notify(ctx: ActionContext) -&gt; None:
+    sent.append((ctx.rule.name, ctx.data[&quot;customer&quot;][&quot;email&quot;], dict(ctx.output)))
+
+
+promo = RuleSet([
+    Rule(&quot;vip&quot;, F.customer.years &gt; 5, {&quot;discount&quot;: Decimal(&quot;0.15&quot;)}, do=notify),
+    Rule(&quot;loyal&quot;, F.customer.years &gt; 2, {&quot;discount&quot;: Decimal(&quot;0.05&quot;)}, do=notify),
+])
+customer = {&quot;customer&quot;: {&quot;years&quot;: 7, &quot;email&quot;: &quot;ana@example.com&quot;}}
+
+promo.evaluate(customer)
+print(sent)
+decision = promo.run(customer)
+print(decision, sent)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[]
+&lt;Decision first: selected [vip]&gt; [(&#x27;vip&#x27;, &#x27;ana@example.com&#x27;, {&#x27;discount&#x27;: Decimal(&#x27;0.15&#x27;)})]</pre>
+</div>
+<p>Under the default <code>first</code> policy only <code>vip</code> was selected, so only its action ran. If an action raises, <code>run</code> stops: later actions do not run, and an <code>ActionError</code> carries the original exception as its <code>__cause__</code>, the decision, and the rules whose actions had already run (<code>executed</code>).</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import ActionError, Const
+
+log = []
+
+
+def record(ctx: ActionContext) -&gt; None:
+    log.append(ctx.rule.name)
+
+
+def mail(ctx: ActionContext) -&gt; None:
+    raise ConnectionError(&quot;mail server unreachable&quot;)
+
+
+chain = RuleSet([Rule(&quot;log&quot;, Const(True), do=record), Rule(&quot;mail&quot;, Const(True), do=mail),
+                 Rule(&quot;audit&quot;, Const(True), do=record)], hit_policy=&quot;rule_order&quot;)
+try:
+    chain.run({})
+except ActionError as err:
+    print(err.code, err.rule, err.executed, repr(err.__cause__))
+    print(err.decision, log)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">action_error mail (&#x27;log&#x27;,) ConnectionError(&#x27;mail server unreachable&#x27;)
+&lt;Decision rule_order: selected [log, mail, audit]&gt; [&#x27;log&#x27;]</pre>
+</div>
+<p>Actions are code of the host language, so they are not written to JSON. Actions referenced by a registered name, so that rule files can name them safely, are planned (task D.4).</p>
+
+<h2 id="json">As JSON<a class="h-anchor" href="#json" aria-label="Link to this section">#</a></h2>
+<p>A rule set is also a JSON document. Each worked example shows its rule set in that form, written by the core, for instance the <a href="../examples/loan.html#rules">loan approval rules</a>. Loading rule files from Python is task D.1; the Rust core reads them today (<a href="json.html">Rules as JSON</a>).</p>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="conditions.html"><small>← Previous</small>Writing conditions</a><a class="next" href="hit-policies.html"><small>Next →</small>Hit policies and aggregates</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#rule">Rules</a></li><li><a href="#checks">Checks when a rule is built</a></li><li><a href="#ruleset">Rule sets</a></li><li><a href="#immutability">Immutability</a></li><li><a href="#actions">Actions</a></li><li><a href="#json">As JSON</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

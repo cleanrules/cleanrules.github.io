@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eligibility with dates — cleanrules examples</title>
+  <meta name="description" content="A housing grant with date conditions and a deadline in Madrid time; the explanation tells a rejected applicant how many days and hours they missed by.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/examples/eligibility.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Eligibility with dates — cleanrules examples">
+  <meta property="og:description" content="A housing grant with date conditions and a deadline in Madrid time; the explanation tells a rejected applicant how many days and hours they missed by.">
+  <meta property="og:url" content="https://cleanrules.github.io/examples/eligibility.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html" aria-current="page">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="page-hero">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="crumbs muted"><a href="index.html">Examples</a> / 06</p>
+        <div class="ex-meta"><span class="chip dom">Public sector</span><span class="chip pol">FIRST</span></div>
+        <h1>Eligibility with dates</h1>
+        <p class="lead">A housing grant has four requirements: two years of residence, being an adult, a household income under 28,000, and an application submitted before the deadline, 15 December 2026 at 14:00 in Madrid.</p>
+        <ul class="toc">
+          <li><a href="#problem">The problem</a></li><li><a href="#rules">The rules in every language</a></li>
+          <li><a href="#decision">The decision</a></li><li><a href="#explanation">The explanation</a></li>
+          <li><a href="#what-if">What happens if…</a></li><li><a href="#more">Learn more</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="problem">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The problem</p>
+          <h2>Eligibility with dates, in words.</h2>
+
+<p>One rule whose condition is the conjunction of the four requirements. The dates are <code>date</code> constants; the deadline is an aware <code>datetime</code> with the <code>Europe/Madrid</code> zone, so it means the same instant wherever the code runs. The grant is a <code>Decimal</code>.</p>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;residence_since&quot;: {&quot;$date&quot;: &quot;2025-01-20&quot;},
+  &quot;birth_date&quot;: {&quot;$date&quot;: &quot;1999-04-02&quot;},
+  &quot;household_income&quot;: 26500,
+  &quot;submitted_at&quot;: {&quot;$datetime&quot;: &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;}
+}</code></pre>
+</div>
+          <p class="caption">An applicant resident since 20 January 2025, born in 1999, with a household income of 26,500, who applied on 16 December 2026 at 09:30 Madrid time. The input in the JSON format, where decimals and dates have their own encoding; in Python it is the dict in the program below.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="rules">
+      <div class="wrap">
+        <p class="eyebrow">The rules in every language</p>
+        <h2>One rule set, ten ways to write it.</h2>
+        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
+<button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
+<button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
+<button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
+<button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
+<button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="pv"></span>C</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
+</div>
+<div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.py</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from datetime import date, datetime
+from decimal import Decimal
+from zoneinfo import ZoneInfo
+
+from cleanrules import F, Rule, RuleSet
+
+madrid = ZoneInfo(&quot;Europe/Madrid&quot;)
+grant = Rule(
+    &quot;housing_grant&quot;,
+    (F.residence_since &lt;= date(2024, 11, 1))
+    &amp; (F.birth_date &lt;= date(2008, 11, 1))
+    &amp; (F.household_income &lt; 28_000)
+    &amp; (F.submitted_at &lt;= datetime(2026, 12, 15, 14, 0, tzinfo=madrid)),
+    {&quot;grant&quot;: Decimal(&quot;1500.00&quot;)},
+    description=&quot;Two years of residence, adult, low income, before the deadline&quot;,
+)
+rules = RuleSet([grant])
+
+applicant = {
+    &quot;residence_since&quot;: date(2025, 1, 20),
+    &quot;birth_date&quot;: date(1999, 4, 2),
+    &quot;household_income&quot;: 26_500,
+    &quot;submitted_at&quot;: datetime(2026, 12, 16, 9, 30, tzinfo=madrid),
+}
+decision = rules.evaluate(applicant)
+print(decision, decision.output)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Decision first: selected []&gt; None</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-rs" aria-labelledby="tab-rules-rs" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! Eligibility with dates: counterfactuals in days and in microseconds.
+use cleanrules::Value;
+use cleanrules::build::{Build, constant, field};
+use cleanrules::explain::{Cause, Gap, Requirement, explain};
+use cleanrules::format::{ValueContext, read_value, write_path, write_value};
+use cleanrules::jiff::civil::date;
+use cleanrules::json::{Limits, parse, to_string};
+use cleanrules::rules::{Config, Rule, RuleSet};
+
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn std::error::Error&gt;&gt;;
+
+fn rule(name: &amp;str, when: Build, then: Vec&lt;(&amp;str, Build)&gt;) -&gt; Result&lt;Rule&gt; {
+    let then = then
+        .into_iter()
+        .map(|(key, value)| Ok((key.to_owned(), value.build()?)))
+        .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;
+    Ok(Rule::with_payload(name, when.build()?, then)?)
+}
+
+fn input(json: &amp;str) -&gt; Result&lt;Value&gt; {
+    Ok(read_value(
+        &amp;parse(json, &amp;Limits::default())?,
+        &quot;&quot;,
+        ValueContext::Data,
+    )?)
+}
+
+fn causes&lt;&#x27;r, &#x27;d, &#x27;a&gt;(requirement: &amp;&#x27;r Requirement&lt;&#x27;d, &#x27;a&gt;) -&gt; Vec&lt;&amp;&#x27;r Cause&lt;&#x27;d, &#x27;a&gt;&gt; {
+    match requirement {
+        Requirement::Cause(cause) =&gt; vec![cause],
+        Requirement::Group(_, items) =&gt; items.iter().flat_map(|item| causes(item)).collect(),
+    }
+}
+
+fn rules() -&gt; Result&lt;RuleSet&gt; {
+    // An aware datetime constant is read from the JSON format, which keeps the zone.
+    let deadline = input(r#&quot;{&quot;$datetime&quot;: &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;}&quot;#)?;
+    let grant = rule(
+        &quot;housing_grant&quot;,
+        field(&quot;residence_since&quot;).le(date(2024, 11, 1))
+            &amp; field(&quot;birth_date&quot;).le(date(2008, 11, 1))
+            &amp; field(&quot;household_income&quot;).lt(28_000)
+            &amp; field(&quot;submitted_at&quot;).le(deadline),
+        vec![(&quot;grant&quot;, constant(cleanrules::Decimal::parse(&quot;1500.00&quot;)?))],
+    )?
+    .description(&quot;Two years of residence, adult, low income, before the deadline&quot;);
+    Ok(RuleSet::new(vec![grant], Config::default())?)
+}
+
+fn main() -&gt; Result&lt;()&gt; {
+    let rules = rules()?;
+    let applicant = input(
+        r#&quot;{&quot;residence_since&quot;: {&quot;$date&quot;: &quot;2025-01-20&quot;}, &quot;birth_date&quot;: {&quot;$date&quot;: &quot;1999-04-02&quot;},
+            &quot;household_income&quot;: 26500,
+            &quot;submitted_at&quot;: {&quot;$datetime&quot;: &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;}}&quot;#,
+    )?;
+    let decision = rules.evaluate(&amp;applicant)?;
+    let explanation = explain(&amp;decision);
+    let grant = &amp;explanation.rules[0];
+    println!(
+        &quot;{}: {} (achievable: {:?})&quot;,
+        grant.rule,
+        grant.status.as_str(),
+        grant.achievable
+    );
+    for cause in causes(&amp;grant.requirement)
+        .into_iter()
+        .filter(|c| !c.holds())
+    {
+        let Some(cf) = &amp;cause.counterfactual else {
+            continue;
+        };
+        let gap = match &amp;cf.gap {
+            Some(Gap::Days(days)) =&gt; format!(&quot;{days} days&quot;),
+            Some(Gap::Microseconds(us)) =&gt; format!(&quot;{} hours&quot;, *us as f64 / 3.6e9),
+            Some(Gap::Number(n)) =&gt; to_string(&amp;write_value(n)),
+            None =&gt; &quot;none&quot;.to_owned(),
+        };
+        println!(
+            &quot;  needs {} {} {}: gap {gap}&quot;,
+            to_string(&amp;write_path(&amp;cf.path)),
+            cf.op.tag(),
+            to_string(&amp;write_value(&amp;cf.target))
+        );
+    }
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">housing_grant: not_fired (achievable: Some(true))
+  needs [&quot;residence_since&quot;] le {&quot;$date&quot;:&quot;2024-11-01&quot;}: gap 80 days
+  needs [&quot;submitted_at&quot;] le {&quot;$datetime&quot;:&quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;}: gap 19.5 hours</pre>
+</div>
+</div>
+<div role="tabpanel" id="rules-json" aria-labelledby="tab-rules-json" hidden>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.ruleset.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;first&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;housing_grant&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;le&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;residence_since&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$date&quot;: &quot;2024-11-01&quot;}}
+            },
+            {
+              &quot;op&quot;: &quot;le&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;birth_date&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$date&quot;: &quot;2008-11-01&quot;}}
+            },
+            {
+              &quot;op&quot;: &quot;lt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;household_income&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 28000}
+            },
+            {
+              &quot;op&quot;: &quot;le&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;submitted_at&quot;]},
+              &quot;right&quot;: {
+                &quot;op&quot;: &quot;const&quot;,
+                &quot;value&quot;: {&quot;$datetime&quot;: &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;}
+              }
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;grant&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;1500.00&quot;}}},
+        &quot;description&quot;: &quot;Two years of residence, adult, low income, before the deadline&quot;
+      }
+    ]
+  }
+}</code></pre>
+</div>
+<p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
+</div>
+<div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.ts</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
+import { F, Rule, RuleSet, date, decimal } from &quot;cleanrules&quot;;
+
+const deadline = Temporal.ZonedDateTime.from(&quot;2026-12-15T14:00[Europe/Madrid]&quot;);
+const grant = new Rule(
+  &quot;housing_grant&quot;,
+  F.residence_since.le(date(&quot;2024-11-01&quot;))
+    .and(F.birth_date.le(date(&quot;2008-11-01&quot;)))
+    .and(F.household_income.lt(28_000))
+    .and(F.submitted_at.le(deadline)),
+  { grant: decimal(&quot;1500.00&quot;) },
+  { description: &quot;Two years of residence, adult, low income, before the deadline&quot; },
+);
+const rules = new RuleSet([grant]);
+
+const applicant = {
+  residence_since: date(&quot;2025-01-20&quot;),
+  birth_date: date(&quot;1999-04-02&quot;),
+  household_income: 26_500,
+  submitted_at: Temporal.ZonedDateTime.from(&quot;2026-12-16T09:30[Europe/Madrid]&quot;),
+};
+const decision = rules.evaluate(applicant);
+console.log(decision.fired);
+console.log(decision.output);</code></pre>
+</div>
+<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.java</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+import io.github.cleanrules.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+import static io.github.cleanrules.Conditions.*;
+
+public class Eligibility {
+    record Applicant(LocalDate residence_since, LocalDate birth_date, int household_income,
+                     ZonedDateTime submitted_at) {}
+
+    public static void main(String[] args) {
+        var madrid = ZoneId.of(&quot;Europe/Madrid&quot;);
+        var grant = Rule.named(&quot;housing_grant&quot;)
+            .when(field(&quot;residence_since&quot;).le(LocalDate.of(2024, 11, 1))
+                .and(field(&quot;birth_date&quot;).le(LocalDate.of(2008, 11, 1)))
+                .and(field(&quot;household_income&quot;).lt(28_000))
+                .and(field(&quot;submitted_at&quot;).le(ZonedDateTime.of(2026, 12, 15, 14, 0, 0, 0, madrid))))
+            .then(&quot;grant&quot;, new BigDecimal(&quot;1500.00&quot;))
+            .description(&quot;Two years of residence, adult, low income, before the deadline&quot;);
+        var rules = RuleSet.builder().add(grant).build();
+
+        var applicant = new Applicant(
+            LocalDate.of(2025, 1, 20),
+            LocalDate.of(1999, 4, 2),
+            26_500,
+            ZonedDateTime.of(2026, 12, 16, 9, 30, 0, 0, madrid));
+        var decision = rules.evaluate(applicant);
+        System.out.println(decision.fired());
+        System.out.println(decision.output());
+    }
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.scala</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
+import io.github.cleanrules.scala.*
+import java.time.{LocalDate, ZoneId, ZonedDateTime}
+
+case class Applicant(residence_since: LocalDate, birth_date: LocalDate, household_income: Int,
+                     submitted_at: ZonedDateTime)
+
+@main def eligibility(): Unit =
+    val madrid = ZoneId.of(&quot;Europe/Madrid&quot;)
+    val grant = Rule(
+        &quot;housing_grant&quot;,
+        F.residence_since &lt;= LocalDate.of(2024, 11, 1)
+            &amp; F.birth_date &lt;= LocalDate.of(2008, 11, 1)
+            &amp; F.household_income &lt; 28000
+            &amp; F.submitted_at &lt;= ZonedDateTime.of(2026, 12, 15, 14, 0, 0, 0, madrid),
+        Map(&quot;grant&quot; -&gt; BigDecimal(&quot;1500.00&quot;)),
+        description = &quot;Two years of residence, adult, low income, before the deadline&quot;,
+    )
+    val rules = RuleSet(Seq(grant))
+
+    val applicant = Applicant(
+        LocalDate.of(2025, 1, 20),
+        LocalDate.of(1999, 4, 2),
+        26500,
+        ZonedDateTime.of(2026, 12, 16, 9, 30, 0, 0, madrid),
+    )
+    val decision = rules.evaluate(applicant)
+    println(decision.fired)
+    println(decision.output)</code></pre>
+</div>
+<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.go</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-go">// Design preview: the Go binding does not exist yet (phase H).
+package main
+
+import (
+	&quot;fmt&quot;
+	&quot;log&quot;
+	&quot;time&quot;
+
+	cr &quot;github.com/cleanrules/cleanrules/bindings/go&quot;
+)
+
+type Applicant struct {
+	ResidenceSince  cr.Date   `json:&quot;residence_since&quot;`
+	BirthDate       cr.Date   `json:&quot;birth_date&quot;`
+	HouseholdIncome int       `json:&quot;household_income&quot;`
+	SubmittedAt     time.Time `json:&quot;submitted_at&quot;`
+}
+
+func main() {
+	madrid, err := time.LoadLocation(&quot;Europe/Madrid&quot;)
+	if err != nil {
+		log.Fatal(err)
+	}
+	grant := cr.NewRule(&quot;housing_grant&quot;, cr.And(
+		cr.Field(&quot;residence_since&quot;).Le(cr.NewDate(2024, time.November, 1)),
+		cr.Field(&quot;birth_date&quot;).Le(cr.NewDate(2008, time.November, 1)),
+		cr.Field(&quot;household_income&quot;).Lt(28000),
+		cr.Field(&quot;submitted_at&quot;).Le(time.Date(2026, time.December, 15, 14, 0, 0, 0, madrid)),
+	)).Then(&quot;grant&quot;, cr.MustDecimal(&quot;1500.00&quot;)).
+		Description(&quot;Two years of residence, adult, low income, before the deadline&quot;)
+	rules, err := cr.NewRuleSet([]*cr.Rule{grant})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	decision, err := rules.Evaluate(Applicant{
+		ResidenceSince:  cr.NewDate(2025, time.January, 20),
+		BirthDate:       cr.NewDate(1999, time.April, 2),
+		HouseholdIncome: 26500,
+		SubmittedAt:     time.Date(2026, time.December, 16, 9, 30, 0, 0, madrid),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	output, err := decision.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(decision.Fired())
+	fmt.Println(output)
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-c" aria-labelledby="tab-rules-c" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.c</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-c">// Design preview: the C binding does not exist yet (phase E).
+#include &lt;stdio.h&gt;
+#include &lt;cleanrules.h&gt;
+
+static int fail(cr_status status) {
+    fprintf(stderr, &quot;%s: %s\n&quot;, cr_status_name(status), cr_error_message(cr_last_error()));
+    return 1;
+}
+
+int main(void) {
+    cr_ruleset *rules = NULL;
+    cr_decision *decision = NULL;
+    char *output = NULL;
+
+    /* The rule set document shown in the JSON tab. */
+    cr_status status = cr_ruleset_read_file(&quot;eligibility.ruleset.json&quot;, &amp;rules);
+    if (status != CR_OK) return fail(status);
+
+    const char *applicant =
+        &quot;{\&quot;residence_since\&quot;: {\&quot;$date\&quot;: \&quot;2025-01-20\&quot;}, &quot;
+        &quot;\&quot;birth_date\&quot;: {\&quot;$date\&quot;: \&quot;1999-04-02\&quot;}, \&quot;household_income\&quot;: 26500, &quot;
+        &quot;\&quot;submitted_at\&quot;: {\&quot;$datetime\&quot;: \&quot;2026-12-16T09:30:00+01:00[Europe/Madrid]\&quot;}}&quot;;
+    status = cr_ruleset_evaluate_json(rules, applicant, &amp;decision);
+    if (status == CR_OK) status = cr_decision_output_json(decision, &amp;output);
+    if (status == CR_OK) puts(output);  /* a JSON object, or null */
+    else fail(status);
+
+    cr_string_free(output);
+    cr_decision_free(decision);
+    cr_ruleset_free(rules);
+    return status == CR_OK ? 0 : 1;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.cpp</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
+#include &lt;cleanrules.hpp&gt;
+#include &lt;chrono&gt;
+#include &lt;iostream&gt;
+
+namespace cr = cleanrules;
+using cr::F;
+
+int main() {
+    using namespace std::chrono;
+    auto deadline = zoned_time{&quot;Europe/Madrid&quot;, local_days{2026y / December / 15} + 14h};
+    cr::RuleSet rules({
+        cr::Rule(&quot;housing_grant&quot;,
+                 (F(&quot;residence_since&quot;) &lt;= year_month_day{2024y / November / 1})
+                     &amp; (F(&quot;birth_date&quot;) &lt;= year_month_day{2008y / November / 1})
+                     &amp; (F(&quot;household_income&quot;) &lt; 28000)
+                     &amp; (F(&quot;submitted_at&quot;) &lt;= deadline))
+            .then({{&quot;grant&quot;, cr::Decimal(&quot;1500.00&quot;)}})
+            .description(&quot;Two years of residence, adult, low income, before the deadline&quot;),
+    });
+
+    auto decision = rules.evaluate(cr::Value::from_json(R&quot;({
+        &quot;residence_since&quot;: {&quot;$date&quot;: &quot;2025-01-20&quot;}, &quot;birth_date&quot;: {&quot;$date&quot;: &quot;1999-04-02&quot;},
+        &quot;household_income&quot;: 26500,
+        &quot;submitted_at&quot;: {&quot;$datetime&quot;: &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;}})&quot;));
+    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
+    std::cout &lt;&lt; &#x27;\n&#x27;;
+    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+}</code></pre>
+</div>
+<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+<div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.erl</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-erlang">%% Design preview: the Erlang binding does not exist yet (phase N).
+-module(eligibility).
+-export([main/0]).
+
+main() -&gt;
+    C = cleanrules,
+    Deadline = {datetime, {{2026, 12, 15}, {14, 0, 0}}, &lt;&lt;&quot;Europe/Madrid&quot;&gt;&gt;},
+    Grant = C:rule(&lt;&lt;&quot;housing_grant&quot;&gt;&gt;,
+                   C:all([C:le([residence_since], {date, {2024, 11, 1}}),
+                          C:le([birth_date], {date, {2008, 11, 1}}),
+                          C:lt([household_income], 28000),
+                          C:le([submitted_at], Deadline)]),
+                   #{grant =&gt; {decimal, &lt;&lt;&quot;1500.00&quot;&gt;&gt;}},
+                   #{description =&gt;
+                         &lt;&lt;&quot;Two years of residence, adult, low income, before the deadline&quot;&gt;&gt;}),
+    {ok, Rules} = C:ruleset([Grant], #{}),
+    Applicant = #{residence_since =&gt; {date, {2025, 1, 20}},
+                  birth_date =&gt; {date, {1999, 4, 2}},
+                  household_income =&gt; 26500,
+                  submitted_at =&gt; {datetime, {{2026, 12, 16}, {9, 30, 0}}, &lt;&lt;&quot;Europe/Madrid&quot;&gt;&gt;}},
+    {ok, Decision} = C:evaluate(Rules, Applicant),
+    io:format(&quot;fired: ~p~n&quot;, [cleanrules:fired(Decision)]),
+    {ok, Output} = cleanrules:output(Decision),
+    io:format(&quot;~p~n&quot;, [Output]).</code></pre>
+</div>
+<p class="panel-note">Design preview: the Erlang binding does not exist yet (phase N); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+</div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="decision">
+      <div class="wrap split">
+        <div class="prose">
+          <p class="eyebrow">The decision</p>
+          <h2>What the engine decided.</h2>
+<p>Nothing was selected: the applicant is not eligible. A bare "no" is not much use to them, which is where the explanation comes in.</p>
+          <div class="table-wrap"><table class="data"><caption>Each rule's status, from the explanation the core wrote</caption><thead><tr><th>Rule</th><th>Status</th><th>Note</th></tr></thead><tbody><tr><td><code>housing_grant</code></td><td><span class="st not_fired">not_fired</span></td><td>achievable</td></tr></tbody></table></div>
+        </div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.output</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">null</code></pre>
+</div>
+          <div class="window scroll short"><div class="window-bar"><i></i><i></i><i></i><span>decision.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;decision&quot;: {
+    &quot;hit_policy&quot;: &quot;first&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;results&quot;: [
+      {
+        &quot;rule&quot;: &quot;housing_grant&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;le&quot;,
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;residence_since&quot;],
+                  &quot;value&quot;: {&quot;$date&quot;: &quot;2025-01-20&quot;}
+                },
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$date&quot;: &quot;2024-11-01&quot;}}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;le&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;birth_date&quot;],
+                  &quot;value&quot;: {&quot;$date&quot;: &quot;1999-04-02&quot;}
+                },
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$date&quot;: &quot;2008-11-01&quot;}}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;lt&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;household_income&quot;], &quot;value&quot;: 26500},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 28000}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;le&quot;,
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;submitted_at&quot;],
+                  &quot;value&quot;: {&quot;$datetime&quot;: &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;}
+                },
+                {
+                  &quot;op&quot;: &quot;const&quot;,
+                  &quot;value&quot;: {&quot;$datetime&quot;: &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;}
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    &quot;selected&quot;: []
+  }
+}</code></pre>
+</div>
+          <p class="caption">The decision document records every rule's result tree, with each value read; its outputs are derived from it. It equals <code>decision.to_dict()</code> in Python.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="explanation">
+      <div class="wrap">
+        <p class="eyebrow">The explanation</p>
+        <h2>Why, and why not.</h2>
+        <div class="prose"><p>Two requirements failed, each with a counterfactual. Residence needed to start 80 days earlier (a gap in whole days, since both are dates). The application was 19.5 hours late (70,200 seconds): both are aware datetimes, so the gap is between instants. Age and income held, so they are not listed. <code>achievable</code> is <code>True</code>: fixing these two would be enough.</p></div>
+        <div class="stack">
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">why = decision.why_not(&quot;housing_grant&quot;)
+print(why.status, &quot;- achievable:&quot;, why.achievable, &quot;-&quot;, why.requirement.kind)
+for cause in why.causes:
+    if not cause.holds:
+        cf = cause.counterfactual
+        print(f&quot;  {cause.node!r}: needs {cf.op} {cf.target}, gap {cf.gap!r}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">not_fired - achievable: True - all
+  F.residence_since &lt;= datetime.date(2024, 11, 1): needs le 2024-11-01, gap datetime.timedelta(days=80)
+  F.submitted_at &lt;= datetime.datetime(2026, 12, 15, 14, 0, tzinfo=zoneinfo.ZoneInfo(key=&#x27;Europe/Madrid&#x27;)): needs le 2026-12-15 14:00:00+01:00, gap datetime.timedelta(seconds=70200)</pre>
+</div>
+            <p class="caption">The cells of this page run in order in one Python session.</p>
+          </div>
+          <div class="stack">
+            <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">written by the core</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;first&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;housing_grant&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;le&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;residence_since&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$date&quot;: &quot;2024-11-01&quot;}}
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+              &quot;truth&quot;: false,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [
+                {
+                  &quot;path&quot;: [&quot;residence_since&quot;],
+                  &quot;value&quot;: {&quot;$date&quot;: &quot;2025-01-20&quot;}
+                }
+              ],
+              &quot;counterfactual&quot;: {
+                &quot;path&quot;: [&quot;residence_since&quot;],
+                &quot;op&quot;: &quot;le&quot;,
+                &quot;target&quot;: {&quot;$date&quot;: &quot;2024-11-01&quot;},
+                &quot;gap&quot;: {&quot;days&quot;: 80}
+              }
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;le&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;submitted_at&quot;]},
+                &quot;right&quot;: {
+                  &quot;op&quot;: &quot;const&quot;,
+                  &quot;value&quot;: {&quot;$datetime&quot;: &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;}
+                }
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/3&quot;,
+              &quot;truth&quot;: false,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [
+                {
+                  &quot;path&quot;: [&quot;submitted_at&quot;],
+                  &quot;value&quot;: {&quot;$datetime&quot;: &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;}
+                }
+              ],
+              &quot;counterfactual&quot;: {
+                &quot;path&quot;: [&quot;submitted_at&quot;],
+                &quot;op&quot;: &quot;le&quot;,
+                &quot;target&quot;: {&quot;$datetime&quot;: &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;},
+                &quot;gap&quot;: {&quot;microseconds&quot;: 70200000000}
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}</code></pre>
+</div>
+            <p class="caption">The same explanation as a JSON document, written by the core; it equals <code>decision.explain().to_dict()</code> in Python. Each <code>at</code> points into the decision document.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section no-reveal" id="what-if">
+      <div class="wrap">
+        <p class="eyebrow">What happens if…</p>
+        <h2>Change the input, see the outcome move.</h2>
+        <div class="prose">
+<p><strong>An eligible applicant</strong> gets the grant as a <code>Decimal</code>. <strong>An application without a timestamp</strong> is not rejected for lateness: the rule is <em>unknown</em>, with a <code>missing_field</code> reason, which a case worker can follow up.</p></div>
+        <div class="stack">
+          <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python · continues the program</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">on_time = {**applicant, &quot;residence_since&quot;: date(2024, 9, 1),
+           &quot;submitted_at&quot;: datetime(2026, 12, 15, 13, 59, tzinfo=madrid)}
+print(dict(rules.evaluate(on_time).output))
+
+no_date = {k: v for k, v in on_time.items() if k != &quot;submitted_at&quot;}
+d = rules.evaluate(no_date)
+print(d.results[0].truth, [c.reason.code for c in d.why_not(&quot;housing_grant&quot;).causes if c.reason])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&#x27;grant&#x27;: Decimal(&#x27;1500.00&#x27;)}
+unknown [&#x27;missing_field&#x27;]</pre>
+</div>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt no-reveal" id="more">
+      <div class="wrap">
+        <p class="eyebrow">Learn more</p>
+        <h2>The manual chapters this example uses.</h2>
+        <ul class="manual-links"><li><a href="../manual/explanations.html#counterfactuals">Counterfactuals and gaps</a></li><li><a href="../manual/conditions.html#constants">Dates, datetimes and time zones</a></li><li><a href="../manual/explanations.html#achievable">When a rule cannot fire</a></li><li><a href="../manual/evaluating.html#reasons">Reasons</a></li></ul>
+        <nav class="pager" aria-label="Examples"><a class="prev" href="orders.html"><small>← Previous example</small>Order validation</a><a class="next" href="discounts.html"><small>Next example →</small>Discount agreement</a></nav>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

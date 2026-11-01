@@ -27,7 +27,7 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && links.classList.contains("open")) { setOpen(false); menu.focus(); }
     });
-    window.matchMedia("(min-width: 961px)").addEventListener("change", (e) => { if (e.matches) setOpen(false); });
+    window.matchMedia("(min-width: 1081px)").addEventListener("change", (e) => { if (e.matches) setOpen(false); });
   }
 
   // Accessible tab lists: arrow keys, Home and End move between tabs.
@@ -89,6 +89,61 @@
     });
   });
 
+  // Reference menu in the header (a disclosure button; links are always visible on phones).
+  document.querySelectorAll(".nav-drop").forEach((drop) => {
+    const btn = drop.querySelector(".nav-drop-btn");
+    const sub = drop.querySelector(".nav-sub");
+    if (!btn || !sub) return;
+    const setOpen = (open) => { sub.classList.toggle("open", open); btn.setAttribute("aria-expanded", String(open)); };
+    btn.addEventListener("click", (e) => { e.stopPropagation(); setOpen(!sub.classList.contains("open")); });
+    document.addEventListener("click", (e) => { if (!drop.contains(e.target)) setOpen(false); });
+    drop.addEventListener("keydown", (e) => { if (e.key === "Escape" && sub.classList.contains("open")) { setOpen(false); btn.focus(); } });
+    drop.addEventListener("focusout", (e) => { if (!drop.contains(e.relatedTarget)) setOpen(false); });
+  });
+
+  // Language tabs: choosing a language selects it in every tab list of the page,
+  // and the choice is remembered for the next page.
+  const langLists = [...document.querySelectorAll("[data-langtabs]")];
+  if (langLists.length) {
+    const choose = (lang, save) => {
+      langLists.forEach((list) => {
+        const tab = list.querySelector(`[role="tab"][data-lang="${lang}"]`);
+        if (tab && tab.getAttribute("aria-selected") !== "true") tab.click();
+      });
+      if (save) { try { localStorage.setItem("lang", lang); } catch (e) { /* storage unavailable */ } }
+    };
+    let syncing = false;
+    langLists.forEach((list) => {
+      list.querySelectorAll('[role="tab"]').forEach((tab) => {
+        tab.addEventListener("click", () => {
+          if (!syncing) { syncing = true; choose(tab.dataset.lang, true); syncing = false; }
+        });
+      });
+    });
+    let saved = null;
+    try { saved = localStorage.getItem("lang"); } catch (e) { /* storage unavailable */ }
+    if (saved) { syncing = true; choose(saved, false); syncing = false; }
+  }
+
+  // Manual: the chapter list folds away on narrow screens.
+  const side = document.querySelector(".doc-side details");
+  if (side && window.matchMedia("(max-width: 960px)").matches) side.open = false;
+
+  // Manual: highlight the section being read in the on-page table of contents.
+  const tocLinks = [...document.querySelectorAll(".doc-toc a")];
+  if (tocLinks.length && "IntersectionObserver" in window) {
+    const byId = new Map(tocLinks.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach((a) => a.classList.remove("active"));
+          byId.get(entry.target.id)?.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-80px 0px -70% 0px" });
+    byId.forEach((_, id) => { const h = document.getElementById(id); if (h) spy.observe(h); });
+  }
+
   // Copy buttons.
   document.querySelectorAll(".copy[data-copy]").forEach((btn) => {
     btn.addEventListener("click", async () => {
@@ -104,7 +159,7 @@
   });
 
   // Reveal sections as they scroll into view.
-  const targets = document.querySelectorAll(".section .wrap > *, .card, .feature, .timeline li, .lang");
+  const targets = document.querySelectorAll(".section:not(.no-reveal) .wrap > *, .card, .feature, .timeline li, .lang");
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {

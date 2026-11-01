@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rust API — cleanrules manual</title>
+  <meta name="description" content="The main public items of the crate, by module.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/api-rust.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Rust API — cleanrules manual">
+  <meta property="og:description" content="The main public items of the crate, by module.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/api-rust.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop on">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html" aria-current="page">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">15 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html" aria-current="page">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 15</p>
+        <h1>Rust API</h1>
+<p class="lead">The main public items of the <code>cleanrules</code> crate, module by module, with their signatures and the first paragraph of their documentation comments. The listing is generated from the crate's source.</p>
+
+<div class="callout">
+  <p>This is a guided subset: the items you use to build rules, evaluate, explain and read or write the JSON format. <code>cargo doc --open -p cleanrules</code> in a clone of the repository renders the complete documentation; the crate will be on docs.rs once it is published.</p>
+</div>
+
+<h2 id="operators">Operators on <code>Build</code><a class="h-anchor" href="#operators" aria-label="Link to this section">#</a></h2>
+<p><code>&amp;</code> (and), <code>|</code> (or) and <code>!</code> (not) combine conditions; <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and unary <code>-</code> build arithmetic, with a <code>Build</code>, a number or any value convertible into a constant on the right (and <code>i64</code> or <code>f64</code> on the left). Constants convert from <code>bool</code>, <code>i32</code>, <code>i64</code>, <code>u32</code>, <code>f64</code>, <code>&amp;str</code>, <code>String</code>, <code>Decimal</code>, <code>jiff::civil::Date</code>, <code>jiff::civil::DateTime</code> and <code>Value</code>.</p>
+
+<h2 id="crate-root"><code>cleanrules</code><a class="h-anchor" href="#crate-root" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-error-Context-Error-ErrorCode-Result-Segment"><h3><span class="kind">use</span>error::{Context, Error, ErrorCode, Result, Segment}</h3>
+<pre class="code sig"><code class="language-rust">pub use error::{Context, Error, ErrorCode, Result, Segment};</code></pre>
+<p></p></section>
+<section class="api" id="rs-cleanrules-jiff"><h3><span class="kind">use</span>jiff</h3>
+<pre class="code sig"><code class="language-rust">pub use jiff;</code></pre>
+<p>The date and time library whose types dates and datetimes use.</p></section>
+<section class="api" id="rs-cleanrules-value-Decimal-Group-Map-NullCause-Number-Value"><h3><span class="kind">use</span>value::{Decimal, Group, Map, NullCause, Number, Value}</h3>
+<pre class="code sig"><code class="language-rust">pub use value::{Decimal, Group, Map, NullCause, Number, Value};</code></pre>
+<p></p></section>
+<section class="api" id="rs-cleanrules-FORMAT_VERSION"><h3><span class="kind">const</span>FORMAT_VERSION</h3>
+<pre class="code sig"><code class="language-rust">pub const FORMAT_VERSION: u32 = 1</code></pre>
+<p>The version of the JSON format this crate reads and writes (<code>spec/json-format.md</code>).</p></section>
+<h2 id="build"><code>cleanrules::build</code><a class="h-anchor" href="#build" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-build-Build"><h3><span class="kind">struct</span>Build</h3>
+<pre class="code sig"><code class="language-rust">pub struct Build(Result&lt;Node, BuildError&gt;)</code></pre>
+<p>A condition or value being built, or the first error met while building it.</p>
+<p class="muted">Methods</p><dl><dt><code>fn build(self) -&gt; Result&lt;Node&gt;</code></dt><dd>Check the expression and return its node.</dd><dt><code>fn get(self, key: impl Into&lt;String&gt;) -&gt; Build</code></dt><dd>The field one key further: <code>field(&quot;customer&quot;).get(&quot;age&quot;)</code>.</dd><dt><code>fn index(self, index: u64) -&gt; Build</code></dt><dd>The field one index further: <code>field(&quot;items&quot;).index(0)</code>.</dd><dt><code>fn eq(self, other: impl Into&lt;Build&gt;) -&gt; Build</code></dt><dd><code>self == other</code>.</dd><dt><code>fn ne(self, other: impl Into&lt;Build&gt;) -&gt; Build</code></dt><dd><code>self != other</code>.</dd><dt><code>fn lt(self, other: impl Into&lt;Build&gt;) -&gt; Build</code></dt><dd><code>self &lt; other</code>.</dd><dt><code>fn le(self, other: impl Into&lt;Build&gt;) -&gt; Build</code></dt><dd><code>self &lt;= other</code>.</dd><dt><code>fn gt(self, other: impl Into&lt;Build&gt;) -&gt; Build</code></dt><dd><code>self &gt; other</code>.</dd><dt><code>fn ge(self, other: impl Into&lt;Build&gt;) -&gt; Build</code></dt><dd><code>self &gt;= other</code>.</dd><dt><code>fn is_in&lt;V: Into&lt;Value&gt;&gt;(self, values: impl IntoIterator&lt;Item = V&gt;) -&gt; Build</code></dt><dd><code>self in values</code>.</dd><dt><code>fn between(self, low: impl Into&lt;Build&gt;, high: impl Into&lt;Build&gt;) -&gt; Build</code></dt><dd><code>low &lt;= self &lt;= high</code>.</dd><dt><code>fn between_closed(self, low: impl Into&lt;Build&gt;, high: impl Into&lt;Build&gt;, closed: Closed) -&gt; Build</code></dt><dd><code>between</code> with the included ends chosen by <code>closed</code>.</dd><dt><code>fn is_null(self) -&gt; Build</code></dt><dd>Whether the value is null or missing.</dd><dt><code>fn matches(self, pattern: &amp;str) -&gt; Build</code></dt><dd>Whether the regular expression matches anywhere in the string.</dd><dt><code>fn starts_with(self, text: impl Into&lt;String&gt;) -&gt; Build</code></dt><dd>Whether the string starts with <code>text</code>.</dd><dt><code>fn ends_with(self, text: impl Into&lt;String&gt;) -&gt; Build</code></dt><dd>Whether the string ends with <code>text</code>.</dd><dt><code>fn contains(self, text: impl Into&lt;String&gt;) -&gt; Build</code></dt><dd>Whether <code>text</code> occurs in the string.</dd><dt><code>fn abs(self) -&gt; Build</code></dt><dd>The absolute value.</dd></dl></section>
+<section class="api" id="rs-cleanrules-build-field"><h3><span class="kind">fn</span>field</h3>
+<pre class="code sig"><code class="language-rust">pub fn field(key: impl Into&lt;String&gt;) -&gt; Build</code></pre>
+<p>A field of the input, by its first key. Extend the path with [<code>Build::get</code>] and [<code>Build::index</code>].</p></section>
+<section class="api" id="rs-cleanrules-build-constant"><h3><span class="kind">fn</span>constant</h3>
+<pre class="code sig"><code class="language-rust">pub fn constant(value: impl Into&lt;Build&gt;) -&gt; Build</code></pre>
+<p>A constant.</p></section>
+<h2 id="rules"><code>cleanrules::rules</code><a class="h-anchor" href="#rules" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-rules-Rule"><h3><span class="kind">struct</span>Rule</h3>
+<pre class="code sig"><code class="language-rust">pub struct Rule</code></pre>
+<p>A rule: a condition, a payload and descriptive data (<code>spec/rules.md</code>, *Rules*). Actions are code of the host language and live in the bindings.</p>
+<p class="muted">Methods</p><dl><dt><code>fn new(name: impl Into&lt;String&gt;, when: Node) -&gt; Result&lt;Self&gt;</code></dt><dd>A rule with a name and a condition, and no payload.</dd><dt><code>fn with_payload(name: impl Into&lt;String&gt;, when: Node, then: Vec&lt;(String, Node)&gt;) -&gt; Result&lt;Self&gt;</code></dt><dd>A rule with a payload, keys in order (a repeated key keeps its first place and its last value).</dd><dt><code>fn priority(mut self, priority: i64) -&gt; Self</code></dt><dd>Set the priority, used by the <code>priority</code> policy.</dd><dt><code>fn tags&lt;S: Into&lt;String&gt;&gt;(mut self, tags: impl IntoIterator&lt;Item = S&gt;) -&gt; Self</code></dt><dd>Set the tags, a set: duplicates are dropped and they are kept sorted.</dd><dt><code>fn description(mut self, description: impl Into&lt;String&gt;) -&gt; Self</code></dt><dd>Set the description.</dd><dt><code>fn metadata(mut self, metadata: Map) -&gt; Self</code></dt><dd>Set the metadata.</dd><dt><code>fn name(&amp;self) -&gt; &amp;str</code></dt><dd>The name.</dd><dt><code>fn when(&amp;self) -&gt; &amp;Node</code></dt><dd>The condition.</dd><dt><code>fn then(&amp;self) -&gt; &amp;[(String, Node)]</code></dt><dd>The payload, keys in order.</dd><dt><code>fn get_priority(&amp;self) -&gt; i64</code></dt><dd>The priority.</dd><dt><code>fn get_tags(&amp;self) -&gt; &amp;[String]</code></dt><dd>The tags, sorted.</dd><dt><code>fn get_description(&amp;self) -&gt; Option&lt;&amp;str&gt;</code></dt><dd>The description.</dd><dt><code>fn get_metadata(&amp;self) -&gt; &amp;Map</code></dt><dd>The metadata.</dd></dl></section>
+<section class="api" id="rs-cleanrules-rules-HitPolicy"><h3><span class="kind">enum</span>HitPolicy</h3>
+<pre class="code sig"><code class="language-rust">pub enum HitPolicy</code></pre>
+<p>How a rule set turns the rules that fired into a decision.</p>
+<p class="muted">Variants</p><dl><dt><code>First</code></dt><dd>The first fired rule.</dd><dt><code>Priority</code></dt><dd>The fired rule with the highest priority; ties go to rule order.</dd><dt><code>Unique</code></dt><dd>The only fired rule; more than one is an error.</dd><dt><code>Any</code></dt><dd>The first fired rule; fired rules must agree on their outputs.</dd><dt><code>RuleOrder</code></dt><dd>Every fired rule, in rule order.</dd><dt><code>Collect</code></dt><dd>Every fired rule, in rule order, optionally aggregated.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The name in the format.</dd><dt><code>fn from_name(name: &amp;str) -&gt; Option&lt;Self&gt;</code></dt><dd>The policy for a name (lowercase, exact).</dd><dt><code>fn single_hit(self) -&gt; bool</code></dt><dd>Whether at most one rule is selected.</dd></dl></section>
+<section class="api" id="rs-cleanrules-rules-Aggregate"><h3><span class="kind">enum</span>Aggregate</h3>
+<pre class="code sig"><code class="language-rust">pub enum Aggregate</code></pre>
+<p>A <code>collect</code> aggregate, applied per payload key.</p>
+<p class="muted">Variants</p><dl><dt><code>Sum</code></dt><dd>The sum of the non-null values.</dd><dt><code>Min</code></dt><dd>The smallest non-null value.</dd><dt><code>Max</code></dt><dd>The largest non-null value.</dd><dt><code>Count</code></dt><dd>The number of non-null values.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The name in the format.</dd><dt><code>fn from_name(name: &amp;str) -&gt; Option&lt;Self&gt;</code></dt><dd>The aggregate for a name.</dd></dl></section>
+<section class="api" id="rs-cleanrules-rules-Config"><h3><span class="kind">struct</span>Config</h3>
+<pre class="code sig"><code class="language-rust">pub struct Config</code></pre>
+<p>How a rule set decides.</p>
+<p class="muted">Fields</p><dl><dt><code>hit_policy: HitPolicy</code></dt><dd>The hit policy.</dd><dt><code>aggregate: Option&lt;Aggregate&gt;</code></dt><dd>The aggregate, only with <code>collect</code>.</dd><dt><code>logic: Option&lt;LogicName&gt;</code></dt><dd>The logic.</dd><dt><code>strict: bool</code></dt><dd>Raise instead of returning unknown.</dd></dl></section>
+<section class="api" id="rs-cleanrules-rules-RuleSet"><h3><span class="kind">struct</span>RuleSet</h3>
+<pre class="code sig"><code class="language-rust">pub struct RuleSet</code></pre>
+<p>Rules evaluated together under a hit policy.</p>
+<p class="muted">Methods</p><dl><dt><code>fn new(rules: Vec&lt;Rule&gt;, config: Config) -&gt; Result&lt;Self&gt;</code></dt><dd>A rule set.</dd><dt><code>fn rules(&amp;self) -&gt; &amp;[Rule]</code></dt><dd>The rules, in rule order.</dd><dt><code>fn hit_policy(&amp;self) -&gt; HitPolicy</code></dt><dd>The hit policy.</dd><dt><code>fn aggregate(&amp;self) -&gt; Option&lt;Aggregate&gt;</code></dt><dd>The aggregate.</dd><dt><code>fn logic(&amp;self) -&gt; LogicName</code></dt><dd>The logic.</dd><dt><code>fn strict(&amp;self) -&gt; bool</code></dt><dd>Whether evaluation is strict.</dd><dt><code>fn evaluate&lt;&#x27;a&gt;(&amp;&#x27;a self, input: &amp;Value) -&gt; Result&lt;Decision&lt;&#x27;a&gt;&gt;</code></dt><dd>Evaluate on one input (<code>spec/rules.md</code>, *Evaluation*). Pure: no action runs.</dd><dt><code>fn evaluate_many&lt;&#x27;a&gt;(&amp;&#x27;a self, inputs: &amp;[Value]) -&gt; Result&lt;Vec&lt;Decision&lt;&#x27;a&gt;&gt;&gt;</code></dt><dd>Evaluate on a batch, one decision per input.</dd></dl></section>
+<section class="api" id="rs-cleanrules-rules-Aggregated"><h3><span class="kind">enum</span>Aggregated</h3>
+<pre class="code sig"><code class="language-rust">pub enum Aggregated</code></pre>
+<p>The aggregate of a decision whose rule set has one.</p>
+<p class="muted">Variants</p><dl><dt><code>NothingSelected</code></dt><dd>No rule was selected: the aggregate is null.</dd><dt><code>Values</code></dt><dd>Each payload key with its aggregate, keys in order of first appearance.</dd></dl></section>
+<section class="api" id="rs-cleanrules-rules-RuleResult"><h3><span class="kind">struct</span>RuleResult</h3>
+<pre class="code sig"><code class="language-rust">pub struct RuleResult&lt;&#x27;a&gt;</code></pre>
+<p>One rule&#x27;s result in a decision.</p>
+<p class="muted">Fields</p><dl><dt><code>rule: &amp;&#x27;a Rule</code></dt><dd>The rule.</dd><dt><code>fired: bool</code></dt><dd>Whether its truth value passed the logic&#x27;s activation test.</dd><dt><code>when: Evaluated&lt;&#x27;a, Truth&gt;</code></dt><dd>The result tree of its condition.</dd><dt><code>then: Option&lt;Vec&lt;(String, Evaluated&lt;&#x27;a, Truth&gt;)&gt;&gt;</code></dt><dd>The result trees of its payload values, when they were evaluated.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn output(&amp;self) -&gt; Vec&lt;(String, Value)&gt;</code></dt><dd>The output: each payload key with the value at the root of its tree; empty when the payload was not evaluated.</dd></dl></section>
+<section class="api" id="rs-cleanrules-rules-Decision"><h3><span class="kind">struct</span>Decision</h3>
+<pre class="code sig"><code class="language-rust">pub struct Decision&lt;&#x27;a&gt;</code></pre>
+<p>What evaluating a rule set on one input produced (<code>spec/rules.md</code>).</p>
+<p class="muted">Methods</p><dl><dt><code>fn ruleset(&amp;self) -&gt; &amp;&#x27;a RuleSet</code></dt><dd>The rule set that produced it.</dd><dt><code>fn results(&amp;self) -&gt; &amp;[RuleResult&lt;&#x27;a&gt;]</code></dt><dd>Every rule&#x27;s result, in rule order.</dd><dt><code>fn selected(&amp;self) -&gt; impl Iterator&lt;Item = &amp;RuleResult&lt;&#x27;a&gt;&gt;</code></dt><dd>The selected rules&#x27; results, in rule order.</dd><dt><code>fn outputs(&amp;self) -&gt; Vec&lt;Vec&lt;(String, Value)&gt;&gt;</code></dt><dd>The outputs of the selected rules, in rule order.</dd><dt><code>fn aggregated(&amp;self) -&gt; Option&lt;&amp;Aggregated&gt;</code></dt><dd>The aggregate, when the rule set has one.</dd><dt><code>fn output(&amp;self) -&gt; Result&lt;Option&lt;Value&gt;&gt;</code></dt><dd>The single output: the winner&#x27;s for single-hit policies (<code>None</code> when nothing was selected), or the aggregate.</dd></dl></section>
+<h2 id="explain"><code>cleanrules::explain</code><a class="h-anchor" href="#explain" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-explain-Status"><h3><span class="kind">enum</span>Status</h3>
+<pre class="code sig"><code class="language-rust">pub enum Status</code></pre>
+<p>How a rule ended up (<code>spec/explain.md</code>, *Rule status*).</p>
+<p class="muted">Variants</p><dl><dt><code>Selected</code></dt><dd>The hit policy selected it.</dd><dt><code>Fired</code></dt><dd>It fired, but the hit policy did not select it.</dd><dt><code>NotFired</code></dt><dd>Its condition is false.</dd><dt><code>Unknown</code></dt><dd>Its condition is unknown.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The name in the format.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-GroupKind"><h3><span class="kind">enum</span>GroupKind</h3>
+<pre class="code sig"><code class="language-rust">pub enum GroupKind</code></pre>
+<p>Whether each item of a group matters, or one is enough.</p>
+<p class="muted">Variants</p><dl><dt><code>All</code></dt><dd>Each item matters.</dd><dt><code>Any</code></dt><dd>One item is enough.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-Counterfactual"><h3><span class="kind">struct</span>Counterfactual</h3>
+<pre class="code sig"><code class="language-rust">pub struct Counterfactual</code></pre>
+<p>What a field would have to satisfy, and how far it is from it.</p>
+<p class="muted">Fields</p><dl><dt><code>path: Vec&lt;Segment&gt;</code></dt><dd>The field&#x27;s path.</dd><dt><code>op: CompareOp</code></dt><dd>The comparison it needs, already flipped and negated.</dd><dt><code>target: Value</code></dt><dd>The constant it is compared with.</dd><dt><code>gap: Option&lt;Gap&gt;</code></dt><dd>How far the field&#x27;s value is from satisfying it, when a gap exists.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-Gap"><h3><span class="kind">enum</span>Gap</h3>
+<pre class="code sig"><code class="language-rust">pub enum Gap</code></pre>
+<p>A counterfactual&#x27;s distance.</p>
+<p class="muted">Variants</p><dl><dt><code>Number</code></dt><dd>Between numbers.</dd><dt><code>Days</code></dt><dd>Between dates, in days.</dd><dt><code>Microseconds</code></dt><dd>Between datetimes, in microseconds.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-Cause"><h3><span class="kind">struct</span>Cause</h3>
+<pre class="code sig"><code class="language-rust">pub struct Cause&lt;&#x27;d, &#x27;a&gt;</code></pre>
+<p>One elementary condition behind a rule&#x27;s outcome.</p>
+<p class="muted">Fields</p><dl><dt><code>result: &amp;&#x27;d Evaluated&lt;&#x27;a, Truth&gt;</code></dt><dd>The condition&#x27;s result, in the decision.</dd><dt><code>negated: bool</code></dt><dd>Whether the rule needs it false.</dd><dt><code>values: Vec&lt;(Vec&lt;Segment&gt;, Value)&gt;</code></dt><dd>The values it read, each path once.</dd><dt><code>counterfactual: Option&lt;Counterfactual&gt;</code></dt><dd>A counterfactual, when it does not hold and one applies.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn truth(&amp;self) -&gt; Truth</code></dt><dd>Its truth value.</dd><dt><code>fn holds(&amp;self) -&gt; bool</code></dt><dd>Whether it has the truth value the rule needs.</dd><dt><code>fn reason(&amp;self) -&gt; Option&lt;&amp;Reason&gt;</code></dt><dd>Its reason, when it is unknown.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-Requirement"><h3><span class="kind">enum</span>Requirement</h3>
+<pre class="code sig"><code class="language-rust">pub enum Requirement&lt;&#x27;d, &#x27;a&gt;</code></pre>
+<p>A cause, or a group of at least two requirements.</p>
+<p class="muted">Variants</p><dl><dt><code>Cause</code></dt><dd>One cause.</dd><dt><code>Group</code></dt><dd>A group.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-NoteKind"><h3><span class="kind">enum</span>NoteKind</h3>
+<pre class="code sig"><code class="language-rust">pub enum NoteKind</code></pre>
+<p>Why a rule that fired was not selected.</p>
+<p class="muted">Variants</p><dl><dt><code>LowerPriority</code></dt><dd>The winner has a higher priority.</dd><dt><code>SamePriority</code></dt><dd>The winner has the same priority and comes first.</dd><dt><code>AnyAgrees</code></dt><dd>Under <code>any</code>, the outputs agree and the first is reported.</dd><dt><code>EarlierRule</code></dt><dd>The winner comes first.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The name in the format.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-Note"><h3><span class="kind">struct</span>Note</h3>
+<pre class="code sig"><code class="language-rust">pub struct Note</code></pre>
+<p>The note of a rule that fired but was not selected.</p>
+<p class="muted">Fields</p><dl><dt><code>kind: NoteKind</code></dt><dd>Why.</dd><dt><code>winner: String</code></dt><dd>The first selected rule.</dd><dt><code>priorities: Option&lt;(i64, i64)&gt;</code></dt><dd>The rule&#x27;s priority and the winner&#x27;s, for the priority kinds.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-RuleExplanation"><h3><span class="kind">struct</span>RuleExplanation</h3>
+<pre class="code sig"><code class="language-rust">pub struct RuleExplanation&lt;&#x27;d, &#x27;a&gt;</code></pre>
+<p>One rule&#x27;s explanation.</p>
+<p class="muted">Fields</p><dl><dt><code>rule: &amp;&#x27;a str</code></dt><dd>The rule&#x27;s name.</dd><dt><code>status: Status</code></dt><dd>How it ended up.</dd><dt><code>note: Option&lt;Note&gt;</code></dt><dd>For a rule that fired but was not selected.</dd><dt><code>achievable: Option&lt;bool&gt;</code></dt><dd>For a rule that did not fire: whether changing the listed conditions can make it fire.</dd><dt><code>requirement: Requirement&lt;&#x27;d, &#x27;a&gt;</code></dt><dd>What decides its outcome.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-Explanation"><h3><span class="kind">struct</span>Explanation</h3>
+<pre class="code sig"><code class="language-rust">pub struct Explanation&lt;&#x27;d, &#x27;a&gt;</code></pre>
+<p>The explanation of a decision, one entry per rule in rule order.</p>
+<p class="muted">Fields</p><dl><dt><code>decision: &amp;&#x27;d Decision&lt;&#x27;a&gt;</code></dt><dd>The decision explained.</dd><dt><code>rules: Vec&lt;RuleExplanation&lt;&#x27;d, &#x27;a&gt;&gt;</code></dt><dd>Every rule&#x27;s explanation.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-explain"><h3><span class="kind">fn</span>explain</h3>
+<pre class="code sig"><code class="language-rust">pub fn explain&lt;&#x27;d, &#x27;a&gt;(decision: &amp;&#x27;d Decision&lt;&#x27;a&gt;) -&gt; Explanation&lt;&#x27;d, &#x27;a&gt;</code></pre>
+<p>Explain a decision (<code>spec/explain.md</code>).</p></section>
+<section class="api" id="rs-cleanrules-explain-FieldUsage"><h3><span class="kind">struct</span>FieldUsage</h3>
+<pre class="code sig"><code class="language-rust">pub struct FieldUsage</code></pre>
+<p>Where one field is read.</p>
+<p class="muted">Fields</p><dl><dt><code>path: Vec&lt;Segment&gt;</code></dt><dd>The field&#x27;s path.</dd><dt><code>conditions: Vec&lt;String&gt;</code></dt><dd>The rules whose condition reads it, in rule order.</dd><dt><code>payloads: Vec&lt;(String, String)&gt;</code></dt><dd>The <code>(rule, output key)</code> pairs whose payload value reads it.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-Summary"><h3><span class="kind">struct</span>Summary</h3>
+<pre class="code sig"><code class="language-rust">pub struct Summary&lt;&#x27;r&gt;</code></pre>
+<p>A static overview of a rule set (<code>spec/explain.md</code>, *Summaries*).</p>
+<p class="muted">Fields</p><dl><dt><code>ruleset: &amp;&#x27;r RuleSet</code></dt><dd>The rule set.</dd><dt><code>fields: Vec&lt;FieldUsage&gt;</code></dt><dd>Every field read, in order of first appearance.</dd><dt><code>outputs: Vec&lt;String&gt;</code></dt><dd>Every payload key, in order of first appearance.</dd><dt><code>tags: Vec&lt;(String, Vec&lt;String&gt;)&gt;</code></dt><dd>Each tag with the rules carrying it, tags sorted.</dd></dl></section>
+<section class="api" id="rs-cleanrules-explain-summary"><h3><span class="kind">fn</span>summary</h3>
+<pre class="code sig"><code class="language-rust">pub fn summary(ruleset: &amp;RuleSet) -&gt; Summary&lt;&#x27;_&gt;</code></pre>
+<p>Summarize a rule set without evaluating it.</p></section>
+<h2 id="format"><code>cleanrules::format</code><a class="h-anchor" href="#format" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-format-read_node"><h3><span class="kind">fn</span>read_node</h3>
+<pre class="code sig"><code class="language-rust">pub fn read_node(json: &amp;Json, pointer: &amp;str, limits: &amp;Limits) -&gt; Result&lt;Node&gt;</code></pre>
+<p>Read a node (a condition or a value) from JSON already parsed, checking its shape and then building it, as inside a document. <code>pointer</code> locates it in errors.</p></section>
+<section class="api" id="rs-cleanrules-format-read_ruleset"><h3><span class="kind">fn</span>read_ruleset</h3>
+<pre class="code sig"><code class="language-rust">pub fn read_ruleset(json: &amp;Json, pointer: &amp;str, limits: &amp;Limits) -&gt; Result&lt;crate::rules::RuleSet&gt;</code></pre>
+<p>Read a rule set&#x27;s content (the object under <code>&quot;ruleset&quot;</code>) from JSON already parsed, as inside a document. <code>pointer</code> locates it in errors.</p></section>
+<section class="api" id="rs-cleanrules-format-Document"><h3><span class="kind">enum</span>Document</h3>
+<pre class="code sig"><code class="language-rust">pub enum Document</code></pre>
+<p>What a document holds.</p>
+<p class="muted">Variants</p><dl><dt><code>Condition</code></dt><dd>A condition.</dd><dt><code>Rule</code></dt><dd>A rule.</dd><dt><code>RuleSet</code></dt><dd>A rule set.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn into_condition(self) -&gt; Option&lt;Node&gt;</code></dt><dd>The condition, if the document holds one.</dd></dl></section>
+<section class="api" id="rs-cleanrules-format-read_document"><h3><span class="kind">fn</span>read_document</h3>
+<pre class="code sig"><code class="language-rust">pub fn read_document(text: &amp;str, limits: &amp;Limits) -&gt; Result&lt;Document&gt;</code></pre>
+<p>Read a document from JSON text.</p></section>
+<section class="api" id="rs-cleanrules-format-read_decision_document"><h3><span class="kind">fn</span>read_decision_document</h3>
+<pre class="code sig"><code class="language-rust">pub fn read_decision_document&lt;&#x27;a&gt;(text: &amp;str, ruleset: &amp;&#x27;a RuleSet, limits: &amp;Limits) -&gt; Result&lt;Decision&lt;&#x27;a&gt;&gt;</code></pre>
+<p>Read a decision document with the rule set that produced it (<code>spec/json-format.md</code>, *Reading a decision*).</p></section>
+<section class="api" id="rs-cleanrules-format-write_document"><h3><span class="kind">fn</span>write_document</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_document(document: &amp;Document) -&gt; Json</code></pre>
+<p>Write a document in canonical form.</p></section>
+<section class="api" id="rs-cleanrules-format-write_rule"><h3><span class="kind">fn</span>write_rule</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_rule(rule: &amp;Rule) -&gt; Json</code></pre>
+<p>Write a rule, omitting optional keys at their default.</p></section>
+<section class="api" id="rs-cleanrules-format-write_ruleset"><h3><span class="kind">fn</span>write_ruleset</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_ruleset(ruleset: &amp;RuleSet) -&gt; Json</code></pre>
+<p>Write a rule set&#x27;s content.</p></section>
+<section class="api" id="rs-cleanrules-format-write_decision"><h3><span class="kind">fn</span>write_decision</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_decision(decision: &amp;Decision&lt;&#x27;_&gt;) -&gt; Json</code></pre>
+<p>Write a decision&#x27;s content (<code>spec/json-format.md</code>, *Decisions*).</p></section>
+<section class="api" id="rs-cleanrules-format-write_explanation"><h3><span class="kind">fn</span>write_explanation</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_explanation(explanation: &amp;Explanation&lt;&#x27;_, &#x27;_&gt;) -&gt; Json</code></pre>
+<p>Write an explanation&#x27;s content (the object under <code>&quot;explanation&quot;</code>).</p></section>
+<section class="api" id="rs-cleanrules-format-write_summary"><h3><span class="kind">fn</span>write_summary</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_summary(summary: &amp;Summary&lt;&#x27;_&gt;) -&gt; Json</code></pre>
+<p>Write a summary&#x27;s content (the object under <code>&quot;summary&quot;</code>).</p></section>
+<section class="api" id="rs-cleanrules-format-ValueContext"><h3><span class="kind">enum</span>ValueContext</h3>
+<pre class="code sig"><code class="language-rust">pub enum ValueContext</code></pre>
+<p>Where a value is read, which decides what is allowed and what an out-of-range number becomes.</p>
+<p class="muted">Variants</p><dl><dt><code>Constant</code></dt><dd>A constant in a condition or payload: only scalars; out of range is an error.</dd><dt><code>Data</code></dt><dd>The input of an evaluation: lists and maps too; out of range is null with a reason.</dd><dt><code>Recorded</code></dt><dd>A value recorded in a decision or an explanation: like data, plus opaque values.</dd></dl></section>
+<section class="api" id="rs-cleanrules-format-read_value"><h3><span class="kind">fn</span>read_value</h3>
+<pre class="code sig"><code class="language-rust">pub fn read_value(json: &amp;Json, pointer: &amp;str, context: ValueContext) -&gt; Result&lt;Value&gt;</code></pre>
+<p>Read a value at <code>pointer</code> (a JSON Pointer, for errors).</p></section>
+<section class="api" id="rs-cleanrules-format-write_value"><h3><span class="kind">fn</span>write_value</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_value(value: &amp;Value) -&gt; Json</code></pre>
+<p>Write a value in canonical form.</p></section>
+<section class="api" id="rs-cleanrules-format-write_node"><h3><span class="kind">fn</span>write_node</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_node(node: &amp;Node) -&gt; Json</code></pre>
+<p>Write a node in canonical form: keys in table order, <code>op</code> first, <code>closed</code> always written.</p></section>
+<section class="api" id="rs-cleanrules-format-write_path"><h3><span class="kind">fn</span>write_path</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_path(path: &amp;[Segment]) -&gt; Json</code></pre>
+<p>A field path as JSON: strings and integers.</p></section>
+<section class="api" id="rs-cleanrules-format-write_reason"><h3><span class="kind">fn</span>write_reason</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_reason(reason: &amp;Reason) -&gt; Json</code></pre>
+<p>A reason as JSON, omitting empty <code>paths</code> and <code>types</code> and an absent <code>detail</code>.</p></section>
+<section class="api" id="rs-cleanrules-format-write_truth"><h3><span class="kind">fn</span>write_truth</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_truth(truth: Truth) -&gt; Json</code></pre>
+<p>A Kleene truth value: <code>true</code>, <code>false</code>, or <code>null</code> for unknown.</p></section>
+<section class="api" id="rs-cleanrules-format-write_result"><h3><span class="kind">fn</span>write_result</h3>
+<pre class="code sig"><code class="language-rust">pub fn write_result(result: &amp;Evaluated&lt;&#x27;_, Truth&gt;) -&gt; Json</code></pre>
+<p>A result tree under Kleene logic, in canonical form.</p></section>
+<h2 id="json"><code>cleanrules::json</code><a class="h-anchor" href="#json" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-json-Json"><h3><span class="kind">enum</span>Json</h3>
+<pre class="code sig"><code class="language-rust">pub enum Json</code></pre>
+<p>A JSON value, with object members in document order and numbers as text.</p>
+<p class="muted">Variants</p><dl><dt><code>Null</code></dt><dd><code>null</code>.</dd><dt><code>Bool</code></dt><dd><code>true</code> or <code>false</code>.</dd><dt><code>Number</code></dt><dd>A number, kept as its literal text.</dd><dt><code>String</code></dt><dd>A string.</dd><dt><code>Array</code></dt><dd>An array.</dd><dt><code>Object</code></dt><dd>An object, members in document order, keys unique.</dd></dl></section>
+<section class="api" id="rs-cleanrules-json-JsonNumber"><h3><span class="kind">struct</span>JsonNumber</h3>
+<pre class="code sig"><code class="language-rust">pub struct JsonNumber</code></pre>
+<p>A number literal, as written: <code>1</code> and <code>1.0</code> are different literals.</p>
+<p class="muted">Methods</p><dl><dt><code>fn from_literal(text: impl Into&lt;String&gt;) -&gt; Self</code></dt><dd>A number from literal text that the reader has already validated, or that a writer produced (<code>-0</code>, <code>42</code>, <code>1.5e-3</code>...).</dd><dt><code>fn text(&amp;self) -&gt; &amp;str</code></dt><dd>The literal text.</dd><dt><code>fn is_integer_literal(&amp;self) -&gt; bool</code></dt><dd>Whether the literal has no fraction and no exponent.</dd><dt><code>fn as_i128(&amp;self) -&gt; Option&lt;i128&gt;</code></dt><dd>The exact integer, when the literal is an integer within 128 bits.</dd><dt><code>fn as_f64(&amp;self) -&gt; f64</code></dt><dd>The literal rounded to the nearest binary64, ties to even. Infinite when the literal rounds to infinity, and <code>0.0</code> (with the literal&#x27;s sign) when it is too small.</dd></dl></section>
+<section class="api" id="rs-cleanrules-json-Limits"><h3><span class="kind">struct</span>Limits</h3>
+<pre class="code sig"><code class="language-rust">pub struct Limits</code></pre>
+<p>The reader&#x27;s limits (<code>spec/json-format.md</code>, *Errors and limits*). Callers may raise them, never disable them.</p>
+<p class="muted">Fields</p><dl><dt><code>max_size: usize</code></dt><dd>The largest document, in bytes of UTF-8.</dd><dt><code>max_nesting: usize</code></dt><dd>The deepest nesting of arrays and objects; the top-level value counts 1.</dd><dt><code>max_depth: usize</code></dt><dd>The deepest condition or payload value, in nodes (used by document readers).</dd></dl></section>
+<section class="api" id="rs-cleanrules-json-parse"><h3><span class="kind">fn</span>parse</h3>
+<pre class="code sig"><code class="language-rust">pub fn parse(text: &amp;str, limits: &amp;Limits) -&gt; Result&lt;Json&gt;</code></pre>
+<p>Read a JSON text.</p></section>
+<section class="api" id="rs-cleanrules-json-to_string"><h3><span class="kind">fn</span>to_string</h3>
+<pre class="code sig"><code class="language-rust">pub fn to_string(value: &amp;Json) -&gt; String</code></pre>
+<p>Write JSON text: compact, members in order, numbers as their literals, and strings escaping only <code>&quot;</code>, <code>\</code> and control characters.</p></section>
+<h2 id="eval"><code>cleanrules::eval</code><a class="h-anchor" href="#eval" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-eval-ReasonCode"><h3><span class="kind">enum</span>ReasonCode</h3>
+<pre class="code sig"><code class="language-rust">pub enum ReasonCode</code></pre>
+<p>Why a truth value is unknown or a value is null.</p>
+<p class="muted">Variants</p><dl><dt><code>MissingField</code></dt><dd>The path cannot be resolved.</dd><dt><code>Null</code></dt><dd>A null value (or NaN) was met.</dd><dt><code>TypeMismatch</code></dt><dd>Values of incompatible groups, or of the <code>other</code> group, met; or a non-boolean used as a condition.</dd><dt><code>Unorderable</code></dt><dd>Booleans were ordered.</dd><dt><code>DivisionByZero</code></dt><dd>A division by zero.</dd><dt><code>IntOverflow</code></dt><dd>An integer outside the signed 64-bit range.</dd><dt><code>DecimalOverflow</code></dt><dd>A decimal in the data that does not fit.</dd><dt><code>NanResult</code></dt><dd>An arithmetic result is NaN.</dd><dt><code>ReadError</code></dt><dd>Reading the data raised an error.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The code as written in the spec.</dd></dl></section>
+<section class="api" id="rs-cleanrules-eval-Reason"><h3><span class="kind">struct</span>Reason</h3>
+<pre class="code sig"><code class="language-rust">pub struct Reason</code></pre>
+<p>A reason: its code, the field paths and type groups involved, and a human-readable detail that is never compared.</p>
+<p class="muted">Fields</p><dl><dt><code>code: ReasonCode</code></dt><dd>What happened.</dd><dt><code>paths: Vec&lt;Vec&lt;Segment&gt;&gt;</code></dt><dd>The field paths involved; an empty path is the input itself.</dd><dt><code>types: Vec&lt;Group&gt;</code></dt><dd>The type groups involved.</dd><dt><code>detail: Option&lt;String&gt;</code></dt><dd>Informative text.</dd></dl></section>
+<section class="api" id="rs-cleanrules-eval-Outcome"><h3><span class="kind">enum</span>Outcome</h3>
+<pre class="code sig"><code class="language-rust">pub enum Outcome&lt;T&gt;</code></pre>
+<p>What a node evaluated to.</p>
+<p class="muted">Variants</p><dl><dt><code>Truth</code></dt><dd>A truth value, for a node in a condition position.</dd><dt><code>Value</code></dt><dd>A value, for every other node.</dd></dl></section>
+<section class="api" id="rs-cleanrules-eval-Evaluated"><h3><span class="kind">struct</span>Evaluated</h3>
+<pre class="code sig"><code class="language-rust">pub struct Evaluated&lt;&#x27;a, T&gt;</code></pre>
+<p>The result of evaluating one node, with the results of its children (<code>spec/json-format.md</code>, *Result trees*).</p>
+<p class="muted">Fields</p><dl><dt><code>node: Cow&lt;&#x27;a, Node&gt;</code></dt><dd>The node evaluated; owned for the synthetic halves of a <code>between</code>.</dd><dt><code>outcome: Outcome&lt;T&gt;</code></dt><dd>The truth value or value.</dd><dt><code>reason: Option&lt;Reason&gt;</code></dt><dd>Why it is unknown or null, and only then.</dd><dt><code>children: Vec&lt;Evaluated&lt;&#x27;a, T&gt;&gt;</code></dt><dd>The children&#x27;s results.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn truth(&amp;self) -&gt; Option&lt;T&gt;</code></dt><dd>The truth value, for a condition result.</dd><dt><code>fn value(&amp;self) -&gt; Option&lt;&amp;Value&gt;</code></dt><dd>The value, for a value result.</dd></dl></section>
+<section class="api" id="rs-cleanrules-eval-Options"><h3><span class="kind">struct</span>Options</h3>
+<pre class="code sig"><code class="language-rust">pub struct Options&lt;&#x27;r&gt;</code></pre>
+<p>Evaluation options.</p>
+<p class="muted">Fields</p><dl><dt><code>strict: bool</code></dt><dd>Raise on missing fields, type mismatches and read errors instead of returning unknown.</dd><dt><code>rule: Option&lt;&amp;&#x27;r str&gt;</code></dt><dd>The rule being evaluated, named in errors.</dd></dl></section>
+<section class="api" id="rs-cleanrules-eval-evaluate_tree"><h3><span class="kind">fn</span>evaluate_tree</h3>
+<pre class="code sig"><code class="language-rust">pub fn evaluate_tree&lt;&#x27;a, L: Logic&gt;(node: &amp;&#x27;a Node, input: &amp;Value, logic: &amp;L, options: Options&lt;&#x27;_&gt;) -&gt; Result&lt;Evaluated&lt;&#x27;a, L::Truth&gt;&gt;</code></pre>
+<p>Evaluate a condition (or a field or constant used as one) on <code>input</code>.</p></section>
+<h2 id="logic"><code>cleanrules::logic</code><a class="h-anchor" href="#logic" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-logic-Logic"><h3><span class="kind">trait</span>Logic</h3>
+<pre class="code sig"><code class="language-rust">pub trait Logic: Debug + Send + Sync</code></pre>
+<p>A logic: its truth values, connectives and activation test.</p></section>
+<section class="api" id="rs-cleanrules-logic-Truth"><h3><span class="kind">enum</span>Truth</h3>
+<pre class="code sig"><code class="language-rust">pub enum Truth</code></pre>
+<p>A Kleene truth value, ordered <code>False &lt; Unknown &lt; True</code>.</p>
+<p class="muted">Variants</p><dl><dt><code>False</code></dt><dd>False.</dd><dt><code>Unknown</code></dt><dd>Unknown: a missing field, a null, or a type mismatch.</dd><dt><code>True</code></dt><dd>True.</dd></dl></section>
+<section class="api" id="rs-cleanrules-logic-Kleene"><h3><span class="kind">struct</span>Kleene</h3>
+<pre class="code sig"><code class="language-rust">pub struct Kleene</code></pre>
+<p>Kleene&#x27;s three-valued logic, registered as <code>&quot;boolean&quot;</code>.</p></section>
+<section class="api" id="rs-cleanrules-logic-LogicName"><h3><span class="kind">enum</span>LogicName</h3>
+<pre class="code sig"><code class="language-rust">pub enum LogicName</code></pre>
+<p>The logics of the core, by name (<code>spec/json-format.md</code>, *Rule sets*).</p>
+<p class="muted">Variants</p><dl><dt><code>Boolean</code></dt><dd>Kleene&#x27;s three-valued logic.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The registered name.</dd><dt><code>fn from_name(name: &amp;str) -&gt; Result&lt;Self&gt;</code></dt><dd>Look a logic up by name.</dd></dl></section>
+<h2 id="errors"><code>cleanrules (errors)</code><a class="h-anchor" href="#errors" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-errors-ErrorCode"><h3><span class="kind">enum</span>ErrorCode</h3>
+<pre class="code sig"><code class="language-rust">pub enum ErrorCode</code></pre>
+<p>The stable code of an error, the same in every language.</p>
+<p class="muted">Variants</p><dl><dt><code>FormatError</code></dt><dd>A document&#x27;s JSON or shape is invalid.</dd><dt><code>UnsupportedVersion</code></dt><dd>A document&#x27;s <code>version</code> is missing or unknown.</dd><dt><code>LimitExceeded</code></dt><dd>A document is too large or nested too deep.</dd><dt><code>DecisionMismatch</code></dt><dd>A decision does not belong to the rule set it is read with.</dd><dt><code>ExpressionError</code></dt><dd>A condition node breaks a construction rule.</dd><dt><code>RuleDefinitionError</code></dt><dd>A rule or rule set breaks a construction rule.</dd><dt><code>RuleSyntaxError</code></dt><dd>The text DSL cannot be parsed.</dd><dt><code>RegistryError</code></dt><dd>A name is not registered.</dd><dt><code>RuleNotFound</code></dt><dd>A rule is looked up by a name the rule set does not have.</dd><dt><code>EvaluationError</code></dt><dd>Strict mode met a value it cannot read, or a batch is not a collection.</dd><dt><code>MissingField</code></dt><dd>Strict mode met a field whose path cannot be resolved.</dd><dt><code>TypeMismatch</code></dt><dd>Strict mode met values that cannot be compared.</dd><dt><code>HitPolicyError</code></dt><dd>The hit policy cannot decide.</dd><dt><code>ActionError</code></dt><dd>An action raised during <code>run</code>.</dd><dt><code>Unsupported</code></dt><dd>This build, this logic or this format version cannot do the operation.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The code as written in the spec and in conformance vectors.</dd><dt><code>fn parent(self) -&gt; Option&lt;ErrorCode&gt;</code></dt><dd>The code of the parent class in the hierarchy, below <code>CleanRulesError</code>: <code>missing_field</code> is an <code>evaluation_error</code>, <code>unsupported_version</code> a <code>format_error</code>. <code>None</code> for the codes directly under the base.</dd><dt><code>fn is_a(self, ancestor: ErrorCode) -&gt; bool</code></dt><dd>Whether this code is <code>ancestor</code> or below it in the hierarchy.</dd></dl></section>
+<section class="api" id="rs-cleanrules-errors-Segment"><h3><span class="kind">enum</span>Segment</h3>
+<pre class="code sig"><code class="language-rust">pub enum Segment</code></pre>
+<p>One segment of a field path: a map key or a list index.</p>
+<p class="muted">Variants</p><dl><dt><code>Key</code></dt><dd>A map key, or a record&#x27;s component.</dd><dt><code>Index</code></dt><dd>A list index, or a record&#x27;s position.</dd></dl></section>
+<section class="api" id="rs-cleanrules-errors-Context"><h3><span class="kind">struct</span>Context</h3>
+<pre class="code sig"><code class="language-rust">pub struct Context</code></pre>
+<p>The context of an error; which fields apply depends on the code (<code>spec/errors.md</code>, *Codes*).</p>
+<p class="muted">Fields</p><dl><dt><code>pointer: Option&lt;String&gt;</code></dt><dd>A JSON Pointer into the document as written.</dd><dt><code>line: Option&lt;u64&gt;</code></dt><dd>1-based line, in a text.</dd><dt><code>column: Option&lt;u64&gt;</code></dt><dd>1-based column, in Unicode code points.</dd><dt><code>rule: Option&lt;String&gt;</code></dt><dd>The rule concerned.</dd><dt><code>rules: Vec&lt;String&gt;</code></dt><dd>The rules concerned, in rule order.</dd><dt><code>path: Option&lt;Vec&lt;Segment&gt;&gt;</code></dt><dd>The full path of the field being read.</dd><dt><code>types: Vec&lt;Group&gt;</code></dt><dd>The type groups involved.</dd><dt><code>row: Option&lt;u64&gt;</code></dt><dd>The position of the input in a batch.</dd><dt><code>name: Option&lt;String&gt;</code></dt><dd>The name looked up.</dd><dt><code>available: Vec&lt;String&gt;</code></dt><dd>The names that exist, sorted.</dd><dt><code>executed: Vec&lt;String&gt;</code></dt><dd>The rules whose actions had run.</dd><dt><code>node: Option&lt;Box&lt;Node&gt;&gt;</code></dt><dd>The failing node: the operand that broke a construction rule, or the innermost node whose evaluation failed.</dd><dt><code>operation: Option&lt;String&gt;</code></dt><dd>What was not supported, in words.</dd><dt><code>reason: Option&lt;String&gt;</code></dt><dd>Why it was not supported, in words.</dd></dl></section>
+<section class="api" id="rs-cleanrules-errors-Error"><h3><span class="kind">struct</span>Error</h3>
+<pre class="code sig"><code class="language-rust">pub struct Error</code></pre>
+<p>An error of cleanrules. It is boxed, so a <code>Result</code> stays one pointer wide.</p>
+<p class="muted">Methods</p><dl><dt><code>fn new(code: ErrorCode, message: impl Into&lt;String&gt;) -&gt; Self</code></dt><dd>A new error with a code and a message that names what failed.</dd><dt><code>fn with_hint(mut self, hint: impl Into&lt;String&gt;) -&gt; Self</code></dt><dd>Add a hint: how to fix it.</dd><dt><code>fn with_context(mut self, context: Context) -&gt; Self</code></dt><dd>Set the context.</dd><dt><code>fn with_node(mut self, node: &amp;Node) -&gt; Self</code></dt><dd>Set the failing node.</dd><dt><code>fn at_pointer(mut self, pointer: impl Into&lt;String&gt;) -&gt; Self</code></dt><dd>Set the JSON Pointer.</dd><dt><code>fn at_position(mut self, line: u64, column: u64) -&gt; Self</code></dt><dd>Set the 1-based line and column.</dd><dt><code>fn caused_by(mut self, source: impl std::error::Error + Send + Sync + &#x27;static) -&gt; Self</code></dt><dd>Keep the error that caused this one.</dd><dt><code>fn code(&amp;self) -&gt; ErrorCode</code></dt><dd>The stable code.</dd><dt><code>fn message(&amp;self) -&gt; &amp;str</code></dt><dd>The message.</dd><dt><code>fn hint(&amp;self) -&gt; Option&lt;&amp;str&gt;</code></dt><dd>The hint, if any.</dd><dt><code>fn context(&amp;self) -&gt; &amp;Context</code></dt><dd>The context.</dd><dt><code>fn context_mut(&amp;mut self) -&gt; &amp;mut Context</code></dt><dd>The context, to fill in.</dd></dl></section>
+<section class="api" id="rs-cleanrules-errors-Result"><h3><span class="kind">type</span>Result</h3>
+<pre class="code sig"><code class="language-rust">pub type Result&lt;T, E = Error&gt; = std::result::Result&lt;T, E&gt;</code></pre>
+<p>The result type of the core.</p></section>
+<h2 id="value"><code>cleanrules::value</code><a class="h-anchor" href="#value" aria-label="Link to this section">#</a></h2>
+<section class="api" id="rs-cleanrules-value-Value"><h3><span class="kind">enum</span>Value</h3>
+<pre class="code sig"><code class="language-rust">pub enum Value</code></pre>
+<p>A value of the data model.</p>
+<p class="muted">Variants</p><dl><dt><code>Null</code></dt><dd>Nothing, with the reason it is null.</dd><dt><code>Bool</code></dt><dd><code>true</code> or <code>false</code>.</dd><dt><code>Int</code></dt><dd>A signed 64-bit integer.</dd><dt><code>Float</code></dt><dd>A binary64 float, never NaN.</dd><dt><code>Decimal</code></dt><dd>An exact decimal.</dd><dt><code>String</code></dt><dd>A sequence of Unicode scalar values.</dd><dt><code>Date</code></dt><dd>A day, years 1 to 9999.</dd><dt><code>NaiveDateTime</code></dt><dd>A date and a time of day, to the microsecond.</dd><dt><code>AwareDateTime</code></dt><dd>An instant with an offset or a time zone.</dd><dt><code>List</code></dt><dd>An ordered sequence of values.</dd><dt><code>Map</code></dt><dd>String keys mapped to values, in a fixed order.</dd><dt><code>Opaque</code></dt><dd>A native value with no equivalent.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn float(value: f64) -&gt; Self</code></dt><dd>A float value, or null when <code>value</code> is NaN.</dd><dt><code>fn is_null(&amp;self) -&gt; bool</code></dt><dd>Whether the value is null.</dd><dt><code>fn group(&amp;self) -&gt; Option&lt;Group&gt;</code></dt><dd>The comparison group, or <code>None</code> for null.</dd><dt><code>fn as_number(&amp;self) -&gt; Option&lt;Number&gt;</code></dt><dd>The value as a number, if it is one.</dd><dt><code>fn compare(&amp;self, other: &amp;Self) -&gt; Option&lt;Ordering&gt;</code></dt><dd>How two non-null values compare, for <code>eq</code> … <code>ge</code> (<code>spec/ast.md</code>, *Types*).</dd><dt><code>fn any_equal(&amp;self, other: &amp;Self) -&gt; bool</code></dt><dd>Equality under <code>ANY</code> (<code>spec/rules.md</code> and <code>spec/data-model.md</code>, *Equality*): null equals null, values of one group compare as [<code>Value::compare</code>], lists element by element, maps key by key whatever their order, and opaque values by identity.</dd></dl></section>
+<section class="api" id="rs-cleanrules-value-NullCause"><h3><span class="kind">enum</span>NullCause</h3>
+<pre class="code sig"><code class="language-rust">pub enum NullCause</code></pre>
+<p>Why a value is null (<code>spec/data-model.md</code>, *Nulls with a reason*).</p>
+<p class="muted">Variants</p><dl><dt><code>Null</code></dt><dd>A native null or a NaN.</dd><dt><code>IntOverflow</code></dt><dd>A native integer outside the signed 64-bit range.</dd><dt><code>DecimalOverflow</code></dt><dd>A native decimal that does not fit in 38 digits.</dd><dt><code>ReadError</code></dt><dd>Reading the native value raised an error, described here.</dd></dl></section>
+<section class="api" id="rs-cleanrules-value-Group"><h3><span class="kind">enum</span>Group</h3>
+<pre class="code sig"><code class="language-rust">pub enum Group</code></pre>
+<p>The comparison group of a value (<code>spec/ast.md</code>, *Types*).</p>
+<p class="muted">Variants</p><dl><dt><code>Number</code></dt><dd>Ints, floats and decimals.</dd><dt><code>String</code></dt><dd>Strings.</dd><dt><code>Boolean</code></dt><dd>Booleans.</dd><dt><code>Date</code></dt><dd>Dates.</dd><dt><code>NaiveDatetime</code></dt><dd>Naive datetimes.</dd><dt><code>AwareDatetime</code></dt><dd>Aware datetimes.</dd><dt><code>Other</code></dt><dd>Lists, maps and opaque values.</dd></dl>
+<p class="muted">Methods</p><dl><dt><code>fn as_str(self) -&gt; &amp;&#x27;static str</code></dt><dd>The name used in reasons and errors, such as <code>naive_datetime</code>.</dd></dl></section>
+<section class="api" id="rs-cleanrules-value-Map"><h3><span class="kind">struct</span>Map</h3>
+<pre class="code sig"><code class="language-rust">pub struct Map</code></pre>
+<p>A map with string keys, kept in insertion order, without duplicate keys.</p>
+<p class="muted">Methods</p><dl><dt><code>fn new() -&gt; Self</code></dt><dd>An empty map.</dd><dt><code>fn record() -&gt; Self</code></dt><dd>An empty record: its entries&#x27; positions are their insertion order.</dd><dt><code>fn is_record(&amp;self) -&gt; bool</code></dt><dd>Whether the map is a record.</dd><dt><code>fn get_index(&amp;self, index: usize) -&gt; Option&lt;&amp;Value&gt;</code></dt><dd>For a record, the value at a position; never for a plain map.</dd><dt><code>fn insert(&amp;mut self, key: impl Into&lt;String&gt;, value: Value)</code></dt><dd>Insert a value, replacing the one under the same key in place.</dd><dt><code>fn get(&amp;self, key: &amp;str) -&gt; Option&lt;&amp;Value&gt;</code></dt><dd>The value under <code>key</code>, if present.</dd><dt><code>fn iter(&amp;self) -&gt; impl Iterator&lt;Item = (&amp;str, &amp;Value)&gt;</code></dt><dd>The entries, in order.</dd><dt><code>fn len(&amp;self) -&gt; usize</code></dt><dd>The number of entries.</dd><dt><code>fn is_empty(&amp;self) -&gt; bool</code></dt><dd>Whether the map is empty.</dd></dl></section>
+<section class="api" id="rs-cleanrules-value-Decimal"><h3><span class="kind">struct</span>Decimal</h3>
+<pre class="code sig"><code class="language-rust">pub struct Decimal</code></pre>
+<p>An exact decimal: a coefficient <code>c</code> with <code>|c| &lt; 10^38</code> and a scale <code>s</code> from 0 to 38, whose value is <code>c × 10^-s</code>, or one of the two infinities.</p>
+<p class="muted">Methods</p><dl><dt><code>fn new(coefficient: i128, scale: u32) -&gt; Result&lt;Self, DecimalError&gt;</code></dt><dd>Build <code>coefficient × 10^-scale</code>.</dd><dt><code>fn parse(text: &amp;str) -&gt; Result&lt;Self, DecimalError&gt;</code></dt><dd>Read a decimal literal: <code>-?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?</code>, <code>inf</code> or <code>-inf</code>.</dd><dt><code>fn is_infinite(self) -&gt; bool</code></dt><dd>Whether the decimal is one of the infinities.</dd><dt><code>fn parts(self) -&gt; Option&lt;(i128, u32)&gt;</code></dt><dd>The coefficient and the scale, or <code>None</code> for an infinity.</dd><dt><code>fn to_f64(self) -&gt; f64</code></dt><dd>The nearest binary64, ties to even (<code>spec/data-model.md</code>, *Decimals*).</dd><dt><code>fn checked_sub(self, other: Self) -&gt; Option&lt;Self&gt;</code></dt><dd>The exact difference <code>self − other</code>, with the larger of the two scales, or <code>None</code> when it does not fit in 38 digits or an operand is infinite (<code>spec/explain.md</code>, *Counterfactuals*).</dd></dl></section>
+<section class="api" id="rs-cleanrules-value-DecimalError"><h3><span class="kind">enum</span>DecimalError</h3>
+<pre class="code sig"><code class="language-rust">pub enum DecimalError</code></pre>
+<p>Why a decimal could not be built.</p>
+<p class="muted">Variants</p><dl><dt><code>Malformed</code></dt><dd>The text is not a decimal literal.</dd><dt><code>DoesNotFit</code></dt><dd>The value needs more than 38 significant digits, or more than 38 digits after the point.</dd></dl></section>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="api-python.html"><small>← Previous</small>Python API</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#operators">Operators on Build</a></li><li><a href="#crate-root">cleanrules</a></li><li><a href="#build">cleanrules::build</a></li><li><a href="#rules">cleanrules::rules</a></li><li><a href="#explain">cleanrules::explain</a></li><li><a href="#format">cleanrules::format</a></li><li><a href="#json">cleanrules::json</a></li><li><a href="#eval">cleanrules::eval</a></li><li><a href="#logic">cleanrules::logic</a></li><li><a href="#errors">cleanrules (errors)</a></li><li><a href="#value">cleanrules::value</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

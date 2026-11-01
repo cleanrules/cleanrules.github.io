@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Writing conditions — cleanrules manual</title>
+  <meta name="description" content="F, operators and methods, constants, decimals, dates and regular expressions.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/conditions.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Writing conditions — cleanrules manual">
+  <meta property="og:description" content="F, operators and methods, constants, decimals, dates and regular expressions.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/conditions.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html" aria-current="page">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">04 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html" aria-current="page">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 04</p>
+        <h1>Writing conditions</h1>
+<p class="lead">A condition is a tree of nodes that the core evaluates later. You build it with <code>F</code>, Python operators and a handful of methods; the core checks every node as it is built. This chapter covers each kind of node, constants of every type, and how to inspect a tree.</p>
+
+<h2 id="fields">Fields: <code>F</code> and <code>Field</code><a class="h-anchor" href="#fields" aria-label="Link to this section">#</a></h2>
+<p><code>F</code> starts a path into the input. Attribute access adds a key, item access adds a key that is not a valid Python name, and an integer indexes a list. <code>Field(...)</code> builds the same node from its segments.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F, Field
+
+print(F.customer.age)
+print(F[&quot;customer&quot;][&quot;first name&quot;])
+print(F.orders[0].total)
+print(Field(&quot;orders&quot;, 0, &quot;total&quot;).path)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">F.customer.age
+F.customer[&#x27;first name&#x27;]
+F.orders[0].total
+(&#x27;orders&#x27;, 0, &#x27;total&#x27;)</pre>
+</div>
+<p>A path reads a key of a mapping, or an index of a list. A missing key gives a <em>missing</em> value and a <code>None</code> gives a <em>null</em>; both make comparisons unknown (<a href="evaluating.html#reasons">reasons</a>). Some names cannot follow a dot because they already mean something on a node (<code>tag</code>, <code>kind</code>, <code>path</code>, the method names, and names starting with <code>_</code>): write them with item access, <code>F.product["tag"]</code>. The <a href="pitfalls.html#clashes">pitfalls</a> chapter lists them.</p>
+
+<h2 id="comparisons">Comparisons<a class="h-anchor" href="#comparisons" aria-label="Link to this section">#</a></h2>
+<p><code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code> and <code>&gt;=</code> build comparison nodes. A Python value next to a node becomes a constant. When the constant is on the left, Python asks the node to reflect the comparison, so the field stays on the left. Two fields can be compared directly.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F
+
+adult = F.customer.age &gt;= 18
+print(adult, &quot;|&quot;, adult.tag, adult.kind)
+print(5 &lt; F.x)             # Python reflects it: the field stays on the left
+print(F.price &lt;= F.budget)  # two fields</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">F.customer.age &gt;= 18 | ge condition
+F.x &gt; 5
+F.price &lt;= F.budget</pre>
+</div>
+<p>Every node has a <code>tag</code> (its operator in the JSON format) and a <code>kind</code>: <code>condition</code> (true, false or unknown), <code>value</code> (a number, a string…), or <code>any</code> for a field or a boolean constant, whose kind depends on the data. A rule's <code>when</code> must be a condition or <code>any</code>; its payload values must be values or <code>any</code>.</p>
+<p>Values compare within their <strong>type group</strong>: numbers (ints, floats and decimals compare with each other, exactly), strings, booleans (<code>==</code> and <code>!=</code> only), dates, naive datetimes and aware datetimes. Comparing across groups is a type mismatch: unknown, or an error in strict mode. <code>==</code> on strings is exact; there is no case folding.</p>
+
+<h2 id="connectives">Combining conditions: <code>&amp;</code>, <code>|</code>, <code>~</code><a class="h-anchor" href="#connectives" aria-label="Link to this section">#</a></h2>
+<p>Use <code>&amp;</code> for <em>and</em>, <code>|</code> for <em>or</em> and <code>~</code> for <em>not</em>, never Python's <code>and</code>, <code>or</code> and <code>not</code>, which need a real boolean and raise <code>ExpressionError</code> (<a href="pitfalls.html">pitfalls</a>). Parenthesize comparisons: in Python, <code>&amp;</code> and <code>|</code> bind more tightly than <code>&gt;</code>.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">spain = F.country == &quot;ES&quot;
+cond = (adult &amp; spain) | ~F.blocked
+print(cond)
+print(cond.tag, [child.tag for child in cond.children()])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">((F.customer.age &gt;= 18) &amp; (F.country == &#x27;ES&#x27;)) | ~F.blocked
+or [&#x27;and&#x27;, &#x27;not&#x27;]</pre>
+</div>
+<p>The <code>repr</code> of a node is Python that builds the same tree, so you can paste it back. Under three-valued logic, <code>&amp;</code> is false as soon as one operand is false, even if another is unknown, and <code>|</code> is true as soon as one is true (<a href="evaluating.html#kleene">truth tables</a>).</p>
+
+<h2 id="methods">Membership, ranges, nulls and strings<a class="h-anchor" href="#methods" aria-label="Link to this section">#</a></h2>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">print(F.country.is_in({&quot;PT&quot;, &quot;ES&quot;, &quot;ES&quot;}))
+print(F.age.between(18, 65))
+print(F.age.between(18, 65, closed=&quot;left&quot;))
+print(F.email.is_null())
+print(F.email.matches(r&quot;(?i)^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$&quot;))
+print(F.sku.starts_with(&quot;EU-&quot;))
+print(F.note.contains(&quot;urgent&quot;))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">F.country.is_in([&#x27;ES&#x27;, &#x27;PT&#x27;])
+F.age.between(18, 65)
+F.age.between(18, 65, closed=&#x27;left&#x27;)
+F.email.is_null()
+F.email.matches(&#x27;(?i)^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$&#x27;)
+F.sku.starts_with(&#x27;EU-&#x27;)
+F.note.contains(&#x27;urgent&#x27;)</pre>
+</div>
+<dl>
+  <dt>is_in(values)</dt><dd>Membership in a collection of constants of one type group (no <code>None</code>). The values are kept sorted and without duplicates, so the order you write them in does not matter.</dd>
+  <dt>between(low, high, closed="both")</dt><dd>A range. <code>closed</code> is <code>"both"</code>, <code>"left"</code>, <code>"right"</code> or <code>"none"</code>, the same names as polars. Bounds may be constants or nodes. Explanations report a <code>between</code> as its two halves, so they can say which bound failed.</dd>
+  <dt>is_null()</dt><dd>True when the value is missing or null, false otherwise; it is never unknown. Use it instead of <code>== None</code>, which raises. In strict mode a <em>missing</em> field raises even under <code>is_null</code>; an explicit <code>None</code> does not (<a href="evaluating.html#strict-null">strict mode and nulls</a>).</dd>
+  <dt>matches(pattern)</dt><dd>A regular-expression search (not a full match: anchor with <code>^</code> and <code>$</code>). <code>(?i)</code> makes it case-insensitive.</dd>
+  <dt>starts_with(text), ends_with(text), contains(text)</dt><dd>Literal string tests, not patterns. <code>contains</code> is substring search on strings, not list membership: use <code>is_in</code> for that.</dd>
+</dl>
+
+<h3 id="regex">Regular expressions<a class="h-anchor" href="#regex" aria-label="Link to this section">#</a></h3>
+<p>Patterns use the syntax of Rust's <a href="https://docs.rs/regex/latest/regex/#syntax" rel="noopener"><code>regex</code> crate</a>, in every language. Matching runs in time linear in the input, which makes rules from untrusted sources safe to evaluate; the price is that look-around and backreferences are not supported. A pattern that does not compile is rejected when the node is built:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">try:
+    F.pin.matches(r&quot;^(?=.*\d).{8,}$&quot;)
+except ExpressionError as err:
+    print(err)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">the pattern &quot;^(?=.*\\d).{8,}$&quot; is not valid: regex parse error:
+    ^(?=.*\d).{8,}$
+     ^^^
+error: look-around, including look-ahead and look-behind, is not supported
+hint: patterns use the syntax of Rust&#x27;s regex crate: no lookaround, no backreferences</pre>
+</div>
+<p>Most everyday syntax works as in Python's <code>re</code>: classes, <code>\d</code>, <code>\b</code>, quantifiers, groups, alternation, <code>(?i)</code>. Unicode is on by default, so <code>\d</code> and <code>\w</code> match beyond ASCII.</p>
+
+<h2 id="arithmetic">Arithmetic<a class="h-anchor" href="#arithmetic" aria-label="Link to this section">#</a></h2>
+<p><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, unary <code>-</code> and <code>abs()</code> build value nodes. They work on numbers; compare the result to get a condition, or use it as a payload value.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">ratio = F.debt / F.income
+print(ratio &gt; 0.45)
+print(abs(F.balance - F.expected) &gt; 0.01)
+print((F.price * F.quantity).kind, (-F.delta).tag)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">F.debt / F.income &gt; 0.45
+abs(F.balance - F.expected) &gt; 0.01
+value neg</pre>
+</div>
+<p>The arithmetic is defined by the specification so every language gets the same numbers: integers stay 64-bit (an overflow gives null with the reason <code>int_overflow</code>), a decimal operand is converted to a float, <code>/</code> always gives a float, and division by zero gives null with the reason <code>division_by_zero</code>, never an exception.</p>
+
+<h2 id="constants">Constants, decimals and dates<a class="h-anchor" href="#constants" aria-label="Link to this section">#</a></h2>
+<p>A constant is <code>None</code>, a <code>bool</code>, an <code>int</code> (64-bit), a <code>float</code>, a <code>Decimal</code> (up to 38 digits), a <code>str</code>, a <code>date</code>, or a <code>datetime</code> (naive, or aware with a <code>ZoneInfo</code> zone or a fixed offset). Python values next to a node become constants on their own; write <code>Const(...)</code> where no node is involved, such as <code>Const(True)</code> for a rule that always fires.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from datetime import date, datetime
+from decimal import Decimal
+from zoneinfo import ZoneInfo
+
+from cleanrules import Const
+
+print(Const(True), Const(Decimal(&quot;0.10&quot;)).value)
+print(F.signed_on &gt;= date(2026, 1, 1))
+print(F.sent_at &lt; datetime(2026, 12, 15, 14, 0, tzinfo=ZoneInfo(&quot;Europe/Madrid&quot;)))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">Const(True) 0.10
+F.signed_on &gt;= datetime.date(2026, 1, 1)
+F.sent_at &lt; datetime.datetime(2026, 12, 15, 14, 0, tzinfo=zoneinfo.ZoneInfo(key=&#x27;Europe/Madrid&#x27;))</pre>
+</div>
+<p>Prefer <code>Decimal</code> for money: decimals compare exactly, so <code>Decimal("0.1")</code> does not equal the float <code>0.1</code> (<a href="evaluating.html#exact">exact comparisons</a>). Aware datetimes compare by instant, whatever their zone; the core bundles its own time-zone database, so results do not depend on the machine. Constants that cannot be represented exactly are rejected, never rounded:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import ExpressionError
+
+for bad in (float(&quot;nan&quot;), 2**64, Decimal(&quot;1&quot; * 39)):
+    try:
+        Const(bad)
+    except ExpressionError as err:
+        print(type(bad).__name__, &quot;-&gt;&quot;, err.message)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">float -&gt; a constant cannot be NaN (nan)
+int -&gt; the integer 18446744073709551616 does not fit in 64 bits
+Decimal -&gt; the decimal Decimal(&#x27;111111111111111111111111111111111111111&#x27;) does not fit in 38 digits</pre>
+</div>
+
+<h2 id="introspection">Inspecting a tree<a class="h-anchor" href="#introspection" aria-label="Link to this section">#</a></h2>
+<p>Because conditions are data, you can walk them. <code>field_paths()</code> lists the fields a tree reads, <code>walk()</code> yields every node, and <code>children()</code> the direct ones. Since <code>==</code> builds a node, structural equality is <code>same_as</code>, and <code>structural_key()</code> gives a hashable key for dictionaries.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">cond = (F.customer.age &gt;= 18) &amp; F.customer.country.is_in([&quot;ES&quot;, &quot;PT&quot;])
+print(cond.field_paths())
+print([node.tag for node in cond.walk()])
+same = (F.customer.age &gt;= 18) &amp; F.customer.country.is_in([&quot;PT&quot;, &quot;ES&quot;])
+print(cond.same_as(same), cond is same)
+print({cond.structural_key(): &quot;adults&quot;}[same.structural_key()])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">((&#x27;customer&#x27;, &#x27;age&#x27;), (&#x27;customer&#x27;, &#x27;country&#x27;))
+[&#x27;and&#x27;, &#x27;ge&#x27;, &#x27;field&#x27;, &#x27;const&#x27;, &#x27;in&#x27;, &#x27;field&#x27;]
+True False
+adults</pre>
+</div>
+<p>Nodes are immutable. Copies are the node itself, and pickling goes through the JSON format, which is the contract between versions:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">import copy
+import pickle
+
+clone = pickle.loads(pickle.dumps(cond))
+print(clone.same_as(cond), copy.deepcopy(cond) is cond)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">True True</pre>
+</div>
+
+<h2 id="rust">In Rust<a class="h-anchor" href="#rust" aria-label="Link to this section">#</a></h2>
+<p>The Rust builder offers the same nodes. <code>field(key)</code> starts a path, <code>.get(key)</code> and <code>.index(i)</code> extend it; comparisons are methods; <code>&amp;</code>, <code>|</code>, <code>!</code> and the arithmetic operators are overloaded. A construction error does not interrupt the expression: it is carried along and reported by <code>.build()</code>.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>conditions.rs</span><span class="src">Rust core · runs</span></div>
+<pre class="code"><code class="language-rust">//! Building conditions in Rust: methods for comparisons, operators for connectives.
+use cleanrules::Decimal;
+use cleanrules::ast::Closed;
+use cleanrules::build::{constant, field};
+use cleanrules::format::write_node;
+use cleanrules::jiff::civil::date;
+use cleanrules::json::to_string;
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let adult = field(&quot;customer&quot;).get(&quot;age&quot;).ge(18) &amp; field(&quot;country&quot;).is_in([&quot;ES&quot;, &quot;PT&quot;]);
+    println!(&quot;{}&quot;, to_string(&amp;write_node(&amp;adult.build()?)));
+
+    let first_total = field(&quot;orders&quot;).index(0).get(&quot;total&quot;);
+    let ratio = (field(&quot;debt&quot;) / field(&quot;income&quot;)).gt(0.45) | !first_total.is_null();
+    println!(&quot;{}&quot;, to_string(&amp;write_node(&amp;ratio.build()?)));
+
+    let window = field(&quot;age&quot;).between_closed(18, 65, Closed::Left)
+        &amp; field(&quot;signed_on&quot;).ge(date(2026, 1, 1))
+        &amp; field(&quot;rate&quot;).le(Decimal::parse(&quot;0.10&quot;)?);
+    println!(&quot;{}&quot;, to_string(&amp;write_node(&amp;window.build()?)));
+
+    // A construction error travels with the expression and surfaces at build().
+    let bad = field(&quot;pin&quot;).matches(r&quot;^(?=.*\d).{8,}$&quot;) &amp; constant(true);
+    match bad.build() {
+        Ok(_) =&gt; println!(&quot;built&quot;),
+        Err(error) =&gt; println!(&quot;{}: {}&quot;, error.code(), error.message()),
+    }
+    Ok(())
+}
+</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;op&quot;:&quot;and&quot;,&quot;operands&quot;:[{&quot;op&quot;:&quot;ge&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;customer&quot;,&quot;age&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:18}},{&quot;op&quot;:&quot;in&quot;,&quot;operand&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;country&quot;]},&quot;values&quot;:[&quot;ES&quot;,&quot;PT&quot;]}]}
+{&quot;op&quot;:&quot;or&quot;,&quot;operands&quot;:[{&quot;op&quot;:&quot;gt&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;div&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;debt&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;income&quot;]}},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:0.45}},{&quot;op&quot;:&quot;not&quot;,&quot;operand&quot;:{&quot;op&quot;:&quot;is_null&quot;,&quot;operand&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;orders&quot;,0,&quot;total&quot;]}}}]}
+{&quot;op&quot;:&quot;and&quot;,&quot;operands&quot;:[{&quot;op&quot;:&quot;between&quot;,&quot;operand&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;age&quot;]},&quot;low&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:18},&quot;high&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:65},&quot;closed&quot;:&quot;left&quot;},{&quot;op&quot;:&quot;ge&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;signed_on&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:{&quot;$date&quot;:&quot;2026-01-01&quot;}}},{&quot;op&quot;:&quot;le&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;rate&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:{&quot;$decimal&quot;:&quot;0.10&quot;}}}]}
+expression_error: the pattern &quot;^(?=.*\\d).{8,}$&quot; is not valid: regex parse error:
+    ^(?=.*\d).{8,}$
+     ^^^
+error: look-around, including look-ahead and look-behind, is not supported</pre>
+</div>
+
+<h2 id="catalogue">The node catalogue<a class="h-anchor" href="#catalogue" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Tag</th><th>Python</th><th>Kind</th></tr></thead>
+    <tbody>
+      <tr><td><code>field</code></td><td><code>F.a.b</code>, <code>F["a"][0]</code>, <code>Field("a", 0)</code></td><td>any</td></tr>
+      <tr><td><code>const</code></td><td><code>Const(x)</code>, or a Python value next to a node</td><td>any if boolean, else value</td></tr>
+      <tr><td><code>eq ne lt le gt ge</code></td><td><code>== != &lt; &lt;= &gt; &gt;=</code></td><td>condition</td></tr>
+      <tr><td><code>and or not</code></td><td><code>&amp; | ~</code></td><td>condition</td></tr>
+      <tr><td><code>in</code></td><td><code>.is_in([...])</code></td><td>condition</td></tr>
+      <tr><td><code>between</code></td><td><code>.between(lo, hi, closed=...)</code></td><td>condition</td></tr>
+      <tr><td><code>is_null</code></td><td><code>.is_null()</code></td><td>condition</td></tr>
+      <tr><td><code>matches</code></td><td><code>.matches(pattern)</code></td><td>condition</td></tr>
+      <tr><td><code>starts_with ends_with contains</code></td><td><code>.starts_with(t)</code>, <code>.ends_with(t)</code>, <code>.contains(t)</code></td><td>condition</td></tr>
+      <tr><td><code>add sub mul div</code></td><td><code>+ - * /</code></td><td>value</td></tr>
+      <tr><td><code>neg abs</code></td><td><code>-x</code>, <code>abs(x)</code> or <code>.abs()</code></td><td>value</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>The JSON form of each node is in the <a href="../format.html#conditions">format reference</a>, and its exact semantics in the <a href="../guide.html#nodes">concepts guide</a>.</p>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="quickstart.html"><small>← Previous</small>Quick start</a><a class="next" href="rules.html"><small>Next →</small>Rules and rule sets</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#fields">Fields: F and Field</a></li><li><a href="#comparisons">Comparisons</a></li><li><a href="#connectives">Combining conditions: &amp;, |, ~</a></li><li><a href="#methods">Membership, ranges, nulls and strings</a></li><li><a href="#arithmetic">Arithmetic</a></li><li><a href="#constants">Constants, decimals and dates</a></li><li><a href="#introspection">Inspecting a tree</a></li><li><a href="#rust">In Rust</a></li><li><a href="#catalogue">The node catalogue</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

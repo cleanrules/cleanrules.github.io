@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explanations and counterfactuals — cleanrules manual</title>
+  <meta name="description" content="Statuses, causes, gaps in numbers and time, achievability and notes.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/explanations.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Explanations and counterfactuals — cleanrules manual">
+  <meta property="og:description" content="Statuses, causes, gaps in numbers and time, achievability and notes.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/explanations.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html" aria-current="page">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">08 / 15</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html" aria-current="page">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 08</p>
+        <h1>Explanations and counterfactuals</h1>
+<p class="lead">Every decision can explain itself. For each rule, the explanation says what happened to it, which conditions mattered, the values they read, and for the conditions that went the wrong way, what the input would have needed. It is built from the decision alone: nothing is evaluated again.</p>
+
+<h2 id="structure">The structure<a class="h-anchor" href="#structure" aria-label="Link to this section">#</a></h2>
+<p><code>decision.explain()</code> returns an <code>Explanation</code>: one <code>RuleExplanation</code> per rule, in rule order. Each has:</p>
+<dl>
+  <dt>status</dt><dd><code>selected</code> (fired and chosen by the hit policy), <code>fired</code> (fired but not chosen), <code>not_fired</code> (its condition was false) or <code>unknown</code> (its condition was unknown).</dd>
+  <dt>requirement</dt><dd>What decided the outcome: a single <code>Cause</code>, or a <code>CauseGroup</code> whose <code>kind</code> is <code>"all"</code> (every item matters) or <code>"any"</code> (one item is enough). <code>causes</code> flattens it.</dd>
+  <dt>note</dt><dd>For a rule that fired but lost: the winner and why (<a href="hit-policies.html#notes">notes</a>).</dd>
+  <dt>achievable</dt><dd>For a rule that did not fire: whether changing the listed conditions can make it fire.</dd>
+</dl>
+<p>A <code>Cause</code> is one elementary condition (a comparison, a membership test…) with its <code>truth</code>, whether it is <code>negated</code> (it sits under a <code>~</code>, so the rule needs it false), whether it <code>holds</code> (went the way the rule needed), the <code>values</code> it read, a <code>reason</code> when it is unknown, and a <code>counterfactual</code> when it did not hold.</p>
+<p>Here is a rule set with three different shapes of condition, and an applicant who is 16:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F, Rule, RuleSet
+
+rules = RuleSet(
+    [
+        Rule(&quot;fast_track&quot;, (F.score &gt;= 750) | (F.income &gt; 100_000), {&quot;lane&quot;: &quot;fast&quot;}),
+        Rule(&quot;eligible&quot;, ~(F.country.is_in([&quot;IR&quot;, &quot;KP&quot;]) | (F.age &lt; 18)), {&quot;lane&quot;: &quot;standard&quot;}),
+        Rule(&quot;review&quot;, F.score.between(600, 700), {&quot;lane&quot;: &quot;review&quot;}),
+    ],
+    hit_policy=&quot;first&quot;,
+)
+decision = rules.evaluate({&quot;score&quot;: 700, &quot;income&quot;: 80_000.0, &quot;country&quot;: &quot;ES&quot;, &quot;age&quot;: 16})
+explanation = decision.explain()
+explanation</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">&lt;Explanation: fast_track: not_fired, eligible: not_fired, review: selected&gt;</pre>
+</div>
+
+<h2 id="any">"Any of these": one change is enough<a class="h-anchor" href="#any" aria-label="Link to this section">#</a></h2>
+<p><code>fast_track</code> needs a high score <em>or</em> a high income. It did not fire, and its requirement is an <code>any</code> group: changing either condition would do. The gaps say by how much each one missed.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">fast = explanation.for_rule(&quot;fast_track&quot;)
+print(fast.status, fast.achievable, fast.requirement.kind)
+for cause in fast.causes:
+    print(&quot; &quot;, cause.node, cause.truth, &quot;gap:&quot;, cause.counterfactual.gap)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">not_fired True any
+  F.score &gt;= 750 false gap: 50
+  F.income &gt; 100000 false gap: 20000.0</pre>
+</div>
+
+<h2 id="negated">Negated conditions<a class="h-anchor" href="#negated" aria-label="Link to this section">#</a></h2>
+<p><code>eligible</code> is <code>~(sanctioned country | under 18)</code>. The explanation pushes the negation inward (De Morgan) and lists only the conditions that went the wrong way: <code>F.age &lt; 18</code> is true, but the rule needs it false. The counterfactual is the comparison the field must satisfy, already negated: <code>age &gt;= 18</code>, 2 years away.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">eligible = explanation.for_rule(&quot;eligible&quot;)
+print(eligible.status, eligible.requirement)
+for cause in eligible.causes:
+    print(f&quot;  {cause.node!r:&lt;34} truth={cause.truth:&lt;5} negated={cause.negated!s:&lt;5} holds={cause.holds}&quot;)
+    if cause.counterfactual:
+        print(&quot;    needs&quot;, cause.counterfactual)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">not_fired &lt;Cause F.age &lt; 18: true&gt;
+  F.age &lt; 18                         truth=true  negated=True  holds=False
+    needs Counterfactual(path=(&#x27;age&#x27;,), op=&#x27;ge&#x27;, target=18, gap=2)</pre>
+</div>
+
+<h2 id="selected">Selected rules<a class="h-anchor" href="#selected" aria-label="Link to this section">#</a></h2>
+<p>For a rule that fired, the requirement lists the conditions that made it fire, each of them true. A <code>between</code> is reported as its two halves:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">review = explanation.for_rule(&quot;review&quot;)
+print(review.status, [(str(c.node), c.values) for c in review.causes])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">selected [(&#x27;F.score &gt;= 600&#x27;, (((&#x27;score&#x27;,), 700),)), (&#x27;F.score &lt;= 700&#x27;, (((&#x27;score&#x27;,), 700),))]</pre>
+</div>
+
+<h2 id="counterfactuals">Counterfactuals and gaps<a class="h-anchor" href="#counterfactuals" aria-label="Link to this section">#</a></h2>
+<p>A counterfactual is given for a cause that did not hold and is not unknown, when the cause compares one field with one constant. It records the field's <code>path</code>, the comparison it needs (<code>op</code>), the <code>target</code> and the <code>gap</code>. The gap's type follows the values:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from datetime import date, datetime
+from decimal import Decimal
+from zoneinfo import ZoneInfo
+
+madrid = ZoneInfo(&quot;Europe/Madrid&quot;)
+gaps = RuleSet([
+    Rule(&quot;balance&quot;, F.balance &gt;= Decimal(&quot;1000.00&quot;)),
+    Rule(&quot;renewal&quot;, F.contract_end &lt;= date(2026, 12, 31)),
+    Rule(&quot;on_time&quot;, F.sent_at &lt;= datetime(2026, 10, 25, 1, 0, tzinfo=madrid)),
+    Rule(&quot;limit&quot;, F.amount &lt; 500),
+], hit_policy=&quot;rule_order&quot;)
+d = gaps.evaluate({&quot;balance&quot;: Decimal(&quot;950.50&quot;), &quot;contract_end&quot;: date(2027, 1, 15),
+                   &quot;sent_at&quot;: datetime(2026, 10, 25, 4, 0, tzinfo=madrid), &quot;amount&quot;: 500})
+for entry in d.explain().rules:
+    print(f&quot;{entry.rule:&lt;8} {entry.causes[0].counterfactual.gap!r}&quot;)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">balance  Decimal(&#x27;49.50&#x27;)
+renewal  datetime.timedelta(days=15)
+on_time  datetime.timedelta(seconds=14400)
+limit    0</pre>
+</div>
+<ul>
+  <li><strong>Numbers</strong>: the exact difference. Two decimals give a <code>Decimal</code> with the larger scale (<code>49.50</code>); a decimal and a float give no gap, since the difference would not be exact.</li>
+  <li><strong>Dates</strong>: a <code>timedelta</code> of whole days.</li>
+  <li><strong>Datetimes</strong>: a <code>timedelta</code>. Aware datetimes subtract instants, so the gap above is 4 hours across the night when clocks went back in Madrid (01:00 to 04:00 on 25 October 2026), not 3.</li>
+  <li><strong>At the limit</strong>: a gap of <code>0</code> means a strict comparison failed exactly at its bound (<code>500 &lt; 500</code>).</li>
+  <li><code>==</code> and <code>!=</code> have no distance: a counterfactual without a gap is given only for a negated cause.</li>
+</ul>
+<p>The <a href="../examples/eligibility.html">eligibility example</a> uses day and hour gaps to tell an applicant exactly what is missing.</p>
+
+<h2 id="achievable">When a rule cannot fire<a class="h-anchor" href="#achievable" aria-label="Link to this section">#</a></h2>
+<p>Each way to make a rule fire is checked against the decision before it is listed. When the conditions conflict, the explanation says so with <code>achievable=False</code>:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">odd = RuleSet([Rule(&quot;never&quot;, (F.x &gt; 1) &amp; ~(F.x &gt; 1))])
+never = odd.evaluate({&quot;x&quot;: 8}).why_not(&quot;never&quot;)
+print(never.status, never.achievable)
+for cause in never.causes:
+    print(&quot; &quot;, cause.node, cause.truth, &quot;negated&quot; if cause.negated else &quot;&quot;, cause.counterfactual)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">not_fired False
+  F.x &gt; 1 true negated Counterfactual(path=(&#x27;x&#x27;,), op=&#x27;le&#x27;, target=1, gap=7)</pre>
+</div>
+
+<h2 id="notes">Notes<a class="h-anchor" href="#notes" aria-label="Link to this section">#</a></h2>
+<p>Rules that fired but lost carry a note with the winner and, under <code>priority</code>, both priorities:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import Note
+
+tiers = RuleSet([
+    Rule(&quot;loyal&quot;, F.years &gt; 2, {&quot;pct&quot;: 10}, priority=5),
+    Rule(&quot;vip&quot;, F.years &gt; 5, {&quot;pct&quot;: 15}, priority=10),
+    Rule(&quot;partner&quot;, F.years &gt; 5, {&quot;pct&quot;: 15}, priority=10),
+], hit_policy=&quot;priority&quot;)
+for entry in tiers.evaluate({&quot;years&quot;: 7}).explain().rules:
+    print(entry.rule, entry.status, entry.note)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">loyal fired Note(kind=&#x27;lower_priority&#x27;, winner=&#x27;vip&#x27;, priority=5, winner_priority=10)
+vip selected None
+partner fired Note(kind=&#x27;same_priority&#x27;, winner=&#x27;vip&#x27;, priority=10, winner_priority=10)</pre>
+</div>
+
+<h2 id="unknown">Unknown rules<a class="h-anchor" href="#unknown" aria-label="Link to this section">#</a></h2>
+<p>For an unknown rule, the causes that are unknown carry their reasons. Here the score is missing: <code>fast_track</code> is unknown, because income alone did not decide it, while <code>eligible</code> is decided without the score.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">d = rules.evaluate({&quot;income&quot;: 80_000.0, &quot;country&quot;: &quot;ES&quot;, &quot;age&quot;: 30})
+for entry in d.explain().rules:
+    reasons = [c.reason.code for c in entry.causes if c.reason]
+    print(entry.rule, entry.status, reasons)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">fast_track unknown [&#x27;missing_field&#x27;]
+eligible selected []
+review unknown [&#x27;missing_field&#x27;, &#x27;missing_field&#x27;]</pre>
+</div>
+
+<h2 id="json">The JSON form<a class="h-anchor" href="#json" aria-label="Link to this section">#</a></h2>
+<p><code>Explanation.to_dict()</code> returns the explanation document of the JSON format. Groups are written as <code>{"all": [...]}</code> or <code>{"any": [...]}</code>, and each cause has an <code>at</code> pointer into the decision document, so a viewer can highlight the exact node:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">doc = decision.explain().to_dict()
+entry = doc[&quot;explanation&quot;][&quot;rules&quot;][0]
+print(entry[&quot;status&quot;], list(entry[&quot;requirement&quot;]))
+first = entry[&quot;requirement&quot;][&quot;any&quot;][0]
+print(first[&quot;at&quot;], first[&quot;counterfactual&quot;])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">not_fired [&#x27;any&#x27;]
+/decision/results/0/when/children/0 {&#x27;path&#x27;: [&#x27;score&#x27;], &#x27;op&#x27;: &#x27;ge&#x27;, &#x27;target&#x27;: 750, &#x27;gap&#x27;: 50}</pre>
+</div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">decision_doc = decision.to_dict()
+node = decision_doc
+for part in first[&quot;at&quot;].strip(&quot;/&quot;).split(&quot;/&quot;):
+    node = node[int(part)] if isinstance(node, list) else node[part]
+print(node[&quot;op&quot;], node[&quot;truth&quot;])</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">ge False</pre>
+</div>
+<p>Every worked example shows its explanation in this form, written by the core, next to the Python objects. The <a href="../guide.html#explanations">concepts guide</a> covers how requirements are built and simplified, as the specification defines it.</p>
+
+<h2 id="text">A text rendering<a class="h-anchor" href="#text" aria-label="Link to this section">#</a></h2>
+<p>The specification also defines a text rendering of explanations ("<code>[ ] vip (not fired) … short by 2</code>"), generated by the core so it reads the same in every language. It arrives with the text DSL (task D.2); until then, read the objects as above.</p>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="evaluating.html"><small>← Previous</small>Evaluating data</a><a class="next" href="summaries.html"><small>Next →</small>Summaries</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#structure">The structure</a></li><li><a href="#any">&quot;Any of these&quot;: one change is enough</a></li><li><a href="#negated">Negated conditions</a></li><li><a href="#selected">Selected rules</a></li><li><a href="#counterfactuals">Counterfactuals and gaps</a></li><li><a href="#achievable">When a rule cannot fire</a></li><li><a href="#notes">Notes</a></li><li><a href="#unknown">Unknown rules</a></li><li><a href="#json">The JSON form</a></li><li><a href="#text">A text rendering</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad faculty page</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a>, <a href="https://www.cunef.edu/en/faculty-and-research/salmeron-silvera-jose-luis/" rel="noopener">CUNEF Universidad</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>
