@@ -1,4 +1,4 @@
-// cleanrules site: theme toggle, tabs, copy button and reveal-on-scroll.
+// cleanrules site: theme toggle, mobile menu, tabs, copy button and reveal-on-scroll.
 (() => {
   const root = document.documentElement;
   root.classList.add("js");
@@ -13,7 +13,24 @@
     try { localStorage.setItem("theme", next); } catch (e) { /* storage unavailable */ }
   });
 
-  // Accessible tab lists: arrow keys move between tabs.
+  // Mobile menu: a button shows and hides the page links on narrow screens.
+  const menu = document.getElementById("nav-menu");
+  const links = document.getElementById("nav-links");
+  if (menu && links) {
+    const setOpen = (open) => {
+      links.classList.toggle("open", open);
+      menu.setAttribute("aria-expanded", String(open));
+      menu.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    };
+    menu.addEventListener("click", () => setOpen(!links.classList.contains("open")));
+    links.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && links.classList.contains("open")) { setOpen(false); menu.focus(); }
+    });
+    window.matchMedia("(min-width: 961px)").addEventListener("change", (e) => { if (e.matches) setOpen(false); });
+  }
+
+  // Accessible tab lists: arrow keys, Home and End move between tabs.
   function setupTabs(list, onSelect) {
     const tabs = [...list.querySelectorAll('[role="tab"]')];
     const select = (tab) => {
@@ -27,10 +44,14 @@
     tabs.forEach((tab, i) => {
       tab.addEventListener("click", () => select(tab));
       tab.addEventListener("keydown", (e) => {
-        const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-        if (!step) return;
+        let j = null;
+        if (e.key === "ArrowRight") j = (i + 1) % tabs.length;
+        else if (e.key === "ArrowLeft") j = (i - 1 + tabs.length) % tabs.length;
+        else if (e.key === "Home") j = 0;
+        else if (e.key === "End") j = tabs.length - 1;
+        if (j === null) return;
         e.preventDefault();
-        const next = tabs[(i + step + tabs.length) % tabs.length];
+        const next = tabs[j];
         next.focus();
         select(next);
       });
@@ -58,6 +79,15 @@
       });
     });
   }
+
+  // Generic tab groups: each tab names its panel with aria-controls.
+  document.querySelectorAll("[data-tabgroup]").forEach((list) => {
+    const panels = [...list.querySelectorAll('[role="tab"]')].map((t) => document.getElementById(t.getAttribute("aria-controls")));
+    setupTabs(list, (tab) => {
+      const id = tab.getAttribute("aria-controls");
+      panels.forEach((panel) => { if (panel) panel.hidden = panel.id !== id; });
+    });
+  });
 
   // Copy buttons.
   document.querySelectorAll(".copy[data-copy]").forEach((btn) => {

@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI agents (planned) — cleanrules</title>
+  <meta name="description" content="Planned integration of cleanrules with AI agents: an MCP server, guardrails that allow, deny or ask on tool calls, framework adapters, and rules proposed by language models that are validated, audited, tested and approved.">
+  <meta name="theme-color" content="#0b0f14">
+  <link rel="canonical" href="https://cleanrules.github.io/agents.html">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="cleanrules for AI agents (planned)">
+  <meta property="og:description" content="Deterministic, explained decisions for agents: MCP server, guardrails, adapters, verified LLM-proposed rules.">
+  <meta property="og:url" content="https://cleanrules.github.io/agents.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" aria-label="cleanrules home">
+        <img src="assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="index.html">Overview</a>
+        <a href="guide.html">Guide</a>
+        <a href="format.html">Format</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="agents.html" aria-current="page">Agents</a>
+        <a href="compare.html">Compare</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" id="top">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="status-pill"><span class="dot"></span> Planned · phase O of the roadmap</p>
+        <h1>Deterministic decisions for agents <span class="grad">that are not</span>.</h1>
+        <p class="lead">Agents built on language models are flexible and unpredictable. Some decisions should be neither: whether a payment needs approval, whether a command may run, whether a customer qualifies. cleanrules plans to give agents those decisions as a tool, a guardrail and a verified target for the rules they propose, with an explanation that tells the model what would change the outcome.</p>
+        <div class="callout planned">
+          <p><strong>Everything on this page is planned</strong> (phase O, after the rules-as-data phase D). Snippets marked <em>design preview</em> show intent, not an API. The one thing that already works is the engine underneath: the guardrail rule set and its decisions in the <a href="#today">example below</a> are real output of the Rust core today.</p>
+        </div>
+        <nav aria-label="On this page">
+          <ul class="toc">
+            <li><a href="#principle">Principle</a></li>
+            <li><a href="#mcp">MCP server</a></li>
+            <li><a href="#guardrails">Guardrails</a></li>
+            <li><a href="#today">Works today</a></li>
+            <li><a href="#authoring">Rules from LLMs</a></li>
+            <li><a href="#adapters">Adapters</a></li>
+            <li><a href="#security">Security model</a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Principle -->
+    <section class="section" id="principle">
+      <div class="wrap">
+        <p class="eyebrow">Principle</p>
+        <h2>The AI uses the engine. It is never part of it.</h2>
+        <div class="split even">
+          <div class="prose">
+            <p>Neither the core nor any binding will ever call a language model. Agents reach cleanrules from the outside, through an MCP server and thin adapters for their frameworks. This is a design decision of the project (D13), and it keeps three properties that agents themselves cannot offer:</p>
+            <ul>
+              <li><strong>Determinism.</strong> The same rule set and input give the same decision, the same firing order and the same explanation, in every language and on every run.</li>
+              <li><strong>Explanations a model can act on.</strong> Not only “denied”, but which conditions held, which failed, and counterfactuals such as “needs <code>context.hour &gt;= 20</code>”.</li>
+              <li><strong>Audit.</strong> Each decision is a JSON document that can be stored, read back with its rule set and verified to be one the engine could have produced.</li>
+            </ul>
+            <p>It also keeps the core's dependencies minimal: no model SDKs, no network.</p>
+          </div>
+          <div class="cards" style="margin-top: 0; grid-template-columns: 1fr;">
+            <article class="card"><h3>A tool for agents</h3><p>Evaluate, explain and summarise rule sets from any MCP client, read-only.</p></article>
+            <article class="card"><h3>A guardrail on tool calls</h3><p>A rule set decides <em>allow</em>, <em>deny</em> or <em>ask</em> before the agent acts, and says why.</p></article>
+            <article class="card"><h3>A verified target for LLM-written rules</h3><p>Rules are data. A proposed rule is validated, audited, tested and approved by a person before use.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MCP -->
+    <section class="section alt" id="mcp">
+      <div class="wrap">
+        <p class="eyebrow">MCP server · planned (tasks O.1–O.2)</p>
+        <h2><code>cleanrules-mcp</code>: rule sets as tools.</h2>
+        <p class="sub">A binary in <code>crates/mcp</code> that serves the rule sets of a configured directory to any MCP client: Claude, the OpenAI Agents SDK, LangGraph and others. The Rust MCP SDK is still to be confirmed (the official <code>rmcp</code> is proposed).</p>
+        <div class="split">
+          <div>
+            <div class="table-wrap" style="margin-top: 0;">
+              <table class="data">
+                <caption>Planned tools (task O.1)</caption>
+                <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+                <tbody>
+                  <tr><td><code>list_rulesets</code></td><td>the rule sets the server offers</td></tr>
+                  <tr><td><code>evaluate</code></td><td>a decision for one input</td></tr>
+                  <tr><td><code>explain</code></td><td>the decision's explanation, in a compact form sized for a model's context</td></tr>
+                  <tr><td><code>summary</code></td><td>what a rule set reads and outputs, without evaluating it</td></tr>
+                  <tr><td><code>validate</code></td><td>check a rule or rule set document, with errors a model can correct</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="caption">Input and output JSON Schemas derive from format v1, and each rule set's input schema is generated from its <code>summary()</code>: the fields it reads and their types. The rule sets are also offered as MCP resources.</p>
+          </div>
+          <div class="prose">
+            <ul>
+              <li><strong>Transports:</strong> stdio and streamable HTTP.</li>
+              <li><strong>Read-only by default.</strong> The server never runs actions; it evaluates and explains.</li>
+              <li><strong>Bounded.</strong> Limits on document size and on time, on top of the format's own limits.</li>
+              <li><strong>Errors a model can correct:</strong> every error carries a stable code, a JSON Pointer to the offending value, a message and a hint, as the core already produces (see the <a href="format.html#errors">format page</a>).</li>
+              <li><strong>Tested against the core:</strong> each tool's output must match the core's.</li>
+            </ul>
+            <div class="window">
+              <div class="window-bar"><i></i><i></i><i></i><span>tools/call</span><span class="src dp">design preview</span></div>
+<pre class="code"><code class="language-json">// Tool and argument names are not specified yet (task O.1).
+{
+  "name": "evaluate",
+  "arguments": {
+    "ruleset": "agent-guardrail",
+    "input": {
+      "tool": {"name": "pay_invoice", "args": {"amount": {"$decimal": "1250.00"}}},
+      "context": {"hour": 14}
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Guardrails -->
+    <section class="section" id="guardrails">
+      <div class="wrap">
+        <p class="eyebrow">Guardrails · planned (task O.3)</p>
+        <h2>Allow, deny or ask, before the agent acts.</h2>
+        <p class="sub">A rule set receives a tool call (its name, arguments and context) or a model output, and decides. The verdict and its explanation go back to the model; the decision document goes to the audit log.</p>
+        <div class="arch flow">
+          <svg class="flow-svg" viewBox="0 0 760 340" role="img" aria-labelledby="flow-title flow-desc">
+            <title id="flow-title">Planned guardrail flow</title>
+            <desc id="flow-desc">An AI agent proposes a tool call. A guardrail hook in its framework sends the call to the cleanrules core, which evaluates a rule set and returns a decision: allow, so the tool runs; ask, so a person approves; or deny, so the tool does not run. The explanation and counterfactuals return to the model, and every decision is stored as a document that can be read back and verified.</desc>
+            <defs>
+              <linearGradient id="flow-g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#06b6d4"/>
+              </linearGradient>
+              <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path class="arrow" d="M0 0 L10 5 L0 10 z"/>
+              </marker>
+            </defs>
+            <g class="arch-lines">
+              <path d="M186 80 L246 80" marker-end="url(#arrowhead)"/>
+              <path d="M460 80 L524 80" marker-end="url(#arrowhead)"/>
+              <path d="M637 114 C637 150 135 150 135 186" marker-end="url(#arrowhead)"/>
+              <path d="M637 114 C637 150 385 150 385 186" marker-end="url(#arrowhead)"/>
+              <path d="M637 114 L637 186" marker-end="url(#arrowhead)"/>
+            </g>
+            <g class="arch-lines dashed">
+              <path d="M600 46 C600 8 101 8 101 50" marker-end="url(#arrowhead)"/>
+              <path d="M135 244 L135 282"/>
+              <path d="M385 244 L385 282"/>
+              <path d="M637 244 L637 282"/>
+            </g>
+            <text class="lbl" x="350" y="40">explanation and counterfactuals return to the model</text>
+            <g class="arch-node">
+              <rect x="16" y="52" width="170" height="56" rx="12"/><text x="101" y="76">AI agent</text><text class="s" x="101" y="94">proposes a tool call</text>
+              <rect x="250" y="52" width="210" height="56" rx="12"/><text x="355" y="76">Guardrail hook</text><text class="s" x="355" y="94">PreToolUse · guardrail · node</text>
+            </g>
+            <rect x="528" y="46" width="218" height="68" rx="14" fill="url(#flow-g)"/>
+            <text class="core-t" x="637" y="75">cleanrules core</text>
+            <text class="core-s" x="637" y="95">rule set → decision + explain</text>
+            <g class="arch-node">
+              <rect class="v-allow" x="40" y="190" width="190" height="54" rx="12"/><text x="135" y="213">allow</text><text class="s" x="135" y="231">the tool runs</text>
+              <rect class="v-ask" x="290" y="190" width="190" height="54" rx="12"/><text x="385" y="213">ask</text><text class="s" x="385" y="231">a person approves</text>
+              <rect class="v-deny" x="542" y="190" width="190" height="54" rx="12"/><text x="637" y="213">deny</text><text class="s" x="637" y="231">the tool does not run</text>
+            </g>
+            <rect class="conf" x="40" y="284" width="692" height="34" rx="9"/>
+            <text class="conf-t" x="386" y="305">audit log: each decision is a document, read back and verified with its rule set</text>
+          </svg>
+        </div>
+        <div class="split even">
+          <div class="prose">
+            <h3>Planned integrations</h3>
+            <ul>
+              <li><strong>Claude Agent SDK:</strong> its hooks, such as <code>PreToolUse</code>.</li>
+              <li><strong>OpenAI Agents SDK:</strong> its guardrails.</li>
+              <li><strong>LangGraph:</strong> its nodes and interrupts.</li>
+            </ul>
+          </div>
+          <div class="prose">
+            <h3>Why a decision document</h3>
+            <p>The decision records every rule's result tree and the values read. Reading it back with its rule set runs eight checks, from the policy to every truth value, so a stored record that was altered, or that comes from a different rule set, is rejected with a pointer to the first mismatch. The core does this today (<a href="format.html#decisions">see the format page</a>).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Works today -->
+    <section class="section alt" id="today">
+      <div class="wrap">
+        <p class="eyebrow">Works today</p>
+        <h2>The guardrail itself is just a rule set.</h2>
+        <p class="sub">The integration is planned; the decision logic is not waiting for it. The rule set below is a valid format v1 document, and the three scenarios are real decisions and explanations produced by the Rust core now. Note how the explanation for the payment tells the model that <code>deny_outside_hours</code> would need <code>context.hour &lt; 8</code> or <code>&gt;= 20</code>.</p>
+        <div class="split">
+          <div class="window scroll">
+            <div class="window-bar"><i></i><i></i><i></i><span>agent-guardrail.ruleset.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;description&quot;: &quot;Never let the agent delete recursively&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;eq&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;bash&quot;}
+            },
+            {
+              &quot;op&quot;: &quot;matches&quot;,
+              &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]},
+              &quot;pattern&quot;: &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;deny&quot;}},
+        &quot;priority&quot;: 100,
+        &quot;tags&quot;: [&quot;safety&quot;]
+      },
+      {
+        &quot;name&quot;: &quot;ask_large_payment&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;eq&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;pay_invoice&quot;}
+            },
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;}}
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;ask&quot;}},
+        &quot;priority&quot;: 50,
+        &quot;tags&quot;: [&quot;money&quot;]
+      },
+      {
+        &quot;name&quot;: &quot;deny_outside_hours&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;in&quot;,
+              &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+              &quot;values&quot;: [&quot;deploy&quot;, &quot;pay_invoice&quot;]
+            },
+            {
+              &quot;op&quot;: &quot;not&quot;,
+              &quot;operand&quot;: {
+                &quot;op&quot;: &quot;between&quot;,
+                &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 8},
+                &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20},
+                &quot;closed&quot;: &quot;left&quot;
+              }
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;deny&quot;}},
+        &quot;priority&quot;: 80
+      },
+      {
+        &quot;name&quot;: &quot;allow&quot;,
+        &quot;when&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+        &quot;then&quot;: {&quot;verdict&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;allow&quot;}}
+      }
+    ]
+  }
+}</code></pre>
+          </div>
+          <div class="window scroll">
+            <div class="window-bar"><i></i><i></i><i></i><span>summary.json · what the guardrail reads</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;summary&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;priority&quot;: 100,
+        &quot;outputs&quot;: [&quot;verdict&quot;]
+      },
+      {&quot;name&quot;: &quot;ask_large_payment&quot;, &quot;priority&quot;: 50, &quot;outputs&quot;: [&quot;verdict&quot;]},
+      {&quot;name&quot;: &quot;deny_outside_hours&quot;, &quot;priority&quot;: 80, &quot;outputs&quot;: [&quot;verdict&quot;]},
+      {&quot;name&quot;: &quot;allow&quot;, &quot;priority&quot;: 0, &quot;outputs&quot;: [&quot;verdict&quot;]}
+    ],
+    &quot;fields&quot;: [
+      {
+        &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;],
+        &quot;conditions&quot;: [&quot;deny_destructive_shell&quot;, &quot;ask_large_payment&quot;, &quot;deny_outside_hours&quot;],
+        &quot;payloads&quot;: []
+      },
+      {
+        &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;],
+        &quot;conditions&quot;: [&quot;deny_destructive_shell&quot;],
+        &quot;payloads&quot;: []
+      },
+      {
+        &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;],
+        &quot;conditions&quot;: [&quot;ask_large_payment&quot;],
+        &quot;payloads&quot;: []
+      },
+      {
+        &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;],
+        &quot;conditions&quot;: [&quot;deny_outside_hours&quot;],
+        &quot;payloads&quot;: []
+      }
+    ],
+    &quot;outputs&quot;: [&quot;verdict&quot;],
+    &quot;tags&quot;: [
+      {&quot;tag&quot;: &quot;money&quot;, &quot;rules&quot;: [&quot;ask_large_payment&quot;]},
+      {&quot;tag&quot;: &quot;safety&quot;, &quot;rules&quot;: [&quot;deny_destructive_shell&quot;]}
+    ]
+  }
+}</code></pre>
+          </div>
+        </div>
+        <div class="block">
+          <div class="tabs" role="tablist" aria-label="Guardrail scenarios" data-tabgroup>
+<button role="tab" id="tab-g-pay" aria-controls="g-pay" aria-selected="true" tabindex="0">pay_invoice 1250.00 → ask</button>
+<button role="tab" id="tab-g-small" aria-controls="g-small" aria-selected="false" tabindex="-1">pay_invoice 120.00 → allow</button>
+<button role="tab" id="tab-g-rm" aria-controls="g-rm" aria-selected="false" tabindex="-1">bash rm -rf → deny</button>
+          </div>
+<div role="tabpanel" id="g-pay" aria-labelledby="tab-g-pay">
+<div class="split even">
+<div class="stack">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input</span></div><pre class="code"><code class="language-json">{
+  &quot;tool&quot;: {
+    &quot;name&quot;: &quot;pay_invoice&quot;,
+    &quot;args&quot;: {&quot;invoice&quot;: &quot;F-2026-118&quot;, &quot;amount&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}}
+  },
+  &quot;context&quot;: {&quot;hour&quot;: 14}
+}</code></pre></div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.output · selected [&quot;ask_large_payment&quot;]</span><span class="src">Rust core output</span></div><pre class="code"><code class="language-json">{&quot;verdict&quot;: &quot;ask&quot;}</code></pre></div>
+</div>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">Rust core output</span></div><pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;ask_large_payment&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;eq&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;bash&quot;}
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+              &quot;truth&quot;: false,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;pay_invoice&quot;}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;matches&quot;,
+                &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]},
+                &quot;pattern&quot;: &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/1&quot;,
+              &quot;truth&quot;: null,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [],
+              &quot;reason&quot;: {
+                &quot;code&quot;: &quot;missing_field&quot;,
+                &quot;paths&quot;: [[&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]]
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;ask_large_payment&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;eq&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;pay_invoice&quot;}
+              },
+              &quot;at&quot;: &quot;/decision/results/1/when/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;pay_invoice&quot;}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;gt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;}}
+              },
+              &quot;at&quot;: &quot;/decision/results/1/when/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [
+                {
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;],
+                  &quot;value&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;deny_outside_hours&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;any&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 8}
+              },
+              &quot;at&quot;: &quot;/decision/results/2/when/children/1/children/0/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: true,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;value&quot;: 14}],
+              &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;op&quot;: &quot;lt&quot;, &quot;target&quot;: 8, &quot;gap&quot;: 6}
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;lt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20}
+              },
+              &quot;at&quot;: &quot;/decision/results/2/when/children/1/children/0/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: true,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;value&quot;: 14}],
+              &quot;counterfactual&quot;: {
+                &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;],
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;target&quot;: 20,
+                &quot;gap&quot;: 6
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;allow&quot;,
+        &quot;status&quot;: &quot;fired&quot;,
+        &quot;note&quot;: {
+          &quot;kind&quot;: &quot;lower_priority&quot;,
+          &quot;winner&quot;: &quot;ask_large_payment&quot;,
+          &quot;priority&quot;: 0,
+          &quot;winner_priority&quot;: 50
+        },
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+          &quot;at&quot;: &quot;/decision/results/3/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: []
+        }
+      }
+    ]
+  }
+}</code></pre></div>
+</div>
+</div>
+<div role="tabpanel" id="g-small" aria-labelledby="tab-g-small" hidden>
+<div class="split even">
+<div class="stack">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input</span></div><pre class="code"><code class="language-json">{
+  &quot;tool&quot;: {
+    &quot;name&quot;: &quot;pay_invoice&quot;,
+    &quot;args&quot;: {&quot;invoice&quot;: &quot;F-2026-119&quot;, &quot;amount&quot;: {&quot;$decimal&quot;: &quot;120.00&quot;}}
+  },
+  &quot;context&quot;: {&quot;hour&quot;: 14}
+}</code></pre></div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.output · selected [&quot;allow&quot;]</span><span class="src">Rust core output</span></div><pre class="code"><code class="language-json">{&quot;verdict&quot;: &quot;allow&quot;}</code></pre></div>
+</div>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">Rust core output</span></div><pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;allow&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;eq&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;bash&quot;}
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+              &quot;truth&quot;: false,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;pay_invoice&quot;}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;matches&quot;,
+                &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]},
+                &quot;pattern&quot;: &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/1&quot;,
+              &quot;truth&quot;: null,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [],
+              &quot;reason&quot;: {
+                &quot;code&quot;: &quot;missing_field&quot;,
+                &quot;paths&quot;: [[&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]]
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;ask_large_payment&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;}}
+          },
+          &quot;at&quot;: &quot;/decision/results/1/when/children/1&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [
+            {
+              &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;],
+              &quot;value&quot;: {&quot;$decimal&quot;: &quot;120.00&quot;}
+            }
+          ],
+          &quot;counterfactual&quot;: {
+            &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;],
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;target&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;},
+            &quot;gap&quot;: {&quot;$decimal&quot;: &quot;380.00&quot;}
+          }
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;deny_outside_hours&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;any&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 8}
+              },
+              &quot;at&quot;: &quot;/decision/results/2/when/children/1/children/0/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: true,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;value&quot;: 14}],
+              &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;op&quot;: &quot;lt&quot;, &quot;target&quot;: 8, &quot;gap&quot;: 6}
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;lt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 20}
+              },
+              &quot;at&quot;: &quot;/decision/results/2/when/children/1/children/0/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: true,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;], &quot;value&quot;: 14}],
+              &quot;counterfactual&quot;: {
+                &quot;path&quot;: [&quot;context&quot;, &quot;hour&quot;],
+                &quot;op&quot;: &quot;ge&quot;,
+                &quot;target&quot;: 20,
+                &quot;gap&quot;: 6
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;allow&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+          &quot;at&quot;: &quot;/decision/results/3/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: []
+        }
+      }
+    ]
+  }
+}</code></pre></div>
+</div>
+</div>
+<div role="tabpanel" id="g-rm" aria-labelledby="tab-g-rm" hidden>
+<div class="split even">
+<div class="stack">
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>input</span></div><pre class="code"><code class="language-json">{
+  &quot;tool&quot;: {&quot;name&quot;: &quot;bash&quot;, &quot;args&quot;: {&quot;command&quot;: &quot;rm -rf ./build&quot;}},
+  &quot;context&quot;: {&quot;hour&quot;: 23}
+}</code></pre></div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>decision.output · selected [&quot;deny_destructive_shell&quot;]</span><span class="src">Rust core output</span></div><pre class="code"><code class="language-json">{&quot;verdict&quot;: &quot;deny&quot;}</code></pre></div>
+</div>
+<div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">Rust core output</span></div><pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;deny_destructive_shell&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;deny_destructive_shell&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;eq&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;bash&quot;}
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;bash&quot;}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;matches&quot;,
+                &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;]},
+                &quot;pattern&quot;: &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/1&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [
+                {
+                  &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;command&quot;],
+                  &quot;value&quot;: &quot;rm -rf ./build&quot;
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;ask_large_payment&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;eq&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;pay_invoice&quot;}
+              },
+              &quot;at&quot;: &quot;/decision/results/1/when/children/0&quot;,
+              &quot;truth&quot;: false,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;bash&quot;}]
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;gt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;500.00&quot;}}
+              },
+              &quot;at&quot;: &quot;/decision/results/1/when/children/1&quot;,
+              &quot;truth&quot;: null,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [],
+              &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;tool&quot;, &quot;args&quot;, &quot;amount&quot;]]}
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;deny_outside_hours&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;in&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;]},
+            &quot;values&quot;: [&quot;deploy&quot;, &quot;pay_invoice&quot;]
+          },
+          &quot;at&quot;: &quot;/decision/results/2/when/children/0&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;tool&quot;, &quot;name&quot;], &quot;value&quot;: &quot;bash&quot;}]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;allow&quot;,
+        &quot;status&quot;: &quot;fired&quot;,
+        &quot;note&quot;: {
+          &quot;kind&quot;: &quot;lower_priority&quot;,
+          &quot;winner&quot;: &quot;deny_destructive_shell&quot;,
+          &quot;priority&quot;: 0,
+          &quot;winner_priority&quot;: 100
+        },
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true},
+          &quot;at&quot;: &quot;/decision/results/3/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: []
+        }
+      }
+    ]
+  }
+}</code></pre></div>
+</div>
+</div>
+        </div>
+        <p class="caption">Under <code>priority</code>, the catch-all <code>allow</code> fires on every call but only wins when nothing with a higher priority fires; its note says so. Unknown conditions (an <code>amount</code> missing from a <code>bash</code> call) never fire a rule.</p>
+      </div>
+    </section>
+
+    <!-- Authoring -->
+    <section class="section" id="authoring">
+      <div class="wrap">
+        <p class="eyebrow">Rules written by agents · planned (task O.5)</p>
+        <h2>A model may propose a rule. It never runs one unchecked.</h2>
+        <p class="sub">Because conditions are data, a rule proposed by a model is a JSON document, never code: there is no <code>eval</code> anywhere in cleanrules. Before it decides anything, it goes through a loop, offered as MCP tools and as an API.</p>
+        <ol class="loop">
+          <li><h3>Propose</h3><p>The model writes a rule or rule set as a format v1 document, from a policy in natural language.</p></li>
+          <li><h3>Validate</h3><p>Shape and construction rules, with errors that carry a pointer, a message and a hint the model can correct.</p></li>
+          <li><h3>Audit</h3><p>Static audit (task J.4): unsatisfiable conditions, shadowed rules, overlaps, contradictions and gaps.</p></li>
+          <li><h3>Test</h3><p>Run the rules against cases with known expected decisions.</p></li>
+          <li class="human"><h3>Approve</h3><p>A person approves the rule before it is used.</p></li>
+          <li><h3>Deploy</h3><p>Only then is the rule set loaded where agents and services use it.</p></li>
+        </ol>
+        <p class="caption">The roadmap also plans an evaluation set (natural-language policies to rules) with metrics of validity and of accuracy on held-out cases. Later, after the expert system (phase K), agents can feed facts from their tools into forward chaining, with the derivation tree as the explanation (task O.6).</p>
+      </div>
+    </section>
+
+    <!-- Adapters -->
+    <section class="section alt" id="adapters">
+      <div class="wrap">
+        <p class="eyebrow">Adapters · planned (task O.4)</p>
+        <h2>Thin and optional, one per framework.</h2>
+        <p class="sub">Each adapter turns a rule set into a tool of its framework. Adapters are optional extras loaded lazily, tested against pinned versions of each framework, and contain no decision logic. MCP stays the stable base for everything else.</p>
+        <div class="lang-grid">
+          <div class="lang"><span class="lang-name">Python</span><span class="chip planned">planned</span><code>Claude Agent SDK · OpenAI Agents SDK · LangChain / LangGraph · LlamaIndex · Pydantic AI · CrewAI</code></div>
+          <div class="lang"><span class="lang-name">JavaScript / TS</span><span class="chip planned">planned</span><code>Vercel AI SDK · LangChain.js · Mastra</code></div>
+          <div class="lang"><span class="lang-name">JVM</span><span class="chip planned">planned</span><code>LangChain4j · Spring AI</code></div>
+          <div class="lang"><span class="lang-name">Go</span><span class="chip planned">via MCP</span><code>any MCP client</code></div>
+          <div class="lang"><span class="lang-name">Erlang</span><span class="chip planned">via MCP</span><code>any MCP client</code></div>
+          <div class="lang"><span class="lang-name">Everything else</span><span class="chip planned">via MCP</span><code>cleanrules-mcp</code></div>
+        </div>
+        <p class="caption center">The framework list is a proposal still to be confirmed by the author.</p>
+      </div>
+    </section>
+
+    <!-- Security -->
+    <section class="section" id="security">
+      <div class="wrap">
+        <p class="eyebrow">Security model · planned (task O.7)</p>
+        <h2>Assume the data and the rules may be hostile.</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Threat</th><th>Mitigation</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Prompt injection through the data being evaluated</td><td>Data is never an instruction to the engine. The MCP server is read-only and never runs actions.</td><td>engine: today · server: planned</td></tr>
+              <tr><td>Untrusted rule sets</td><td>Rules are data, never code; no <code>eval</code>. Regular expressions run in linear time (no lookaround, no backreferences). Readers enforce size, nesting and depth limits. A rule can only read map keys and public data attributes, never private members, methods or modules.</td><td>core: today · bindings: specified</td></tr>
+              <tr><td>Incorrect or malicious rules proposed by a model</td><td>Validation, static audit, tests against cases and human approval before deployment.</td><td>planned</td></tr>
+              <tr><td>Resource abuse</td><td>Format limits (16 MiB, 1024 nesting, 256 node depth) plus size and time limits in the server.</td><td>format: today · server: planned</td></tr>
+              <tr><td>Altered or misattributed audit records</td><td>Decisions are read back with their rule set and verified node by node (<code>decision_mismatch</code>).</td><td>today</td></tr>
+              <tr><td>Personal data in audit logs</td><td>Decisions hold the values they read, so stored decisions must be protected like the input itself.</td><td>documented</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">The threat model and one guide per framework are part of task O.7. Planned integrations may change as agent frameworks evolve; MCP is the stable base.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+      <ul class="footer-links" aria-label="Site">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="format.html">Format</a></li>
+        <li><a href="benchmarks.html">Benchmarks</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+      </ul>
+      <p>MIT licensed · © 2026 Jose L. Salmeron · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>
+

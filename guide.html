@@ -1,0 +1,1300 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Concepts guide — cleanrules</title>
+  <meta name="description" content="How cleanrules works: conditions as data, three-valued Kleene logic, unknown values and their reasons, strict mode, rules and payloads, the six hit policies, explanations with counterfactuals, and summaries. Every example is real output of the Rust core.">
+  <meta name="theme-color" content="#0b0f14">
+  <link rel="canonical" href="https://cleanrules.github.io/guide.html">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="cleanrules concepts guide">
+  <meta property="og:description" content="Conditions as data, Kleene logic, hit policies and explanations, with real output of the Rust core.">
+  <meta property="og:url" content="https://cleanrules.github.io/guide.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" aria-label="cleanrules home">
+        <img src="assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="index.html">Overview</a>
+        <a href="guide.html" aria-current="page">Guide</a>
+        <a href="format.html">Format</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="agents.html">Agents</a>
+        <a href="compare.html">Compare</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" id="top">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="eyebrow">Concepts guide</p>
+        <h1>How cleanrules <span class="grad">decides</span> and <span class="grad">explains</span>.</h1>
+        <p class="lead">One engine, one set of semantics, written down in a <a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">specification</a> and enforced by 2,135 conformance vectors. This guide walks through it from the condition tree to the explanation, with a real example for every idea.</p>
+        <div class="callout real">
+          <p><strong>Every JSON output on this page is real output of the Rust core</strong>, produced by running the examples through <code>crates/core</code> and written with its own JSON writer. The two text renderings of <code>explain()</code> and <code>summary()</code> are output of the Python reference implementation, the predecessor whose semantics the core reproduces; the core's text form arrives with the text DSL (task D.2). Code in Python, TypeScript and the other languages is an API preview.</p>
+        </div>
+        <nav aria-label="On this page">
+          <ul class="toc">
+            <li><a href="#conditions">Conditions as data</a></li>
+            <li><a href="#nodes">Node catalogue</a></li>
+            <li><a href="#logic">Kleene logic</a></li>
+            <li><a href="#unknowns">Unknowns and reasons</a></li>
+            <li><a href="#strict">Strict mode</a></li>
+            <li><a href="#rules">Rules and payloads</a></li>
+            <li><a href="#policies">Hit policies</a></li>
+            <li><a href="#explanations">Explanations</a></li>
+            <li><a href="#counterfactuals">Counterfactuals</a></li>
+            <li><a href="#summaries">Summaries</a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Conditions as data -->
+    <section class="section" id="conditions">
+      <div class="wrap">
+        <p class="eyebrow">1 · Conditions as data</p>
+        <h2>A condition is a tree you can read, not a function you call.</h2>
+        <div class="split">
+          <div class="prose">
+            <p>In most rule libraries a condition is a lambda: the engine can run it, but cannot look inside. In cleanrules a condition is an immutable <strong>syntax tree</strong> of nodes with stable lowercase tags (<code>and</code>, <code>gt</code>, <code>field</code>…). Users build it idiomatically in each language, such as <code>(F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000)</code> in Python, and the tree is the same everywhere.</p>
+            <p>Because the engine can see the tree, it can:</p>
+            <ul>
+              <li><strong>explain</strong> which leaf made a rule fire or fail, and by how much;</li>
+              <li><strong>serialise</strong> it to a versioned JSON document that every language reads the same way;</li>
+              <li><strong>audit</strong> it statically, vectorise it over Arrow batches and compile it into a Rete network (all planned);</li>
+              <li><strong>cross language boundaries</strong> without callbacks: a rule written in Java is evaluated by the same core in Go.</li>
+            </ul>
+            <p>Trees are checked when they are built. Each node has a <strong>kind</strong>: a <code>condition</code> yields a truth value, a <code>value</code> yields a value, and <code>any</code> (fields and boolean constants) depends on the data. Comparing two conditions, using a number as a rule's condition or putting a null constant anywhere except under <code>is_null</code> is an <code>ExpressionError</code> at construction, never a surprise at evaluation time.</p>
+            <div class="table-wrap">
+              <table class="data">
+                <caption>Node kinds (<code>spec/ast.md</code>)</caption>
+                <thead><tr><th>Kind</th><th>Evaluates to</th><th>Operand of <code>and</code>/<code>or</code>/<code>not</code></th><th>Operand of comparisons</th></tr></thead>
+                <tbody>
+                  <tr><td><code>condition</code></td><td>a truth value</td><td class="yes">yes</td><td>no</td></tr>
+                  <tr><td><code>value</code></td><td>a value</td><td>no</td><td class="yes">yes</td></tr>
+                  <tr><td><code>any</code></td><td>fields and boolean constants</td><td class="yes">yes</td><td class="yes">yes</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="window">
+              <div class="window-bar"><i></i><i></i><i></i><span>vip.condition.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;condition&quot;: {
+    &quot;op&quot;: &quot;and&quot;,
+    &quot;operands&quot;: [
+      {
+        &quot;op&quot;: &quot;gt&quot;,
+        &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+        &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+      },
+      {
+        &quot;op&quot;: &quot;gt&quot;,
+        &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;]},
+        &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+            <div class="window scroll">
+              <div class="window-bar"><i></i><i></i><i></i><span>result tree · customer.years = 3, order.total = 1500</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;and&quot;,
+  &quot;truth&quot;: false,
+  &quot;children&quot;: [
+    {
+      &quot;op&quot;: &quot;gt&quot;,
+      &quot;truth&quot;: false,
+      &quot;children&quot;: [
+        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;value&quot;: 3},
+        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+      ]
+    },
+    {
+      &quot;op&quot;: &quot;gt&quot;,
+      &quot;truth&quot;: true,
+      &quot;children&quot;: [
+        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;], &quot;value&quot;: 1500},
+        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+      ]
+    }
+  ]
+}</code></pre>
+            </div>
+            <p class="caption">Evaluating a condition returns a <strong>result tree</strong>: every node with its <code>truth</code> or <code>value</code>, and the value each field read. Decisions keep these trees, which is what explanations are built from.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Node catalogue -->
+    <section class="section alt" id="nodes">
+      <div class="wrap">
+        <p class="eyebrow">2 · Node catalogue</p>
+        <h2>Every node, the same in every language.</h2>
+        <p class="sub">Each node is a JSON object with an <code>"op"</code> key and one key per field. A missing key, an unknown key or an unknown <code>op</code> is a format error; breaking a construction rule is an expression error (<a href="format.html#conditions">format</a>).</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Family</th><th>Tags</th><th>JSON keys</th><th>Kind</th><th>Semantics</th></tr></thead>
+            <tbody>
+              <tr><td>Field</td><td><code>field</code></td><td><code>path</code></td><td>any</td><td>Segments are non-empty strings (map keys) or integers ≥ 0 (list indices): <code>["items", 0, "price"]</code>. Anything else is missing.</td></tr>
+              <tr><td>Constant</td><td><code>const</code></td><td><code>value</code></td><td>any if boolean, else value</td><td>A scalar: null, boolean, int, float, decimal, string, date or datetime. NaN is rejected; null only under <code>is_null</code> or as a whole payload value.</td></tr>
+              <tr><td>Comparison</td><td><code>eq</code> <code>ne</code> <code>lt</code> <code>le</code> <code>gt</code> <code>ge</code></td><td><code>left</code>, <code>right</code></td><td>condition</td><td>Within one type group; ints, floats and decimals compare exactly by value. Ordering booleans is <code>unorderable</code>.</td></tr>
+              <tr><td>Connectives</td><td><code>and</code> <code>or</code></td><td><code>operands</code></td><td>condition</td><td>n-ary, at least two operands, flattened when built; operand order is kept because it orders explanations.</td></tr>
+              <tr><td></td><td><code>not</code></td><td><code>operand</code></td><td>condition</td><td>Kleene negation: <code>not unknown</code> is unknown.</td></tr>
+              <tr><td>Membership</td><td><code>in</code></td><td><code>operand</code>, <code>values</code></td><td>condition</td><td>Non-empty, non-null values from one type group, stored sorted and without duplicates, so <code>x in [2, 1]</code> is the same node as <code>x in [1, 2]</code>.</td></tr>
+              <tr><td>Range</td><td><code>between</code></td><td><code>operand</code>, <code>low</code>, <code>high</code>, <code>closed</code></td><td>condition</td><td><code>closed</code> is <code>both</code> (default), <code>left</code>, <code>right</code> or <code>none</code>. Bounds may be fields. Evaluated and explained as its two half comparisons.</td></tr>
+              <tr><td>Nulls</td><td><code>is_null</code></td><td><code>operand</code></td><td>condition</td><td>True for a missing field or a null; the only node that is never unknown.</td></tr>
+              <tr><td>Pattern</td><td><code>matches</code></td><td><code>operand</code>, <code>pattern</code></td><td>condition</td><td>Search semantics with the syntax of Rust's <code>regex</code> crate: no lookaround, no backreferences, linear time.</td></tr>
+              <tr><td>Text</td><td><code>starts_with</code> <code>ends_with</code> <code>contains</code></td><td><code>operand</code>, <code>text</code></td><td>condition</td><td>Literal text, never a pattern.</td></tr>
+              <tr><td>Arithmetic</td><td><code>add</code> <code>sub</code> <code>mul</code> <code>div</code></td><td><code>left</code>, <code>right</code></td><td>value</td><td>On numbers. <code>div</code> always returns a float; division by zero and 64-bit overflow give null; decimals become float64.</td></tr>
+              <tr><td></td><td><code>abs</code> <code>neg</code></td><td><code>operand</code></td><td>value</td><td>On numbers; a non-number gives null with <code>type_mismatch</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="split even">
+          <div class="stack">
+            <div class="window">
+              <div class="window-bar"><i></i><i></i><i></i><span>between, closed = "left"</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;condition&quot;: {
+    &quot;op&quot;: &quot;between&quot;,
+    &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;]},
+    &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18},
+    &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 65},
+    &quot;closed&quot;: &quot;left&quot;
+  }
+}</code></pre>
+            </div>
+            <p class="caption">A <code>between</code> is reported as its two halves, so an explanation can say which bound failed. With <code>age = 65</code> and <code>closed: "left"</code>, the lower half holds and the upper half <code>age &lt; 65</code> does not.</p>
+          </div>
+          <div class="window scroll">
+            <div class="window-bar"><i></i><i></i><i></i><span>result tree · age = 65</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;between&quot;,
+  &quot;truth&quot;: false,
+  &quot;children&quot;: [
+    {
+      &quot;op&quot;: &quot;ge&quot;,
+      &quot;truth&quot;: true,
+      &quot;children&quot;: [
+        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;], &quot;value&quot;: 65},
+        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+      ]
+    },
+    {
+      &quot;op&quot;: &quot;lt&quot;,
+      &quot;truth&quot;: false,
+      &quot;children&quot;: [
+        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;], &quot;value&quot;: 65},
+        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 65}
+      ]
+    }
+  ]
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kleene logic -->
+    <section class="section" id="logic">
+      <div class="wrap">
+        <p class="eyebrow">3 · Three-valued logic</p>
+        <h2>True, false and unknown: Kleene logic, as in SQL.</h2>
+        <div class="split">
+          <div class="prose">
+            <p>Crisp logic in cleanrules has three truth values. A missing field or a null makes a comparison <strong>unknown</strong>, and unknown propagates through the connectives with Kleene's tables, which are the same rules SQL uses for <code>NULL</code>. A rule <strong>fires only when its condition is true</strong>.</p>
+            <p>The tables are checked by 21 hand-picked conformance vectors (<code>ast/truth/*</code>), and the core's tests check them exhaustively over all 27 combinations, together with De Morgan, double negation, associativity and distributivity. Property tests check De Morgan and double negation again on randomly generated condition trees.</p>
+            <p>The evaluator never combines truth values with a language's <code>&amp;&amp;</code> or <code>||</code>: every connective goes through a <code>Logic</code> trait. Today that trait has one implementation, Kleene logic, registered as <code>"boolean"</code>. Fuzzy t-norms and s-norms from <a href="https://fuzzytool.github.io/" rel="noopener">fuzzytool</a> will plug into the same place (phase J).</p>
+            <div class="callout planned">
+              <p><strong>Proposed, pending confirmation (phase J):</strong> under a fuzzy logic, unknown becomes the interval <code>[0, 1]</code> and each connective is applied to the endpoints, which reduces exactly to Kleene's tables on <code>{0, 1}</code>.</p>
+            </div>
+          </div>
+          <div>
+            <div class="truth-grid">
+              <div class="truth-card">
+                <h3>a and b</h3>
+                <table class="truth" aria-label="Kleene and">
+                  <thead><tr><th scope="col"><span class="visually-hidden">a \ b</span></th><th scope="col">T</th><th scope="col">U</th><th scope="col">F</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">T</th><td class="T">T</td><td class="U">U</td><td class="F">F</td></tr>
+                    <tr><th scope="row">U</th><td class="U">U</td><td class="U">U</td><td class="F">F</td></tr>
+                    <tr><th scope="row">F</th><td class="F">F</td><td class="F">F</td><td class="F">F</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="truth-card">
+                <h3>a or b</h3>
+                <table class="truth" aria-label="Kleene or">
+                  <thead><tr><th scope="col"><span class="visually-hidden">a \ b</span></th><th scope="col">T</th><th scope="col">U</th><th scope="col">F</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">T</th><td class="T">T</td><td class="T">T</td><td class="T">T</td></tr>
+                    <tr><th scope="row">U</th><td class="T">T</td><td class="U">U</td><td class="U">U</td></tr>
+                    <tr><th scope="row">F</th><td class="T">T</td><td class="U">U</td><td class="F">F</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="truth-card">
+                <h3>not a</h3>
+                <table class="truth" aria-label="Kleene not">
+                  <thead><tr><th scope="col">a</th><th scope="col">not</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">T</th><td class="F">F</td></tr>
+                    <tr><th scope="row">U</th><td class="U">U</td></tr>
+                    <tr><th scope="row">F</th><td class="T">T</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <p class="caption center">Rows are <code>a</code>, columns are <code>b</code>. T = true, U = unknown, F = false.</p>
+            <div class="window" style="margin-top: 20px;">
+              <div class="window-bar"><i></i><i></i><i></i><span>is_null(score) or score &lt; 500 · input {}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;or&quot;,
+  &quot;truth&quot;: true,
+  &quot;children&quot;: [
+    {
+      &quot;op&quot;: &quot;is_null&quot;,
+      &quot;truth&quot;: true,
+      &quot;children&quot;: [
+        {
+          &quot;op&quot;: &quot;field&quot;,
+          &quot;path&quot;: [&quot;score&quot;],
+          &quot;value&quot;: null,
+          &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;score&quot;]]}
+        }
+      ]
+    },
+    {
+      &quot;op&quot;: &quot;lt&quot;,
+      &quot;truth&quot;: null,
+      &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;score&quot;]]},
+      &quot;children&quot;: [
+        {
+          &quot;op&quot;: &quot;field&quot;,
+          &quot;path&quot;: [&quot;score&quot;],
+          &quot;value&quot;: null,
+          &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;score&quot;]]}
+        },
+        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 500}
+      ]
+    }
+  ]
+}</code></pre>
+            </div>
+            <p class="caption"><code>true or unknown</code> is <code>true</code>: the rule can still fire although <code>score &lt; 500</code> is unknown. <code>is_null</code> itself is never unknown.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Unknowns -->
+    <section class="section alt" id="unknowns">
+      <div class="wrap">
+        <p class="eyebrow">4 · Unknown values</p>
+        <h2>Missing data is never a crash, and never a silent false.</h2>
+        <p class="sub">When a truth value is unknown or a value is null, the result records a <strong>reason</strong>: a stable code, the field paths involved and the type groups. A true or false result never carries one. Implementations are compared on the code, paths and groups; the human-readable <code>detail</code> may change.</p>
+        <div class="split">
+          <div>
+            <div class="table-wrap">
+              <table class="data">
+                <caption>Reason codes (<code>spec/ast.md</code>, <em>Results and reasons</em>)</caption>
+                <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><code>missing_field</code></td><td>the path cannot be resolved</td></tr>
+                  <tr><td><code>null</code></td><td>a null value (or NaN) was met; the path says where</td></tr>
+                  <tr><td><code>type_mismatch</code></td><td>values of incompatible groups, a list, map or opaque value, or a non-boolean used as a condition</td></tr>
+                  <tr><td><code>unorderable</code></td><td>booleans were ordered with <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code> or <code>&gt;=</code></td></tr>
+                  <tr><td><code>division_by_zero</code></td><td>a division by zero</td></tr>
+                  <tr><td><code>int_overflow</code></td><td>an integer outside the signed 64-bit range</td></tr>
+                  <tr><td><code>decimal_overflow</code></td><td>a decimal in the data that does not fit in 38 digits</td></tr>
+                  <tr><td><code>nan_result</code></td><td>an arithmetic result is NaN</td></tr>
+                  <tr><td><code>read_error</code></td><td>reading the data raised an error</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="prose">
+              <h3>Type groups</h3>
+              <p>Values compare only within a group: <strong>number</strong> (ints, floats and decimals), <strong>string</strong> (ordered by Unicode code point), <strong>boolean</strong>, <strong>date</strong>, <strong>naive_datetime</strong>, <strong>aware_datetime</strong> (compared by instant) and <strong>other</strong> (lists, maps, opaque values). Numbers compare <em>exactly</em>: <code>2⁵³ + 1</code> is not the float <code>2⁵³</code>, and the decimal <code>0.1</code> is not the float <code>0.1</code>.</p>
+              <h3>A null in the middle of a path</h3>
+              <p><code>customer.age</code> with <code>customer</code> null is null with reason <code>null</code> and the path where the null was met. NaN read from data is null in every language, because languages disagree on how NaN compares.</p>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="tabs" role="tablist" aria-label="Reason examples" data-tabgroup>
+              <button role="tab" id="tab-r-tm" aria-controls="r-tm" aria-selected="true" tabindex="0">age = "42"</button>
+              <button role="tab" id="tab-r-nm" aria-controls="r-nm" aria-selected="false" tabindex="-1">customer = null</button>
+              <button role="tab" id="tab-r-d0" aria-controls="r-d0" aria-selected="false" tabindex="-1">income = 0</button>
+              <button role="tab" id="tab-r-ex" aria-controls="r-ex" aria-selected="false" tabindex="-1">0.1 vs 0.1</button>
+            </div>
+            <div role="tabpanel" id="r-tm" aria-labelledby="tab-r-tm">
+              <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>age &gt;= 18 · {"age": "42"}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;ge&quot;,
+  &quot;truth&quot;: null,
+  &quot;reason&quot;: {
+    &quot;code&quot;: &quot;type_mismatch&quot;,
+    &quot;paths&quot;: [[&quot;age&quot;]],
+    &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+    &quot;detail&quot;: &quot;string vs number&quot;
+  },
+  &quot;children&quot;: [
+    {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;], &quot;value&quot;: &quot;42&quot;},
+    {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+  ]
+}</code></pre></div>
+              <p class="caption">A string compared with a number is <code>type_mismatch</code>, with both groups in order. One bad row never aborts a batch.</p>
+            </div>
+            <div role="tabpanel" id="r-nm" aria-labelledby="tab-r-nm" hidden>
+              <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>customer.age &gt;= 18 · {"customer": null}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;ge&quot;,
+  &quot;truth&quot;: null,
+  &quot;reason&quot;: {&quot;code&quot;: &quot;null&quot;, &quot;paths&quot;: [[&quot;customer&quot;]]},
+  &quot;children&quot;: [
+    {
+      &quot;op&quot;: &quot;field&quot;,
+      &quot;path&quot;: [&quot;customer&quot;, &quot;age&quot;],
+      &quot;value&quot;: null,
+      &quot;reason&quot;: {&quot;code&quot;: &quot;null&quot;, &quot;paths&quot;: [[&quot;customer&quot;]]}
+    },
+    {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+  ]
+}</code></pre></div>
+              <p class="caption">The reason's path is <code>["customer"]</code>, where reading stopped, not the full path.</p>
+            </div>
+            <div role="tabpanel" id="r-d0" aria-labelledby="tab-r-d0" hidden>
+              <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>debt / income &gt; 0.6 · {"debt": 1200, "income": 0}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;gt&quot;,
+  &quot;truth&quot;: null,
+  &quot;reason&quot;: {&quot;code&quot;: &quot;division_by_zero&quot;, &quot;paths&quot;: [[&quot;debt&quot;], [&quot;income&quot;]]},
+  &quot;children&quot;: [
+    {
+      &quot;op&quot;: &quot;div&quot;,
+      &quot;value&quot;: null,
+      &quot;reason&quot;: {&quot;code&quot;: &quot;division_by_zero&quot;, &quot;paths&quot;: [[&quot;debt&quot;], [&quot;income&quot;]]},
+      &quot;children&quot;: [
+        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;debt&quot;], &quot;value&quot;: 1200},
+        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;], &quot;value&quot;: 0}
+      ]
+    },
+    {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.6}
+  ]
+}</code></pre></div>
+              <p class="caption">Division by zero is null with a reason, for ints and floats alike; the comparison above it inherits the reason.</p>
+            </div>
+            <div role="tabpanel" id="r-ex" aria-labelledby="tab-r-ex" hidden>
+              <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>rate == decimal 0.1 · {"rate": 0.1}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;eq&quot;,
+  &quot;truth&quot;: false,
+  &quot;children&quot;: [
+    {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;rate&quot;], &quot;value&quot;: 0.1},
+    {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;0.1&quot;}}
+  ]
+}</code></pre></div>
+              <p class="caption">The float <code>0.1</code> is 0.1000000000000000055…, so it does not equal the exact decimal <code>0.1</code>. Comparisons never round.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strict mode -->
+    <section class="section" id="strict">
+      <div class="wrap">
+        <p class="eyebrow">5 · Strict mode</p>
+        <h2>When unknown should be an error, ask for strict.</h2>
+        <div class="split">
+          <div class="prose">
+            <p>A rule set with <code>"strict": true</code> raises instead of returning unknown, for exactly three causes: a <strong>missing field</strong> (<code>MissingFieldError</code>, even under <code>is_null</code>), a <strong>type mismatch</strong> (<code>TypeMismatchError</code>, including ordering booleans) and a <strong>read error</strong> (<code>EvaluationError</code> chained to the original). Nulls, division by zero, overflows and NaN results stay nulls with their reasons, and a null in the middle of a path is accepted.</p>
+            <p>The error raised is the first one in depth-first, left-to-right post-order: children before their parent, operands in order, rules in rule order. Every engine mode raises the same error; in a batch, the first failing input, with its <code>row</code>.</p>
+            <p>Payloads are evaluated only for the selected rules (and every fired rule under <code>any</code>), so a rule that fired but lost never raises because of its payload.</p>
+            <p>Errors carry stable codes and context that conformance vectors compare: the rule, the full field path, the type groups, the row. Messages are written by the core, so they read the same in every language.</p>
+          </div>
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>strict · age &gt;= 18 · {"age": "42"}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;code&quot;: &quot;type_mismatch&quot;,
+  &quot;path&quot;: [&quot;age&quot;],
+  &quot;types&quot;: [&quot;string&quot;, &quot;number&quot;],
+  &quot;message&quot;: &quot;type mismatch: string vs number&quot;
+}</code></pre></div>
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>strict · customer.age &gt;= 18 · {"customer": {"name": "Ana"}}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;code&quot;: &quot;missing_field&quot;,
+  &quot;path&quot;: [&quot;customer&quot;, &quot;age&quot;],
+  &quot;message&quot;: &quot;missing field customer.age&quot;
+}</code></pre></div>
+            <p class="caption">Errors from evaluating a bare condition; inside a rule set they also name the <code>rule</code>. The full error catalogue is on the <a href="format.html#errors">format page</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rules -->
+    <section class="section alt" id="rules">
+      <div class="wrap">
+        <p class="eyebrow">6 · Rules and payloads</p>
+        <h2>A rule is a condition, a payload and a name.</h2>
+        <div class="split">
+          <div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead><tr><th>Key</th><th>Required</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><code>name</code></td><td>yes</td><td>unique and non-empty within the rule set</td></tr>
+                  <tr><td><code>when</code></td><td>yes</td><td>the condition: a node of kind condition or any</td></tr>
+                  <tr><td><code>then</code></td><td>no</td><td>the payload: keys mapped to value nodes, in order</td></tr>
+                  <tr><td><code>priority</code></td><td>no</td><td>a signed 64-bit int, default 0, used by <code>priority</code></td></tr>
+                  <tr><td><code>tags</code></td><td>no</td><td>a set of strings</td></tr>
+                  <tr><td><code>description</code></td><td>no</td><td>free text, shown in explanations</td></tr>
+                  <tr><td><code>metadata</code></td><td>no</td><td>keys mapped to data values</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="prose">
+              <p><strong>Payload values are expressions</strong>, not just constants: <code>"rate": base_rate × 2</code> is computed from the input when the rule is selected. A field in a payload passes through whatever the data holds, lists and maps included. Payload member order is significant: it is the order of the output's keys and the order in which values are evaluated.</p>
+              <p><strong>Actions</strong> (<code>do</code>) are code of the host language. <code>evaluate</code> is pure and never runs them, so a decision can be computed any number of times for explanations, validation or model predictions. <code>run</code> evaluates, then calls the actions of the selected rules in rule order (task D.4 adds actions by registered name).</p>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>vip.rule.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;rule&quot;: {
+    &quot;name&quot;: &quot;vip&quot;,
+    &quot;when&quot;: {
+      &quot;op&quot;: &quot;and&quot;,
+      &quot;operands&quot;: [
+        {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+        },
+        {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+        }
+      ]
+    },
+    &quot;then&quot;: {&quot;discount&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.15}},
+    &quot;priority&quot;: 10
+  }
+}</code></pre></div>
+            <div class="window">
+              <div class="window-bar"><i></i><i></i><i></i><span>rules.py</span><span class="src v1">Python reference</span></div>
+<pre class="code"><code class="language-python">Rule("vip", priority=10,
+     when=(F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000),
+     then={"discount": 0.15})</code></pre>
+            </div>
+            <p class="caption">The same rule as a JSON document and as it was written in the Python reference implementation. The Python binding's API (task C.2) follows the same style.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hit policies -->
+    <section class="section" id="policies">
+      <div class="wrap">
+        <p class="eyebrow">7 · Hit policies</p>
+        <h2>Six DMN hit policies decide which rules win.</h2>
+        <p class="sub">Every rule's condition is evaluated, in rule order. Among the rules that fired, the rule set's hit policy selects the winners. Errors are <code>HitPolicyError</code> and list the rules involved.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Policy</th><th>Selects</th><th>Error</th><th>Use it when</th></tr></thead>
+            <tbody>
+              <tr><td><code>first</code></td><td>the first fired rule</td><td>—</td><td>rule order expresses precedence, often with a catch-all rule last</td></tr>
+              <tr><td><code>priority</code></td><td>the fired rule with the highest <code>priority</code>; ties go to rule order</td><td>—</td><td>precedence should not depend on where a rule is written</td></tr>
+              <tr><td><code>unique</code></td><td>the fired rule</td><td>more than one fired</td><td>rules are meant to be mutually exclusive, and an overlap is a bug to report</td></tr>
+              <tr><td><code>any</code></td><td>the first fired rule</td><td>fired rules have different payloads</td><td>rules may overlap as long as they agree</td></tr>
+              <tr><td><code>rule_order</code></td><td>every fired rule, in rule order</td><td>—</td><td>you need every match, as a list (<code>outputs</code>)</td></tr>
+              <tr><td><code>collect</code></td><td>every fired rule, in rule order; optional aggregate</td><td>an aggregate meets a non-number</td><td>you want every match or one number per payload key: <code>sum</code>, <code>min</code>, <code>max</code>, <code>count</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="split">
+          <div class="stack">
+            <div class="window short"><div class="window-bar"><i></i><i></i><i></i><span>discounts.ruleset.json (hit_policy varied below)</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;first&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;standard&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 100}
+        },
+        &quot;then&quot;: {&quot;discount_pct&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}},
+        &quot;priority&quot;: 1
+      },
+      {
+        &quot;name&quot;: &quot;loyal&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 2}
+        },
+        &quot;then&quot;: {&quot;discount_pct&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 10}},
+        &quot;priority&quot;: 5
+      },
+      {
+        &quot;name&quot;: &quot;vip&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+            },
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;discount_pct&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 15}},
+        &quot;priority&quot;: 10
+      }
+    ]
+  }
+}</code></pre></div>
+            <p class="caption">Input: <code>{&quot;customer&quot;: {&quot;years&quot;: 7}, &quot;order&quot;: {&quot;total&quot;: 1500}}</code>. All three rules fire.</p>
+          </div>
+          <div>
+            <div class="table-wrap" style="margin-top: 0;">
+              <table class="data">
+                <caption>The same rules and input under each policy (Rust core output)</caption>
+                <thead><tr><th>Policy</th><th>selected</th><th>output</th></tr></thead>
+                <tbody>
+<tr><td><code>first</code></td><td><code>[&quot;standard&quot;]</code></td><td class="wrap"><code>{&quot;discount_pct&quot;: 5}</code></td></tr>
+<tr><td><code>priority</code></td><td><code>[&quot;vip&quot;]</code></td><td class="wrap"><code>{&quot;discount_pct&quot;: 15}</code></td></tr>
+<tr><td><code>unique</code></td><td><span class="muted">—</span></td><td class="wrap"><code>hit_policy_error</code> · rules <code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code><br><span class="muted">“3 rules fired under the unique hit policy”</span></td></tr>
+<tr><td><code>any</code></td><td><span class="muted">—</span></td><td class="wrap"><code>hit_policy_error</code> · rules <code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code><br><span class="muted">“rules fired with different outputs under the any hit policy”</span></td></tr>
+<tr><td><code>rule_order</code></td><td><code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code></td><td class="wrap"><code>outputs</code> = <code>[{&quot;discount_pct&quot;: 5}, {&quot;discount_pct&quot;: 10}, {&quot;discount_pct&quot;: 15}]</code><br><span class="muted"><code>output</code>: “rule_order decisions have several outputs”</span></td></tr>
+<tr><td><code>collect</code></td><td><code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code></td><td class="wrap"><code>outputs</code> = <code>[{&quot;discount_pct&quot;: 5}, {&quot;discount_pct&quot;: 10}, {&quot;discount_pct&quot;: 15}]</code><br><span class="muted"><code>output</code>: “collect decisions have several outputs”</span></td></tr>
+<tr><td><code>collect</code> + <code>sum</code></td><td><code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code></td><td class="wrap"><code>{&quot;discount_pct&quot;: 30}</code></td></tr>
+<tr><td><code>collect</code> + <code>min</code></td><td><code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code></td><td class="wrap"><code>{&quot;discount_pct&quot;: 5}</code></td></tr>
+<tr><td><code>collect</code> + <code>max</code></td><td><code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code></td><td class="wrap"><code>{&quot;discount_pct&quot;: 15}</code></td></tr>
+<tr><td><code>collect</code> + <code>count</code></td><td><code>[&quot;standard&quot;, &quot;loyal&quot;, &quot;vip&quot;]</code></td><td class="wrap"><code>{&quot;discount_pct&quot;: 3}</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="split even">
+          <div class="prose">
+            <h3>Outputs</h3>
+            <p><code>outputs</code> are the payloads of the selected rules, in rule order. <code>output</code> is the winner's payload for single-hit policies (null when nothing was selected) and the aggregate for <code>collect</code> with one; for <code>rule_order</code> and <code>collect</code> without an aggregate, asking for it is an error, as the table shows. Outputs are read-only.</p>
+            <h3>Aggregates</h3>
+            <p>Applied <strong>per payload key</strong> over the selected payloads. Nulls are skipped, as in SQL, and <code>count</code> counts non-null values. Decimals are converted to float64 before <code>sum</code>, <code>min</code> and <code>max</code>; an integer sum outside 64 bits and a NaN sum are null; with nothing selected the aggregate is null.</p>
+          </div>
+          <div class="prose">
+            <h3>Deliberate deviations from DMN</h3>
+            <ul>
+              <li>Aggregates are per payload key; DMN aggregates one output column.</li>
+              <li><code>count</code> counts non-null values; DMN engines differ on what <code>C#</code> counts.</li>
+              <li><code>priority</code> uses each rule's priority; decision tables (task D.3) will compile DMN's output-value priorities into rule priorities.</li>
+              <li><code>collect</code> without an aggregate keeps rule order, because results must be deterministic.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explanations -->
+    <section class="section alt" id="explanations">
+      <div class="wrap">
+        <p class="eyebrow">8 · Explanations</p>
+        <h2>Why each rule fired, and what would change it.</h2>
+        <p class="sub">An explanation is built only from a decision's result trees and its rule set: nothing is evaluated again. A decision read back from JSON explains exactly like the original. Each rule gets a status and a <strong>requirement</strong>: the elementary conditions behind its outcome.</p>
+        <div class="split even">
+          <div>
+            <div class="table-wrap" style="margin-top: 0;">
+              <table class="data">
+                <caption>Rule status</caption>
+                <thead><tr><th>Status</th><th>Meaning</th><th>Text</th></tr></thead>
+                <tbody>
+                  <tr><td><code>selected</code></td><td>the hit policy selected it</td><td><code>[x]</code></td></tr>
+                  <tr><td><code>fired</code></td><td>it fired, but the policy chose another rule; a <strong>note</strong> says why</td><td><code>[x]</code></td></tr>
+                  <tr><td><code>not_fired</code></td><td>its condition is false</td><td><code>[ ]</code></td></tr>
+                  <tr><td><code>unknown</code></td><td>its condition is unknown</td><td><code>[?]</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-wrap">
+              <table class="data">
+                <caption>Notes for rules that fired but were not selected</caption>
+                <thead><tr><th>Note</th><th>When</th></tr></thead>
+                <tbody>
+                  <tr><td><code>lower_priority</code></td><td><code>priority</code>, and the winner's priority is higher</td></tr>
+                  <tr><td><code>same_priority</code></td><td><code>priority</code>, same priority, the winner comes first</td></tr>
+                  <tr><td><code>any_agrees</code></td><td><code>any</code>: the outputs agree, the first is reported</td></tr>
+                  <tr><td><code>earlier_rule</code></td><td>any other policy: the winner comes first</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="prose">
+            <h3>Requirements: <code>all</code> and <code>any</code></h3>
+            <p>A requirement is a <strong>cause</strong> (one elementary condition: a comparison, <code>in</code>, <code>is_null</code>, a string test, a field used as a condition, a <code>between</code> half) or a <strong>group</strong> of at least two requirements: <code>all</code> (each one matters) or <code>any</code> (one is enough).</p>
+            <p>For an <code>and</code> that is false, the group is <code>all</code> of the operands that are not true: fixing only the false ones would leave the result unknown. For an <code>or</code> that fired, it is <code>any</code> of the true operands. A <code>not</code> flips the role of the connective below it (De Morgan), so <code>not (a or b)</code> is explained as needing <code>a</code> and <code>b</code> to be false.</p>
+            <p>The requirement is then <strong>simplified</strong>: nested groups of the same kind are spliced, repeated causes merged, and absorption applied (<code>a and (a or b)</code> needs only <code>a</code>).</p>
+            <p>Finally, for rules that did not fire, every way to make them fire is <strong>checked against the whole tree</strong>, because a condition can occur in several places, possibly under a <code>not</code>. Only options that really make the rule fire are kept; if none does, the rule is marked <code>"achievable": false</code>: its conditions conflict.</p>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>The worked example of the specification</h3>
+          <p class="muted">Five rules under <code>priority</code>, input <code>{"x": 8, "y": 2}</code>. This is conformance vector <code>explain/requirements/priority-example</code>; the core's output below equals the vector exactly.</p>
+          <div class="split even">
+            <div class="stack">
+              <div class="window short"><div class="window-bar"><i></i><i></i><i></i><span>worked.ruleset.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;a&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 10}
+            },
+            {
+              &quot;op&quot;: &quot;not&quot;,
+              &quot;operand&quot;: {
+                &quot;op&quot;: &quot;le&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;y&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 3}
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;name&quot;: &quot;b&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;between&quot;,
+          &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+          &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0},
+          &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5},
+          &quot;closed&quot;: &quot;both&quot;
+        }
+      },
+      {
+        &quot;name&quot;: &quot;c&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1}
+            },
+            {
+              &quot;op&quot;: &quot;not&quot;,
+              &quot;operand&quot;: {
+                &quot;op&quot;: &quot;gt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1}
+              }
+            }
+          ]
+        }
+      },
+      {
+        &quot;name&quot;: &quot;d&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1}
+        },
+        &quot;priority&quot;: 1
+      },
+      {
+        &quot;name&quot;: &quot;e&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0}
+        },
+        &quot;priority&quot;: 5
+      }
+    ]
+  }
+}</code></pre></div>
+              <div class="window">
+                <div class="window-bar"><i></i><i></i><i></i><span>explain() as text</span><span class="src v1">Python reference</span></div>
+<pre class="term"><span class="hd">PRIORITY decision: selected 'e'</span>
+<span class="f">[ ]</span> a (not fired): (F.x &gt; 10) &amp; ~(F.y &lt;= 3)
+    would fire if all of these changed:
+    - F.x &gt; 10 is <b class="f">false</b> (x = 8); <b class="hint">short by 2</b>
+    - F.y &lt;= 3 is <b class="t">true</b> (y = 2), but the rule needs it false; <b class="hint">needs y &gt; 3 (short by 1)</b>
+<span class="f">[ ]</span> b (not fired): F.x.between(0, 5)
+    - F.x &lt;= 5 is <b class="f">false</b> (x = 8); <b class="hint">over by 3</b>
+<span class="f">[ ]</span> c (not fired): (F.x &gt; 1) &amp; ~(F.x &gt; 1)
+    cannot fire by changing these conditions alone; they conflict:
+    - F.x &gt; 1 is <b class="t">true</b> (x = 8), but the rule needs it false; <b class="hint">needs x &lt;= 1 (over by 7)</b>
+<span class="t">[x]</span> d (fired, not selected): F.x &gt; 1
+    fired, but 'e' has a higher priority (5 &gt; 1)
+    - F.x &gt; 1 is <b class="t">true</b> (x = 8)
+<span class="t">[x]</span> e (selected): F.x &gt; 0
+    - F.x &gt; 0 is <b class="t">true</b> (x = 8)</pre>
+              </div>
+              <p class="caption">Text quoted from <code>spec/explain.md</code> (output of the Python v1, which writes conditions in Python syntax). The core's text rendering is fixed by snapshot tests once the text DSL lands (D.2).</p>
+            </div>
+            <div class="window scroll" style="max-height: none;">
+              <div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">Rust core output</span></div>
+<pre class="code" style="max-height: 1180px;"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;e&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;a&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;all&quot;: [
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;gt&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 10}
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+              &quot;truth&quot;: false,
+              &quot;negated&quot;: false,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;x&quot;], &quot;value&quot;: 8}],
+              &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;x&quot;], &quot;op&quot;: &quot;gt&quot;, &quot;target&quot;: 10, &quot;gap&quot;: 2}
+            },
+            {
+              &quot;condition&quot;: {
+                &quot;op&quot;: &quot;le&quot;,
+                &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;y&quot;]},
+                &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 3}
+              },
+              &quot;at&quot;: &quot;/decision/results/0/when/children/1/children/0&quot;,
+              &quot;truth&quot;: true,
+              &quot;negated&quot;: true,
+              &quot;values&quot;: [{&quot;path&quot;: [&quot;y&quot;], &quot;value&quot;: 2}],
+              &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;y&quot;], &quot;op&quot;: &quot;gt&quot;, &quot;target&quot;: 3, &quot;gap&quot;: 1}
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;b&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;le&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+          },
+          &quot;at&quot;: &quot;/decision/results/1/when/children/1&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;x&quot;], &quot;value&quot;: 8}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;x&quot;], &quot;op&quot;: &quot;le&quot;, &quot;target&quot;: 5, &quot;gap&quot;: 3}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;c&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: false,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1}
+          },
+          &quot;at&quot;: &quot;/decision/results/2/when/children/1/children/0&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: true,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;x&quot;], &quot;value&quot;: 8}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;x&quot;], &quot;op&quot;: &quot;le&quot;, &quot;target&quot;: 1, &quot;gap&quot;: 7}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;d&quot;,
+        &quot;status&quot;: &quot;fired&quot;,
+        &quot;note&quot;: {
+          &quot;kind&quot;: &quot;lower_priority&quot;,
+          &quot;winner&quot;: &quot;e&quot;,
+          &quot;priority&quot;: 1,
+          &quot;winner_priority&quot;: 5
+        },
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1}
+          },
+          &quot;at&quot;: &quot;/decision/results/3/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;x&quot;], &quot;value&quot;: 8}]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;e&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;x&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0}
+          },
+          &quot;at&quot;: &quot;/decision/results/4/when&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;x&quot;], &quot;value&quot;: 8}]
+        }
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>Causes carry what they read</h3>
+          <p class="muted">Each cause has its condition, its truth, <code>negated</code> (the rule needs it false), the values it read, a reason when unknown, a counterfactual when it does not hold, and <code>at</code>: a JSON Pointer to the exact node of the decision document it came from.</p>
+          <div class="tabs" role="tablist" aria-label="Explanation examples" data-tabgroup>
+            <button role="tab" id="tab-x-any" aria-controls="x-any" aria-selected="true" tabindex="0">an or that did not fire</button>
+            <button role="tab" id="tab-x-dm" aria-controls="x-dm" aria-selected="false" tabindex="-1">not over or (De Morgan)</button>
+            <button role="tab" id="tab-x-miss" aria-controls="x-miss" aria-selected="false" tabindex="-1">missing field</button>
+          </div>
+          <div role="tabpanel" id="x-any" aria-labelledby="tab-x-any">
+            <div class="split even">
+              <div class="stack">
+                <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fast_track.rule.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;rule&quot;: {
+    &quot;name&quot;: &quot;fast_track&quot;,
+    &quot;when&quot;: {
+      &quot;op&quot;: &quot;or&quot;,
+      &quot;operands&quot;: [
+        {
+          &quot;op&quot;: &quot;ge&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 750}
+        },
+        {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 100000}
+        }
+      ]
+    }
+  }
+}</code></pre></div>
+                <p class="caption">Input <code>{"score": 700, "income": 80000.0}</code>. Either change is enough: the requirement is an <code>any</code> group. The float income gives a float gap.</p>
+              </div>
+              <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.rules[0]</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;rule&quot;: &quot;fast_track&quot;,
+  &quot;status&quot;: &quot;not_fired&quot;,
+  &quot;achievable&quot;: true,
+  &quot;requirement&quot;: {
+    &quot;any&quot;: [
+      {
+        &quot;condition&quot;: {
+          &quot;op&quot;: &quot;ge&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;score&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 750}
+        },
+        &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+        &quot;truth&quot;: false,
+        &quot;negated&quot;: false,
+        &quot;values&quot;: [{&quot;path&quot;: [&quot;score&quot;], &quot;value&quot;: 700}],
+        &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;score&quot;], &quot;op&quot;: &quot;ge&quot;, &quot;target&quot;: 750, &quot;gap&quot;: 50}
+      },
+      {
+        &quot;condition&quot;: {
+          &quot;op&quot;: &quot;gt&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;income&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 100000}
+        },
+        &quot;at&quot;: &quot;/decision/results/0/when/children/1&quot;,
+        &quot;truth&quot;: false,
+        &quot;negated&quot;: false,
+        &quot;values&quot;: [{&quot;path&quot;: [&quot;income&quot;], &quot;value&quot;: 80000.0}],
+        &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;income&quot;], &quot;op&quot;: &quot;gt&quot;, &quot;target&quot;: 100000, &quot;gap&quot;: 20000.0}
+      }
+    ]
+  }
+}</code></pre></div>
+            </div>
+          </div>
+          <div role="tabpanel" id="x-dm" aria-labelledby="tab-x-dm" hidden>
+            <div class="split even">
+              <div class="stack">
+                <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligible.rule.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;rule&quot;: {
+    &quot;name&quot;: &quot;eligible&quot;,
+    &quot;when&quot;: {
+      &quot;op&quot;: &quot;not&quot;,
+      &quot;operand&quot;: {
+        &quot;op&quot;: &quot;or&quot;,
+        &quot;operands&quot;: [
+          {
+            &quot;op&quot;: &quot;in&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;country&quot;]},
+            &quot;values&quot;: [&quot;IR&quot;, &quot;KP&quot;]
+          },
+          {
+            &quot;op&quot;: &quot;lt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+          }
+        ]
+      }
+    }
+  }
+}</code></pre></div>
+                <p class="caption">Input <code>{"country": "ES", "age": 16}</code>. The <code>in</code> is already false, as the rule needs, so only <code>age &lt; 18</code> must change: the cause is <code>negated</code> and the counterfactual is flipped to <code>age &gt;= 18</code>, short by 2.</p>
+              </div>
+              <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.rules[0]</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;rule&quot;: &quot;eligible&quot;,
+  &quot;status&quot;: &quot;not_fired&quot;,
+  &quot;achievable&quot;: true,
+  &quot;requirement&quot;: {
+    &quot;condition&quot;: {
+      &quot;op&quot;: &quot;lt&quot;,
+      &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;]},
+      &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}
+    },
+    &quot;at&quot;: &quot;/decision/results/0/when/children/0/children/1&quot;,
+    &quot;truth&quot;: true,
+    &quot;negated&quot;: true,
+    &quot;values&quot;: [{&quot;path&quot;: [&quot;age&quot;], &quot;value&quot;: 16}],
+    &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;age&quot;], &quot;op&quot;: &quot;ge&quot;, &quot;target&quot;: 18, &quot;gap&quot;: 2}
+  }
+}</code></pre></div>
+            </div>
+          </div>
+          <div role="tabpanel" id="x-miss" aria-labelledby="tab-x-miss" hidden>
+            <div class="split even">
+              <div class="stack">
+                <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>result tree of vip · {"customer": {}, "order": {"total": 1500}}</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;op&quot;: &quot;and&quot;,
+  &quot;truth&quot;: null,
+  &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;years&quot;]]},
+  &quot;children&quot;: [
+    {
+      &quot;op&quot;: &quot;gt&quot;,
+      &quot;truth&quot;: null,
+      &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;years&quot;]]},
+      &quot;children&quot;: [
+        {
+          &quot;op&quot;: &quot;field&quot;,
+          &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;],
+          &quot;value&quot;: null,
+          &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;years&quot;]]}
+        },
+        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+      ]
+    },
+    {
+      &quot;op&quot;: &quot;gt&quot;,
+      &quot;truth&quot;: true,
+      &quot;children&quot;: [
+        {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;], &quot;value&quot;: 1500},
+        {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+      ]
+    }
+  ]
+}</code></pre></div>
+              </div>
+              <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.json (first policy)</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;first&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;vip&quot;,
+        &quot;status&quot;: &quot;unknown&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+          },
+          &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+          &quot;truth&quot;: null,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [],
+          &quot;reason&quot;: {&quot;code&quot;: &quot;missing_field&quot;, &quot;paths&quot;: [[&quot;customer&quot;, &quot;years&quot;]]}
+        }
+      }
+    ]
+  }
+}</code></pre></div>
+            </div>
+            <p class="caption">The rule is <code>unknown</code>, and its requirement keeps only the unknown operand, with its reason: the true <code>order.total &gt; 1000</code> is not what needs attention.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Counterfactuals -->
+    <section class="section" id="counterfactuals">
+      <div class="wrap">
+        <p class="eyebrow">9 · Counterfactuals</p>
+        <h2>“Short by 2”, exactly, in the value's own type.</h2>
+        <div class="split">
+          <div class="prose">
+            <p>A cause that does not hold, is not unknown, and compares <strong>one field with one constant</strong> gets a counterfactual: the field's path, the comparison it needs, the target and, when it can be computed, the <strong>gap</strong>.</p>
+            <ul>
+              <li>A constant on the left is flipped (<code>5 &lt; x</code> becomes <code>x &gt; 5</code>), and a negated cause is negated (<code>&gt;</code> becomes <code>&lt;=</code>).</li>
+              <li>The gap is <code>target − value</code> for <code>gt</code>/<code>ge</code> and <code>value − target</code> for <code>lt</code>/<code>le</code>; <code>0</code> for a strict comparison exactly at its limit.</li>
+              <li><code>eq</code> and <code>ne</code> have no distance; a counterfactual without a gap is given when the cause is negated.</li>
+            </ul>
+            <p>Gap arithmetic is exact whenever it can be:</p>
+            <div class="table-wrap">
+              <table class="data">
+                <thead><tr><th>Values</th><th>Gap</th></tr></thead>
+                <tbody>
+                  <tr><td>two ints</td><td>their difference, checked in 64 bits</td></tr>
+                  <tr><td>a float and an int or float</td><td>the float64 difference</td></tr>
+                  <tr><td>two decimals, or a decimal and an int</td><td>the exact decimal difference, larger scale kept: <code>10.05 − 9.9 = 0.15</code></td></tr>
+                  <tr><td>a decimal and a float</td><td>no gap</td></tr>
+                  <tr><td>two dates</td><td><code>{"days": n}</code></td></tr>
+                  <tr><td>two naive or two aware datetimes</td><td><code>{"microseconds": n}</code> (aware: between UTC instants)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>renewal.rule.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;rule&quot;: {
+    &quot;name&quot;: &quot;renewal&quot;,
+    &quot;when&quot;: {
+      &quot;op&quot;: &quot;and&quot;,
+      &quot;operands&quot;: [
+        {
+          &quot;op&quot;: &quot;le&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;contract&quot;, &quot;end&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$date&quot;: &quot;2026-12-31&quot;}}
+        },
+        {
+          &quot;op&quot;: &quot;ge&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;balance&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;1000.00&quot;}}
+        }
+      ]
+    },
+    &quot;then&quot;: {&quot;offer&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;renew&quot;}}
+  }
+}</code></pre></div>
+            <p class="caption">Input <code>{&quot;contract&quot;: {&quot;end&quot;: {&quot;$date&quot;: &quot;2027-01-15&quot;}}, &quot;balance&quot;: {&quot;$decimal&quot;: &quot;950.50&quot;}}</code>.</p>
+            <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>explanation.rules[0]</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;rule&quot;: &quot;renewal&quot;,
+  &quot;status&quot;: &quot;not_fired&quot;,
+  &quot;achievable&quot;: true,
+  &quot;requirement&quot;: {
+    &quot;all&quot;: [
+      {
+        &quot;condition&quot;: {
+          &quot;op&quot;: &quot;le&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;contract&quot;, &quot;end&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$date&quot;: &quot;2026-12-31&quot;}}
+        },
+        &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+        &quot;truth&quot;: false,
+        &quot;negated&quot;: false,
+        &quot;values&quot;: [{&quot;path&quot;: [&quot;contract&quot;, &quot;end&quot;], &quot;value&quot;: {&quot;$date&quot;: &quot;2027-01-15&quot;}}],
+        &quot;counterfactual&quot;: {
+          &quot;path&quot;: [&quot;contract&quot;, &quot;end&quot;],
+          &quot;op&quot;: &quot;le&quot;,
+          &quot;target&quot;: {&quot;$date&quot;: &quot;2026-12-31&quot;},
+          &quot;gap&quot;: {&quot;days&quot;: 15}
+        }
+      },
+      {
+        &quot;condition&quot;: {
+          &quot;op&quot;: &quot;ge&quot;,
+          &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;balance&quot;]},
+          &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;1000.00&quot;}}
+        },
+        &quot;at&quot;: &quot;/decision/results/0/when/children/1&quot;,
+        &quot;truth&quot;: false,
+        &quot;negated&quot;: false,
+        &quot;values&quot;: [{&quot;path&quot;: [&quot;balance&quot;], &quot;value&quot;: {&quot;$decimal&quot;: &quot;950.50&quot;}}],
+        &quot;counterfactual&quot;: {
+          &quot;path&quot;: [&quot;balance&quot;],
+          &quot;op&quot;: &quot;ge&quot;,
+          &quot;target&quot;: {&quot;$decimal&quot;: &quot;1000.00&quot;},
+          &quot;gap&quot;: {&quot;$decimal&quot;: &quot;49.50&quot;}
+        }
+      }
+    ]
+  }
+}</code></pre></div>
+            <p class="caption">A gap of 15 days and an exact decimal gap of <code>49.50</code>, with the scale of <code>1000.00</code> kept.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summaries -->
+    <section class="section alt" id="summaries">
+      <div class="wrap">
+        <p class="eyebrow">10 · Summaries</p>
+        <h2>What a rule set reads and writes, without running it.</h2>
+        <div class="split">
+          <div class="prose">
+            <p><code>summary()</code> describes a rule set statically: its configuration (policy, aggregate, logic, strictness); its rules with their priorities, output keys and whether they have an action; the <strong>fields</strong> it reads, in order of first appearance, each with the rules whose condition reads it and the <code>(rule, key)</code> pairs whose payload reads it; every output key; and the tags with their rules.</p>
+            <p>The field list is also what a binding reads from native data: it converts <strong>only the paths the rule set reads</strong>, never the whole object. The planned MCP server will derive each rule set's input schema from it (<a href="agents.html">agents</a>).</p>
+            <div class="window" style="margin-top: 20px;">
+              <div class="window-bar"><i></i><i></i><i></i><span>rules.summary() as text</span><span class="src v1">Python reference</span></div>
+<pre class="term"><span class="hd">RuleSet: 3 rules, hit policy PRIORITY, logic boolean</span>
+  priority  name     condition                                        outputs
+        10  vip      (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000)  discount
+         5  loyal    (F.customer.years &gt; 2) | F.customer.newsletter   discount
+        99  blocked  F.customer.country.is_in(['XX', 'YY'])           discount
+Fields read (4):
+  customer.years       conditions of vip, loyal
+  order.total          conditions of vip
+  customer.newsletter  conditions of loyal
+  customer.country     conditions of blocked
+Outputs: discount</pre>
+            </div>
+          </div>
+          <div class="window scroll">
+            <div class="window-bar"><i></i><i></i><i></i><span>summary.json · the pricing rule set of the overview</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;summary&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {&quot;name&quot;: &quot;vip&quot;, &quot;priority&quot;: 10, &quot;outputs&quot;: [&quot;discount&quot;]},
+      {&quot;name&quot;: &quot;loyal&quot;, &quot;priority&quot;: 5, &quot;outputs&quot;: [&quot;discount&quot;]},
+      {&quot;name&quot;: &quot;blocked&quot;, &quot;priority&quot;: 99, &quot;outputs&quot;: [&quot;discount&quot;]}
+    ],
+    &quot;fields&quot;: [
+      {
+        &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;],
+        &quot;conditions&quot;: [&quot;vip&quot;, &quot;loyal&quot;],
+        &quot;payloads&quot;: []
+      },
+      {&quot;path&quot;: [&quot;order&quot;, &quot;total&quot;], &quot;conditions&quot;: [&quot;vip&quot;], &quot;payloads&quot;: []},
+      {
+        &quot;path&quot;: [&quot;customer&quot;, &quot;newsletter&quot;],
+        &quot;conditions&quot;: [&quot;loyal&quot;],
+        &quot;payloads&quot;: []
+      },
+      {
+        &quot;path&quot;: [&quot;customer&quot;, &quot;country&quot;],
+        &quot;conditions&quot;: [&quot;blocked&quot;],
+        &quot;payloads&quot;: []
+      }
+    ],
+    &quot;outputs&quot;: [&quot;discount&quot;],
+    &quot;tags&quot;: []
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+      <ul class="footer-links" aria-label="Site">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="format.html">Format</a></li>
+        <li><a href="benchmarks.html">Benchmarks</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+      </ul>
+      <p>MIT licensed · © 2026 Jose L. Salmeron · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>
+

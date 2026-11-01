@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSON format v1 — cleanrules</title>
+  <meta name="description" content="The cleanrules JSON format, version 1: documents and versioning, value encoding, conditions, rules, rule sets, decisions that are read back and verified, explanations, limits and error codes.">
+  <meta name="theme-color" content="#0b0f14">
+  <link rel="canonical" href="https://cleanrules.github.io/format.html">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="cleanrules JSON format v1">
+  <meta property="og:description" content="The versioned contract between languages: values, conditions, rules, decisions, explanations, limits and errors.">
+  <meta property="og:url" content="https://cleanrules.github.io/format.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" aria-label="cleanrules home">
+        <img src="assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="index.html">Overview</a>
+        <a href="guide.html">Guide</a>
+        <a href="format.html" aria-current="page">Format</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="agents.html">Agents</a>
+        <a href="compare.html">Compare</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" id="top">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="eyebrow">JSON format · version 1</p>
+        <h1>The contract <span class="grad">between languages</span>.</h1>
+        <p class="lead">A rule written in Java and read in Go is the same tree and decides the same way. That holds because every binding reads and writes one versioned JSON format, defined in <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/json-format.md" rel="noopener"><code>spec/json-format.md</code></a>, with <a href="https://github.com/cleanrules/cleanrules/tree/main/spec/schemas/v1" rel="noopener">JSON Schemas</a> for editors and 187 conformance vectors for readers.</p>
+        <div class="callout real">
+          <p>The Rust core reads condition, rule, rule set and decision documents and writes all six kinds today. <strong>Every example output and error on this page was produced by the core</strong> from the input shown. Loading rule files in JSON and YAML from every binding is task D.1.</p>
+        </div>
+        <nav aria-label="On this page">
+          <ul class="toc">
+            <li><a href="#documents">Documents</a></li>
+            <li><a href="#values">Values</a></li>
+            <li><a href="#conditions">Conditions</a></li>
+            <li><a href="#rules">Rules and rule sets</a></li>
+            <li><a href="#decisions">Decisions</a></li>
+            <li><a href="#explanations">Explanations</a></li>
+            <li><a href="#limits">Limits and error order</a></li>
+            <li><a href="#errors">Error codes</a></li>
+            <li><a href="#schemas">JSON Schemas</a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Documents -->
+    <section class="section" id="documents">
+      <div class="wrap">
+        <p class="eyebrow">Documents and versioning</p>
+        <h2>One envelope, six kinds of content, strict readers.</h2>
+        <div class="split">
+          <div class="prose">
+            <p>A document is UTF-8 JSON (RFC 8259) without a byte order mark. Its top level is an object with <code>"version": 1</code> and exactly one <strong>content key</strong>: <code>condition</code>, <code>rule</code>, <code>ruleset</code>, <code>decision</code>, <code>explanation</code> or <code>summary</code>. An optional <code>"$schema"</code> string is ignored by readers, so editors can find the schema. Writers put <code>version</code> first.</p>
+            <p>Readers are <strong>strict</strong>, because leniency would let readers in different languages build different trees:</p>
+            <ul>
+              <li>an unknown key, anywhere, is a <code>format_error</code>: ignoring it could silently change what a rule means;</li>
+              <li>a duplicate key is a <code>format_error</code>: JSON parsers disagree on which duplicate wins;</li>
+              <li>invalid UTF-8, a byte order mark and an escaped lone surrogate are rejected, and strings are never Unicode-normalized.</li>
+            </ul>
+            <h3>Versioning</h3>
+            <p>Adding a node, a content key or an optional key keeps the version; so does accepting a new JSON form that existing documents never use. Renaming, removing or changing the meaning of anything increases it. Optional keys added later are omitted at their default, so documents that do not use a new feature stay readable by older readers. A document from a newer format gets <code>unsupported_version</code> before anything else is checked. The format version is independent of the package versions.</p>
+          </div>
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>vip.condition.json</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;condition&quot;: {
+    &quot;op&quot;: &quot;and&quot;,
+    &quot;operands&quot;: [
+      {
+        &quot;op&quot;: &quot;gt&quot;,
+        &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+        &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+      },
+      {
+        &quot;op&quot;: &quot;gt&quot;,
+        &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;]},
+        &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+      }
+    ]
+  }
+}</code></pre></div>
+            <p class="caption">Documents are compared as parsed trees, never as text: members in order, numbers by lexical class and exact value (<code>1</code> and <code>1.0</code> differ, <code>100.0</code> equals <code>1e2</code>), and the sign of a float zero.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="section alt" id="values">
+      <div class="wrap">
+        <p class="eyebrow">Values</p>
+        <h2>Bare JSON where it is unambiguous, typed values elsewhere.</h2>
+        <p class="sub">JSON has no integer, decimal or date types of its own. A value is either bare JSON or a <strong>typed value</strong>: an object with a single key starting with <code>$</code>. Writers always use the canonical form; the other forms exist for writers that cannot produce it.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Type</th><th>Canonical form</th><th>Also accepted</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>null, boolean, string</td><td><code>null</code> <code>true</code> <code>"text"</code></td><td></td><td>strings kept exactly as written</td></tr>
+              <tr><td>int, |n| ≤ 2⁵³ − 1</td><td><code>42</code>, <code>-7</code></td><td><code>{"$int": 42}</code>, <code>{"$int": "42"}</code></td><td>a number with no fraction and no exponent, read exactly, never through a float</td></tr>
+              <tr><td>int, |n| &gt; 2⁵³ − 1</td><td><code>{"$int": "9223372036854775807"}</code></td><td>the bare number</td><td>as text, because JavaScript and Go's default decoder lose larger integers</td></tr>
+              <tr><td>float, finite</td><td><code>42.0</code>, <code>1e-7</code>, <code>-0.0</code></td><td><code>{"$float": 42}</code></td><td>shortest digits that read back; <code>JSON.stringify</code> writers must use <code>$float</code> for <code>1.0</code></td></tr>
+              <tr><td>float, infinite</td><td><code>{"$float": "inf"}</code>, <code>{"$float": "-inf"}</code></td><td></td><td>NaN has no encoding: conditions reject it, data treats it as null</td></tr>
+              <tr><td>decimal</td><td><code>{"$decimal": "0.10"}</code></td><td>exponent forms: <code>"1.5e-3"</code></td><td>exact, up to 38 significant digits, scale kept: <code>"1.00"</code> stays <code>"1.00"</code></td></tr>
+              <tr><td>date</td><td><code>{"$date": "2026-10-31"}</code></td><td></td><td>proleptic Gregorian, years 0001–9999</td></tr>
+              <tr><td>datetime</td><td><code>{"$datetime": "2026-10-31T09:30:00+01:00"}</code></td><td></td><td>naive (no suffix), fixed offset (<code>Z</code>, <code>±HH:MM</code>) or IANA zone (<code>+01:00[Europe/Madrid]</code>, RFC 9557); microseconds</td></tr>
+              <tr><td>list (data only)</td><td><code>[1, 2]</code></td><td></td><td>never a constant in a condition</td></tr>
+              <tr><td>map (data only)</td><td><code>{"a": 1}</code></td><td><code>{"$map": {"a": 1}}</code></td><td><code>$map</code> only for keys that start with <code>$</code>; key order kept</td></tr>
+              <tr><td>opaque</td><td><code>{"$opaque": "bytes"}</code></td><td></td><td>decisions and explanations only: a native value with no equivalent</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="split even">
+          <div class="prose">
+            <h3>Out-of-range values</h3>
+            <p>An int outside 64 bits or a decimal beyond 38 digits is a <code>format_error</code> in a <strong>constant</strong>, but reads as null with reason <code>int_overflow</code> or <code>decimal_overflow</code> in <strong>data</strong>, so one bad value never rejects a whole input. A float literal that rounds to infinity (<code>1e400</code>) is an error; one too small (<code>1e-400</code>) reads as <code>0.0</code>.</p>
+            <h3>Time zones</h3>
+            <p>Zone names are case-sensitive and kept as written, aliases included. The offset must be the zone's offset at that instant, which also picks the right time when a clock change repeats an hour. The time zone database is <strong>bundled with the core</strong>, not taken from the operating system, so a document is valid or invalid in the same way on every machine.</p>
+            <p>Any other <code>$</code>-key is a <code>format_error</code>, so new types can be added without changing what existing documents mean.</p>
+          </div>
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>read: condition with non-canonical values</span></div>
+<pre class="code"><code class="language-json">{&quot;version&quot;: 1, &quot;condition&quot;: {&quot;op&quot;: &quot;and&quot;, &quot;operands&quot;: [
+  {&quot;op&quot;: &quot;in&quot;, &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tier&quot;]}, &quot;values&quot;: [&quot;silver&quot;, &quot;gold&quot;, &quot;bronze&quot;, &quot;gold&quot;]},
+  {&quot;op&quot;: &quot;and&quot;, &quot;operands&quot;: [
+    {&quot;op&quot;: &quot;between&quot;, &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;rate&quot;]},
+     &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;007.50&quot;}},
+     &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;1.5e1&quot;}}},
+    {&quot;op&quot;: &quot;ge&quot;, &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;since&quot;]},
+     &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$datetime&quot;: &quot;2026-10-31T09:30:00.000+01:00[Europe/Madrid]&quot;}}}]}]}}</code></pre></div>
+            <div class="window scroll"><div class="window-bar"><i></i><i></i><i></i><span>written back in canonical form</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;condition&quot;: {
+    &quot;op&quot;: &quot;and&quot;,
+    &quot;operands&quot;: [
+      {
+        &quot;op&quot;: &quot;in&quot;,
+        &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;tier&quot;]},
+        &quot;values&quot;: [&quot;bronze&quot;, &quot;gold&quot;, &quot;silver&quot;]
+      },
+      {
+        &quot;op&quot;: &quot;between&quot;,
+        &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;rate&quot;]},
+        &quot;low&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;7.50&quot;}},
+        &quot;high&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: {&quot;$decimal&quot;: &quot;15&quot;}},
+        &quot;closed&quot;: &quot;both&quot;
+      },
+      {
+        &quot;op&quot;: &quot;ge&quot;,
+        &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;since&quot;]},
+        &quot;right&quot;: {
+          &quot;op&quot;: &quot;const&quot;,
+          &quot;value&quot;: {&quot;$datetime&quot;: &quot;2026-10-31T09:30:00+01:00[Europe/Madrid]&quot;}
+        }
+      }
+    ]
+  }
+}</code></pre></div>
+            <p class="caption">The nested <code>and</code> is flattened, <code>in</code> values sorted and deduplicated, <code>007.50</code> becomes <code>7.50</code> and <code>1.5e1</code> becomes <code>15</code>, <code>closed</code> is written, and the zero fraction of the datetime is dropped.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conditions -->
+    <section class="section" id="conditions">
+      <div class="wrap">
+        <p class="eyebrow">Conditions</p>
+        <h2>Shape first, then the construction rules.</h2>
+        <div class="split">
+          <div class="prose">
+            <p>A condition node is an object with <code>"op"</code> (the node's tag) and one key per field; the full table is in the <a href="guide.html#nodes">guide</a>. A reader first checks the <strong>shape</strong>: missing, unknown or wrongly typed keys and unknown ops are <code>format_error</code>. It then builds the tree with exactly the construction rules the API applies, so a document can never hold a tree that the API could not build. Breaking one is an <code>expression_error</code>:</p>
+            <ul>
+              <li>path rules: non-empty, no empty string segment, no negative index;</li>
+              <li>node kinds: a condition is not a value operand, a value is not an operand of <code>and</code>, <code>or</code> or <code>not</code>;</li>
+              <li>a null constant only under <code>is_null</code> or as a whole payload value;</li>
+              <li>arithmetic only on number constants;</li>
+              <li><code>and</code> and <code>or</code> need two operands <em>as written</em>, before flattening;</li>
+              <li><code>in</code> values non-empty, non-null and from one type group;</li>
+              <li><code>between</code> constant bounds from one orderable group;</li>
+              <li>a <code>matches</code> pattern valid in Rust's <code>regex</code> syntax.</li>
+            </ul>
+            <p>The error points to the node whose construction fails: for a wrong operand, the node that takes it.</p>
+            <h3>Canonical writing</h3>
+            <p>Keys in table order with <code>op</code> first; <code>closed</code> always written; <code>and</code>/<code>or</code> flattened; <code>in</code> values ascending (numbers by exact value, with equal numbers of different types all kept, decimal before float before int; strings by code point; <code>false</code> before <code>true</code>; dates and datetimes in time order); values in canonical form.</p>
+          </div>
+          <div class="stack">
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>read: a rule written in any key order</span></div>
+<pre class="code"><code class="language-json">{&quot;version&quot;: 1, &quot;rule&quot;: {&quot;tags&quot;: [&quot;pricing&quot;, &quot;b2c&quot;, &quot;pricing&quot;],
+  &quot;priority&quot;: {&quot;$int&quot;: &quot;10&quot;},
+  &quot;then&quot;: {&quot;rate&quot;: {&quot;op&quot;: &quot;mul&quot;, &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;base_rate&quot;]}, &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 2}},
+           &quot;label&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;vip&quot;}},
+  &quot;when&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;vip&quot;]}, &quot;name&quot;: &quot;vip&quot;}}</code></pre></div>
+            <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>written back</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;rule&quot;: {
+    &quot;name&quot;: &quot;vip&quot;,
+    &quot;when&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;vip&quot;]},
+    &quot;then&quot;: {
+      &quot;rate&quot;: {
+        &quot;op&quot;: &quot;mul&quot;,
+        &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;base_rate&quot;]},
+        &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 2}
+      },
+      &quot;label&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: &quot;vip&quot;}
+    },
+    &quot;priority&quot;: 10,
+    &quot;tags&quot;: [&quot;b2c&quot;, &quot;pricing&quot;]
+  }
+}</code></pre></div>
+            <p class="caption">Keys in table order, payload members in their original order (that order is the output's), <code>$int</code> priority written bare, tags as a sorted set.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rules and rule sets -->
+    <section class="section alt" id="rules">
+      <div class="wrap">
+        <p class="eyebrow">Rules and rule sets</p>
+        <h2>Payload order is part of the meaning.</h2>
+        <div class="split even">
+          <div>
+            <div class="table-wrap" style="margin-top: 0;">
+              <table class="data">
+                <caption>Rule</caption>
+                <thead><tr><th>Key</th><th>Required</th><th>JSON type</th><th>Default</th></tr></thead>
+                <tbody>
+                  <tr><td><code>name</code></td><td>yes</td><td>string</td><td></td></tr>
+                  <tr><td><code>when</code></td><td>yes</td><td>condition node</td><td></td></tr>
+                  <tr><td><code>then</code></td><td>no</td><td>object: key → value node</td><td><code>{}</code></td></tr>
+                  <tr><td><code>priority</code></td><td>no</td><td>int</td><td><code>0</code></td></tr>
+                  <tr><td><code>tags</code></td><td>no</td><td>array of strings (a set)</td><td><code>[]</code></td></tr>
+                  <tr><td><code>description</code></td><td>no</td><td>string</td><td>none</td></tr>
+                  <tr><td><code>metadata</code></td><td>no</td><td>object: key → data value</td><td><code>{}</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-wrap">
+              <table class="data">
+                <caption>Rule set</caption>
+                <thead><tr><th>Key</th><th>Required</th><th>JSON type</th><th>Default</th></tr></thead>
+                <tbody>
+                  <tr><td><code>hit_policy</code></td><td>no</td><td><code>"first"</code>, <code>"priority"</code>, <code>"unique"</code>, <code>"any"</code>, <code>"rule_order"</code>, <code>"collect"</code></td><td><code>"first"</code></td></tr>
+                  <tr><td><code>aggregate</code></td><td>no</td><td><code>"sum"</code>, <code>"min"</code>, <code>"max"</code>, <code>"count"</code></td><td>none</td></tr>
+                  <tr><td><code>logic</code></td><td>no</td><td>string: a logic name</td><td><code>"boolean"</code></td></tr>
+                  <tr><td><code>strict</code></td><td>no</td><td>boolean</td><td><code>false</code></td></tr>
+                  <tr><td><code>rules</code></td><td>yes</td><td>array of rules (may be empty)</td><td></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="prose">
+            <p><strong>Member order matters.</strong> The order of <code>then</code> is the order of a decision's output keys and the order in which strict mode reports payload errors. Many tools reorder JSON objects (Go's <code>map[string]any</code>, PostgreSQL's <code>jsonb</code>, <code>jq -S</code>, JavaScript's integer-like keys), so every binding reads and writes through an order-preserving representation.</p>
+            <p>Policy, aggregate and logic names are lowercase and matched exactly. This version defines one logic, <code>"boolean"</code> (Kleene). An unknown logic name is a <code>registry_error</code>; one the format defines but this build lacks will be <code>unsupported</code>, naming the Cargo feature.</p>
+            <p>A rule's own checks come after its nodes are built, in this order: a non-empty name, a <code>when</code> that is not a value, no condition as a payload value. A rule set's come after all its rules: unique names, <code>aggregate</code> only with <code>collect</code>, a known logic.</p>
+            <p>Writers omit optional keys at their default, but always write <code>hit_policy</code> and <code>logic</code>: together they say how the rule set decides. <strong>Actions</strong> are host-language code and are not part of version 1; a writer rejects them with <code>unsupported</code> unless asked to <code>omit_actions</code>.</p>
+            <div class="callout planned">
+              <p><strong>Reserved:</strong> an object form of <code>logic</code> with parameters and an <code>alpha</code> threshold for graded logics (phase J). Version 1 readers reject both with <code>format_error</code>; adding them will not change the version.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Decisions -->
+    <section class="section" id="decisions">
+      <div class="wrap">
+        <p class="eyebrow">Decisions</p>
+        <h2>A decision is an audit record that can be read back and verified.</h2>
+        <p class="sub">A decision document records every rule's <strong>result tree</strong>, so it can be explained or audited later without evaluating again. Rules are named, not copied: a decision is always read together with the rule set that produced it. Outputs are not stored, because they follow from the payload trees.</p>
+        <div class="split">
+          <div class="stack">
+            <div class="window short"><div class="window-bar"><i></i><i></i><i></i><span>ruleset</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;ruleset&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;vip&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+            },
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;discount&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.15}},
+        &quot;priority&quot;: 10
+      },
+      {
+        &quot;name&quot;: &quot;loyal&quot;,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;or&quot;,
+          &quot;operands&quot;: [
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+              &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 2}
+            },
+            {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;newsletter&quot;]}
+          ]
+        },
+        &quot;then&quot;: {&quot;discount&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.05}},
+        &quot;priority&quot;: 5
+      }
+    ]
+  }
+}</code></pre></div>
+            <p class="caption">Input: <code>{"customer": {"years": 3, "newsletter": false}, "order": {"total": 1500}}</code></p>
+            <div class="prose">
+              <h3>Reading a decision: eight checks</h3>
+              <p>After its shape, the reader checks that the decision belongs to the rule set, in this order; the first failure is a <code>decision_mismatch</code> with a pointer:</p>
+              <ol>
+                <li><code>hit_policy</code>, <code>aggregate</code> and <code>logic</code> are the rule set's;</li>
+                <li><code>results</code> name exactly its rules, in order;</li>
+                <li>each tree matches the rule's nodes: ops, paths, children, constants;</li>
+                <li><code>then</code> is present exactly where payloads are evaluated;</li>
+                <li>each node's truth, value and reason is what evaluation gives from its children;</li>
+                <li><code>fired</code> agrees with <code>when</code>;</li>
+                <li><code>selected</code> is what the hit policy selects;</li>
+                <li><code>aggregated</code> is what the aggregate gives.</li>
+              </ol>
+              <p>So a decision a reader accepts is exactly one the core could have produced for some input. Leaves hold what was read from the input and are taken as they are.</p>
+            </div>
+          </div>
+          <div class="window scroll" style="max-height: none;">
+            <div class="window-bar"><i></i><i></i><i></i><span>decision.json</span><span class="src">Rust core output</span></div>
+<pre class="code" style="max-height: 1100px;"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;decision&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;results&quot;: [
+      {
+        &quot;rule&quot;: &quot;vip&quot;,
+        &quot;fired&quot;: false,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;and&quot;,
+          &quot;truth&quot;: false,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;value&quot;: 3},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;order&quot;, &quot;total&quot;], &quot;value&quot;: 1500},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 1000}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;loyal&quot;,
+        &quot;fired&quot;: true,
+        &quot;when&quot;: {
+          &quot;op&quot;: &quot;or&quot;,
+          &quot;truth&quot;: true,
+          &quot;children&quot;: [
+            {
+              &quot;op&quot;: &quot;gt&quot;,
+              &quot;truth&quot;: true,
+              &quot;children&quot;: [
+                {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;value&quot;: 3},
+                {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 2}
+              ]
+            },
+            {
+              &quot;op&quot;: &quot;field&quot;,
+              &quot;path&quot;: [&quot;customer&quot;, &quot;newsletter&quot;],
+              &quot;truth&quot;: false,
+              &quot;children&quot;: [
+                {
+                  &quot;op&quot;: &quot;field&quot;,
+                  &quot;path&quot;: [&quot;customer&quot;, &quot;newsletter&quot;],
+                  &quot;value&quot;: false
+                }
+              ]
+            }
+          ]
+        },
+        &quot;then&quot;: {&quot;discount&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 0.05}}
+      }
+    ],
+    &quot;selected&quot;: [&quot;loyal&quot;]
+  }
+}</code></pre>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data">
+            <caption>The decision above, altered and read back with its rule set (Rust core output). The unaltered document reads back and is written identically.</caption>
+            <thead><tr><th>Change</th><th>Code</th><th>Pointer</th><th>Message</th></tr></thead>
+            <tbody>
+<tr><td class="wrap"><code>results[0].when.children[0].truth: false → true</code></td><td><code>decision_mismatch</code></td><td class="wrap"><code>/decision/results/0/when/children/0/truth</code></td><td>evaluation gives false</td></tr>
+<tr><td class="wrap"><code>results[0].when.children[0].children[1].value: 5 → 2</code></td><td><code>decision_mismatch</code></td><td class="wrap"><code>/decision/results/0/when/children/0/children/1/value</code></td><td>not the rule&#x27;s constant</td></tr>
+<tr><td class="wrap"><code>results[1].then.discount.value: 0.05 → 0.5</code></td><td><code>decision_mismatch</code></td><td class="wrap"><code>/decision/results/1/then/discount/value</code></td><td>not the rule&#x27;s constant</td></tr>
+<tr><td class="wrap"><code>selected: [&quot;loyal&quot;] → [&quot;vip&quot;]</code></td><td><code>decision_mismatch</code></td><td class="wrap"><code>/decision/results/0/then</code></td><td>the payload was evaluated</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="split even">
+          <div class="table-wrap">
+            <table class="data">
+              <caption>Result tree node</caption>
+              <thead><tr><th>Key</th><th>When</th></tr></thead>
+              <tbody>
+                <tr><td><code>op</code></td><td>always: the tag evaluated</td></tr>
+                <tr><td><code>path</code></td><td>for <code>field</code></td></tr>
+                <tr><td><code>truth</code></td><td>conditions, and fields or constants in a condition position: <code>true</code>, <code>false</code> or <code>null</code> for unknown</td></tr>
+                <tr><td><code>value</code></td><td>every other node, payload values included</td></tr>
+                <tr><td><code>reason</code></td><td>when <code>truth</code> is unknown or <code>value</code> is null: <code>code</code>, <code>paths</code>, <code>types</code>, <code>detail</code></td></tr>
+                <tr><td><code>children</code></td><td>when the node has children; a <code>between</code> has its two halves</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="prose">
+            <p>A decision holds the values its conditions and payloads read, which may include whole lists or maps and personal data, so audit logs that store decisions must be treated like the input.</p>
+            <p>Reserved for later versions: <code>ruleset_digest</code>, a digest of the rule set document that readers will verify once a canonical byte form exists to hash, and <code>metadata</code> such as a correlation id. The core never stamps times or ids itself, so decisions stay deterministic.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explanations -->
+    <section class="section alt" id="explanations">
+      <div class="wrap">
+        <p class="eyebrow">Explanations and summaries</p>
+        <h2>Output-only documents for user interfaces and logs.</h2>
+        <div class="split even">
+          <div class="prose">
+            <p>An explanation document is the JSON form of <code>explain()</code>. It is <strong>output only</strong>: readers reject it with <code>unsupported</code>, because it follows deterministically from a decision and its rule set, which are the documents to store. To reproduce a past explanation, store the decision, the rule set and the core version.</p>
+            <p>Its top level holds <code>hit_policy</code>, <code>logic</code>, <code>selected</code> and one entry per rule: <code>rule</code>, <code>status</code>, a <code>note</code> for <code>fired</code>, <code>achievable</code> for <code>not_fired</code> and <code>unknown</code>, and the <code>requirement</code>.</p>
+            <p>A requirement is a cause or <code>{"all": [...]}</code> / <code>{"any": [...]}</code>. A cause holds <code>condition</code>, <code>at</code> (a JSON Pointer into the decision document), <code>truth</code>, <code>negated</code>, <code>values</code>, and <code>reason</code> and <code>counterfactual</code> when they apply. A counterfactual's <code>gap</code> is a number, <code>{"days": n}</code> or <code>{"microseconds": n}</code>.</p>
+            <p>A summary document holds the configuration and the arrays <code>rules</code>, <code>fields</code>, <code>outputs</code> and <code>tags</code>, always written even when empty. Examples of both are in the <a href="guide.html#explanations">guide</a>.</p>
+          </div>
+          <div class="window scroll">
+            <div class="window-bar"><i></i><i></i><i></i><span>explanation of the decision above</span><span class="src">Rust core output</span></div>
+<pre class="code"><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;loyal&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;vip&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+          },
+          &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;value&quot;: 3}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;op&quot;: &quot;gt&quot;, &quot;target&quot;: 5, &quot;gap&quot;: 2}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;loyal&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 2}
+          },
+          &quot;at&quot;: &quot;/decision/results/1/when/children/0&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;value&quot;: 3}]
+        }
+      }
+    ]
+  }
+}</code></pre>
+          </div>
+        </div>
+        <p class="caption">The <code>at</code> pointers refer to the decision document shown in the previous section.</p>
+      </div>
+    </section>
+
+    <!-- Limits -->
+    <section class="section" id="limits">
+      <div class="wrap">
+        <p class="eyebrow">Limits and error order</p>
+        <h2>A hostile file cannot exhaust memory or the stack.</h2>
+        <div class="split even">
+          <div>
+            <div class="table-wrap" style="margin-top: 0;">
+              <table class="data">
+                <thead><tr><th>Limit</th><th class="num">Default</th><th>Counted</th></tr></thead>
+                <tbody>
+                  <tr><td>document size</td><td class="num">16 MiB</td><td>bytes of JSON text</td></tr>
+                  <tr><td>JSON nesting</td><td class="num">1024</td><td>arrays and objects, the top-level object is 1, checked while parsing</td></tr>
+                  <tr><td>node depth</td><td class="num">256</td><td>condition or payload nodes, the root is 1, before flattening</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="caption">Callers can raise the limits but never disable them. Exceeding one is <code>limit_exceeded</code>. The core's JSON reader is iterative, with an explicit stack; it was tested with 200,000 levels of nesting.</p>
+          </div>
+          <div class="prose">
+            <p>A reader reports <strong>one</strong> error, the first it finds in this order:</p>
+            <ol>
+              <li>size, JSON nesting and syntax, duplicate keys included, in text order (located by 1-based line and column, in Unicode code points);</li>
+              <li><code>version</code>, before any other key;</li>
+              <li>shape and node depth, depth first in pre-order: an object's known keys in table order, then its unknown keys in text order (located by a JSON Pointer into the document as written);</li>
+              <li>construction rules, in post-order: children before parents; in a rule, the condition, then payload values, then the rule's own rules; in a rule set, the rules, then its own rules.</li>
+            </ol>
+            <p>Every implementation must report the same first error at the same location; the 187 reading vectors check it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Errors -->
+    <section class="section alt" id="errors">
+      <div class="wrap">
+        <p class="eyebrow">Error codes</p>
+        <h2>Stable codes, the same hierarchy in every language.</h2>
+        <p class="sub">Every error has a stable code, a fixed set of context fields and a message written by the core, so it reads the same everywhere. Conformance vectors compare the code and the compared fields, never the message or the hint.</p>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Code</th><th>Raised when</th><th>Compared context</th></tr></thead>
+              <tbody>
+                <tr><td><code>format_error</code></td><td>invalid JSON, shape, key, op, <code>$</code>-key, name or value</td><td><code>pointer</code>, or <code>line</code> and <code>column</code></td></tr>
+                <tr><td><code>unsupported_version</code></td><td><code>version</code> missing or unknown</td><td><code>pointer</code></td></tr>
+                <tr><td><code>limit_exceeded</code></td><td>too large or nested too deep</td><td><code>pointer</code> or <code>line</code>/<code>column</code></td></tr>
+                <tr><td><code>decision_mismatch</code></td><td>a decision does not belong to its rule set</td><td><code>pointer</code></td></tr>
+                <tr><td><code>expression_error</code></td><td>a node breaks a construction rule</td><td><code>pointer</code> when read from JSON</td></tr>
+                <tr><td><code>rule_definition_error</code></td><td>a rule or rule set breaks a construction rule</td><td><code>rule</code>, <code>pointer</code></td></tr>
+                <tr><td><code>rule_syntax_error</code></td><td>the text DSL cannot be parsed (phase D)</td><td><code>line</code>, <code>column</code></td></tr>
+                <tr><td><code>registry_error</code></td><td>a name is not registered (a logic)</td><td><code>name</code>, <code>pointer</code></td></tr>
+                <tr><td><code>rule_not_found</code></td><td>a rule is looked up by an unknown name</td><td><code>name</code></td></tr>
+                <tr><td><code>evaluation_error</code></td><td>strict mode met a read error, or a batch is not a collection</td><td><code>rule</code>, <code>path</code>, <code>row</code></td></tr>
+                <tr><td><code>missing_field</code></td><td>strict mode met a missing field</td><td><code>rule</code>, <code>path</code>, <code>row</code></td></tr>
+                <tr><td><code>type_mismatch</code></td><td>strict mode met incompatible groups</td><td><code>rule</code>, <code>path</code>, <code>types</code>, <code>row</code></td></tr>
+                <tr><td><code>hit_policy_error</code></td><td><code>unique</code>/<code>any</code> conflict, non-number aggregate, single <code>output</code> of a multi-hit decision</td><td><code>rules</code>, <code>row</code></td></tr>
+                <tr><td><code>action_error</code></td><td>an action raised during <code>run</code> (task D.4)</td><td><code>rule</code>, <code>executed</code></td></tr>
+                <tr><td><code>unsupported</code></td><td>this build, logic or format version cannot do it</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        <div class="split even">
+          <div class="stack">
+            <div class="window">
+              <div class="window-bar"><i></i><i></i><i></i><span>hierarchy</span></div>
+<pre class="term">CleanRulesError
+├── FormatError          <span class="dim">format_error, unsupported_version,
+│                        limit_exceeded, decision_mismatch</span>
+├── ExpressionError      <span class="dim">expression_error</span>
+├── RuleDefinitionError  <span class="dim">rule_definition_error</span>
+├── RuleSyntaxError      <span class="dim">rule_syntax_error</span>
+├── RegistryError        <span class="dim">registry_error</span>
+├── RuleNotFoundError    <span class="dim">rule_not_found</span>
+├── EvaluationError      <span class="dim">evaluation_error</span>
+│   ├── MissingFieldError  <span class="dim">missing_field</span>
+│   ├── TypeMismatchError  <span class="dim">type_mismatch</span>
+│   └── HitPolicyError     <span class="dim">hit_policy_error</span>
+├── ActionError          <span class="dim">action_error</span>
+└── UnsupportedError     <span class="dim">unsupported</span></pre>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="table-wrap" style="margin-top: 0;">
+              <table class="data">
+                <caption>In each language (specified; bindings are planned)</caption>
+                <thead><tr><th>Language</th><th>Form</th></tr></thead>
+                <tbody>
+                  <tr><td>Python</td><td>exceptions under <code>cleanrules.CleanRulesError</code>, keeping builtin bases (<code>ExpressionError</code> is also a <code>TypeError</code> and <code>ValueError</code>)</td></tr>
+                  <tr><td>Java, Scala</td><td>unchecked <code>…Exception</code> classes with <code>code()</code></td></tr>
+                  <tr><td>JS / TS</td><td><code>Error</code> subclasses with a <code>code</code> property</td></tr>
+                  <tr><td>C++</td><td>exceptions deriving from <code>std::runtime_error</code></td></tr>
+                  <tr><td>Go</td><td>one <code>*cleanrules.Error</code> with sentinels for <code>errors.Is</code></td></tr>
+                  <tr><td>C</td><td>a <code>cr_status</code> with one stable number per code</td></tr>
+                  <tr><td>Rust</td><td>a <code>#[non_exhaustive]</code> <code>Error</code> with <code>code()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="block">
+          <h3>Errors the core reports when reading</h3>
+          <p class="muted">Each tab shows a document and the error the core returns for it (Rust core output): code, location, message and hint.</p>
+          <div class="tabs" role="tablist" aria-label="Reading errors" data-tabgroup>
+<button role="tab" id="tab-err-unknown-key" aria-controls="err-unknown-key" aria-selected="true" tabindex="0">unknown-key</button>
+<button role="tab" id="tab-err-duplicate-key" aria-controls="err-duplicate-key" aria-selected="false" tabindex="-1">duplicate-key</button>
+<button role="tab" id="tab-err-newer-version" aria-controls="err-newer-version" aria-selected="false" tabindex="-1">newer-version</button>
+<button role="tab" id="tab-err-int-overflow" aria-controls="err-int-overflow" aria-selected="false" tabindex="-1">int-overflow</button>
+<button role="tab" id="tab-err-null-compare" aria-controls="err-null-compare" aria-selected="false" tabindex="-1">null-compare</button>
+<button role="tab" id="tab-err-lookaround" aria-controls="err-lookaround" aria-selected="false" tabindex="-1">lookaround</button>
+<button role="tab" id="tab-err-duplicate-rule" aria-controls="err-duplicate-rule" aria-selected="false" tabindex="-1">duplicate-rule</button>
+<button role="tab" id="tab-err-unknown-logic" aria-controls="err-unknown-logic" aria-selected="false" tabindex="-1">unknown-logic</button>
+          </div>
+          <div class="window">
+<div role="tabpanel" id="err-unknown-key" aria-labelledby="tab-err-unknown-key"><pre class="code"><code class="language-json">// input
+{&quot;version&quot;: 1, &quot;condition&quot;: {&quot;op&quot;: &quot;gt&quot;, &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;age&quot;]},
+  &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 18}, &quot;note&quot;: &quot;adults&quot;}}
+
+// error
+{
+  &quot;code&quot;: &quot;format_error&quot;,
+  &quot;pointer&quot;: &quot;/condition/note&quot;,
+  &quot;message&quot;: &quot;unknown key \&quot;note\&quot;&quot;,
+  &quot;hint&quot;: &quot;it may come from a newer version of cleanrules&quot;
+}</code></pre></div>
+<div role="tabpanel" id="err-duplicate-key" aria-labelledby="tab-err-duplicate-key" hidden><pre class="code"><code class="language-json">// input
+{
+  &quot;version&quot;: 1,
+  &quot;condition&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;vip&quot;], &quot;path&quot;: [&quot;blocked&quot;]}
+}
+
+// error
+{
+  &quot;code&quot;: &quot;format_error&quot;,
+  &quot;line&quot;: 3,
+  &quot;column&quot;: 49,
+  &quot;message&quot;: &quot;the key \&quot;path\&quot; appears twice in an object&quot;,
+  &quot;hint&quot;: &quot;JSON readers disagree on which duplicate wins, so cleanrules rejects them&quot;
+}</code></pre></div>
+<div role="tabpanel" id="err-newer-version" aria-labelledby="tab-err-newer-version" hidden><pre class="code"><code class="language-json">// input
+{&quot;version&quot;: 2, &quot;condition&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;vip&quot;]}}
+
+// error
+{
+  &quot;code&quot;: &quot;unsupported_version&quot;,
+  &quot;pointer&quot;: &quot;/version&quot;,
+  &quot;message&quot;: &quot;this reader knows format version 1&quot;
+}</code></pre></div>
+<div role="tabpanel" id="err-int-overflow" aria-labelledby="tab-err-int-overflow" hidden><pre class="code"><code class="language-json">// input
+{&quot;version&quot;: 1, &quot;condition&quot;: {&quot;op&quot;: &quot;gt&quot;, &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;n&quot;]},
+  &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 9223372036854775808}}}
+
+// error
+{
+  &quot;code&quot;: &quot;format_error&quot;,
+  &quot;pointer&quot;: &quot;/condition/right/value&quot;,
+  &quot;message&quot;: &quot;the integer 9223372036854775808 is outside the signed 64-bit range&quot;
+}</code></pre></div>
+<div role="tabpanel" id="err-null-compare" aria-labelledby="tab-err-null-compare" hidden><pre class="code"><code class="language-json">// input
+{&quot;version&quot;: 1, &quot;condition&quot;: {&quot;op&quot;: &quot;eq&quot;, &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;email&quot;]},
+  &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: null}}}
+
+// error
+{
+  &quot;code&quot;: &quot;expression_error&quot;,
+  &quot;pointer&quot;: &quot;/condition&quot;,
+  &quot;message&quot;: &quot;a null constant cannot be an operand of &#x27;eq&#x27;&quot;,
+  &quot;hint&quot;: &quot;test for missing values with is_null&quot;
+}</code></pre></div>
+<div role="tabpanel" id="err-lookaround" aria-labelledby="tab-err-lookaround" hidden><pre class="code"><code class="language-json">// input
+{&quot;version&quot;: 1, &quot;condition&quot;: {&quot;op&quot;: &quot;matches&quot;, &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;pin&quot;]},
+  &quot;pattern&quot;: &quot;^(?=.*[0-9]).{8,}$&quot;}}
+
+// error
+{
+  &quot;code&quot;: &quot;expression_error&quot;,
+  &quot;pointer&quot;: &quot;/condition&quot;,
+  &quot;message&quot;: &quot;the pattern \&quot;^(?=.*[0-9]).{8,}$\&quot; is not valid: regex parse error:\n    ^(?=.*[0-9]).{8,}$\n     ^^^\nerror: look-around, including look-ahead and look-behind, is not supported&quot;,
+  &quot;hint&quot;: &quot;patterns use the syntax of Rust&#x27;s regex crate: no lookaround, no backreferences&quot;
+}</code></pre></div>
+<div role="tabpanel" id="err-duplicate-rule" aria-labelledby="tab-err-duplicate-rule" hidden><pre class="code"><code class="language-json">// input
+{&quot;version&quot;: 1, &quot;ruleset&quot;: {&quot;rules&quot;: [
+  {&quot;name&quot;: &quot;a&quot;, &quot;when&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: true}},
+  {&quot;name&quot;: &quot;a&quot;, &quot;when&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: false}}]}}
+
+// error
+{
+  &quot;code&quot;: &quot;rule_definition_error&quot;,
+  &quot;pointer&quot;: &quot;/ruleset/rules/1/name&quot;,
+  &quot;message&quot;: &quot;two rules are named \&quot;a\&quot;&quot;
+}</code></pre></div>
+<div role="tabpanel" id="err-unknown-logic" aria-labelledby="tab-err-unknown-logic" hidden><pre class="code"><code class="language-json">// input
+{&quot;version&quot;: 1, &quot;ruleset&quot;: {&quot;logic&quot;: &quot;lukasiewicz&quot;, &quot;rules&quot;: []}}
+
+// error
+{
+  &quot;code&quot;: &quot;registry_error&quot;,
+  &quot;pointer&quot;: &quot;/ruleset/logic&quot;,
+  &quot;name&quot;: &quot;lukasiewicz&quot;,
+  &quot;available&quot;: [&quot;boolean&quot;],
+  &quot;message&quot;: &quot;unknown logic \&quot;lukasiewicz\&quot;&quot;,
+  &quot;hint&quot;: &quot;this version of the core has the logic \&quot;boolean\&quot;&quot;
+}</code></pre></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Schemas -->
+    <section class="section" id="schemas">
+      <div class="wrap">
+        <p class="eyebrow">JSON Schemas</p>
+        <h2>Schemas for editors, the specification for everything else.</h2>
+        <div class="split even">
+          <div class="prose">
+            <p>The <a href="https://github.com/cleanrules/cleanrules/tree/main/spec/schemas/v1" rel="noopener">JSON Schemas (draft 2020-12)</a> cover values and every kind of document, each with valid and invalid examples checked in CI. Point an editor at them with <code>"$schema"</code> to get completion and early warnings.</p>
+            <p>A schema cannot express everything: exact literals, numeric ranges, duplicate keys, construction rules and limits are defined by the specification, and the error code is always the specification's. When a schema and <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/json-format.md" rel="noopener"><code>json-format.md</code></a> disagree, the specification wins.</p>
+          </div>
+          <div class="table-wrap" style="margin-top: 0;">
+            <table class="data">
+              <thead><tr><th>Schema</th><th>Describes</th></tr></thead>
+              <tbody>
+                <tr><td><a href="https://github.com/cleanrules/cleanrules/blob/main/spec/schemas/v1/value.schema.json" rel="noopener"><code>value.schema.json</code></a></td><td>values and typed values</td></tr>
+                <tr><td><a href="https://github.com/cleanrules/cleanrules/blob/main/spec/schemas/v1/condition.schema.json" rel="noopener"><code>condition.schema.json</code></a></td><td>condition documents and nodes</td></tr>
+                <tr><td><a href="https://github.com/cleanrules/cleanrules/blob/main/spec/schemas/v1/rule.schema.json" rel="noopener"><code>rule.schema.json</code></a></td><td>rule documents</td></tr>
+                <tr><td><a href="https://github.com/cleanrules/cleanrules/blob/main/spec/schemas/v1/ruleset.schema.json" rel="noopener"><code>ruleset.schema.json</code></a></td><td>rule set documents</td></tr>
+                <tr><td><a href="https://github.com/cleanrules/cleanrules/blob/main/spec/schemas/v1/decision.schema.json" rel="noopener"><code>decision.schema.json</code></a></td><td>decisions and result trees</td></tr>
+                <tr><td><a href="https://github.com/cleanrules/cleanrules/blob/main/spec/schemas/v1/explanation.schema.json" rel="noopener"><code>explanation.schema.json</code></a></td><td>explanations (output only)</td></tr>
+                <tr><td><a href="https://github.com/cleanrules/cleanrules/blob/main/spec/schemas/v1/summary.schema.json" rel="noopener"><code>summary.schema.json</code></a></td><td>summaries (output only)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+      <ul class="footer-links" aria-label="Site">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="format.html">Format</a></li>
+        <li><a href="benchmarks.html">Benchmarks</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+      </ul>
+      <p>MIT licensed · © 2026 Jose L. Salmeron · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>
+

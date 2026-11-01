@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compare &amp; FAQ — cleanrules</title>
+  <meta name="description" content="How cleanrules relates to Drools, zen-engine, CLIPS, experta, OPA, Cedar, pandera, imodels, NeMo Guardrails and other tools, and answers to common questions.">
+  <meta name="theme-color" content="#0b0f14">
+  <link rel="canonical" href="https://cleanrules.github.io/compare.html">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="cleanrules: compare &amp; FAQ">
+  <meta property="og:description" content="Where cleanrules aims to differ from existing tools, stated fairly, and common questions.">
+  <meta property="og:url" content="https://cleanrules.github.io/compare.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" aria-label="cleanrules home">
+        <img src="assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="index.html">Overview</a>
+        <a href="guide.html">Guide</a>
+        <a href="format.html">Format</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="agents.html">Agents</a>
+        <a href="compare.html" aria-current="page">Compare</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" id="top">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="eyebrow">Compare &amp; FAQ</p>
+        <h1>Where cleanrules <span class="grad">fits</span>.</h1>
+        <p class="lead">cleanrules covers ground that several mature tools already cover, each in its own niche and language. This page says where it aims to differ, what exists today, and what is still a plan.</p>
+        <div class="callout caveat">
+          <p><strong>A fair warning first.</strong> The tools named here are established projects used in production. cleanrules is pre-alpha: its Rust core is complete in the repository, and no package is published yet. The table states goals, with their status, not a feature-by-feature verdict. The only measured comparison so far is with <a href="benchmarks.html#zen">zen-engine</a>, on one workload.</p>
+        </div>
+        <nav aria-label="On this page">
+          <ul class="toc">
+            <li><a href="#landscape">Landscape</a></li>
+            <li><a href="#design">What is different by design</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+    <section class="section" id="landscape">
+      <div class="wrap">
+        <p class="eyebrow">Landscape</p>
+        <h2>Six jobs, the tools people use for them, and the gap cleanrules aims at.</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Job</th><th>Tools often used</th><th>Where cleanrules aims to differ</th><th>Status in cleanrules</th></tr></thead>
+            <tbody>
+              <tr><td>Business rules</td><td>Drools, zen-engine, rule-engine</td><td>The same engine and the same rules in eight languages; decision tables; static audit; explanations with <code>all</code>/<code>any</code> requirements and counterfactuals.</td><td><span class="chip ref">core today</span> rules, six hit policies, explanations · <span class="chip planned">planned</span> decision tables (D.3), audit (J.4), bindings (C, E–H, N)</td></tr>
+              <tr><td>Expert systems</td><td>Drools, CLIPS, experta</td><td>Rete in Rust, truth maintenance, facts with degrees, a derivation tree for every conclusion.</td><td><span class="chip planned">planned · phase K</span></td></tr>
+              <tr><td>Data validation</td><td>pandera, Great Expectations</td><td>The same rules as the business logic, vectorised over Apache Arrow, with an explanation per row.</td><td><span class="chip planned">planned · phase I</span></td></tr>
+              <tr><td>ML explanations</td><td>imodels, alibi</td><td>Rules extracted from models that run and can be audited in any language (extraction in Python).</td><td><span class="chip planned">planned · phase L</span></td></tr>
+              <tr><td>Fuzzy logic</td><td>simpful, scikit-fuzzy, jFuzzyLogic</td><td>Fuzzy norms in the core, available in every language; <a href="https://fuzzytool.github.io/" rel="noopener">fuzzytool</a> for advanced work in Python.</td><td><span class="chip planned">planned · phase J</span></td></tr>
+              <tr><td>Agentic AI</td><td>OPA/Rego, Cedar, NeMo Guardrails, Guardrails AI</td><td>Deterministic, explained decisions as agent tools and guardrails (MCP and adapters); rules proposed by a model, validated, audited and tested before use; counterfactuals that tell the agent what to change.</td><td><span class="chip planned">planned · phase O</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">From the vision of the project's roadmap (<code>docs/PLAN.md</code>). Each of these tools does much that cleanrules does not aim to do; the column says only where cleanrules aims to add something.</p>
+      </div>
+    </section>
+
+    <section class="section alt" id="design">
+      <div class="wrap">
+        <p class="eyebrow">What is different by design</p>
+        <h2>Not one feature: the combination.</h2>
+        <div class="features">
+          <div class="feature">
+            <h3><span class="fi t"></span>Conditions as a serialisable tree</h3>
+            <p>Not lambdas. The engine can explain, write, read back, audit and vectorise every condition, and a condition crosses language boundaries unchanged. <a href="guide.html#conditions">Guide</a></p>
+          </div>
+          <div class="feature">
+            <h3><span class="fi u"></span>A swappable logic</h3>
+            <p>Every connective goes through one trait. Kleene's three-valued logic today; fuzzy t-norms and s-norms later, with the same rules. <a href="guide.html#logic">Guide</a></p>
+          </div>
+          <div class="feature">
+            <h3><span class="fi c"></span>Explanation and audit as outputs</h3>
+            <p>Every decision explains itself with requirements, values read and exact counterfactual gaps, and is a document that can be verified later. <a href="guide.html#explanations">Guide</a></p>
+          </div>
+          <div class="feature">
+            <h3><span class="fi t"></span>One core, eight languages</h3>
+            <p>All semantics in one Rust crate; bindings only build rules, convert data and run actions, so they cannot diverge. <a href="index.html#languages">Overview</a></p>
+          </div>
+          <div class="feature">
+            <h3><span class="fi u"></span>One conformance suite</h3>
+            <p>2,135 vectors with exact expected outputs, run by the core today and by every binding before it ships, once through JSON and once through native data.</p>
+          </div>
+          <div class="feature">
+            <h3><span class="fi c"></span>A stable bridge to agents</h3>
+            <p>Planned: an MCP server and thin adapters, with the engine never calling a model itself. <a href="agents.html">Agents</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="wrap">
+        <p class="eyebrow">FAQ</p>
+        <h2>Common questions.</h2>
+        <div class="faq">
+          <details>
+            <summary>Can I use cleanrules today?</summary>
+            <p>From Rust, by building the core from <a href="https://github.com/cleanrules/cleanrules" rel="noopener">the repository</a>: it implements the whole specification and passes all 2,135 conformance vectors, but it is not on crates.io yet, and its API will be reviewed before the first release (v0.1). The Python binding is the next milestone and the first public release; its wheels already build and pass their tests locally, with CI configured to build them for Linux, macOS and Windows, and its API is under way. The other languages follow (see the <a href="index.html#roadmap">roadmap</a>). The intended package names are <code>cleanrules</code> on crates.io, PyPI, npm and Hex, and <code>io.github.cleanrules:cleanrules</code> on Maven Central.</p>
+          </details>
+          <details>
+            <summary>Why three truth values instead of true and false?</summary>
+            <p>Because real data has holes. With two values, a missing field must become <code>false</code> (silently wrong) or an exception (one bad row aborts a batch). With Kleene logic it becomes <em>unknown</em>, with a structured reason the explanation shows, and a rule fires only when its condition is true. This is the same null handling as SQL. When you prefer errors, strict mode raises them. <a href="guide.html#unknowns">More</a></p>
+          </details>
+          <details>
+            <summary>Why not just write conditions as functions?</summary>
+            <p>A function can be run but not inspected. A tree can be explained (“short by 2”), written to JSON and read in another language, audited statically, evaluated column-wise over Arrow, and compiled into a Rete network. Actions, on the other hand, are ordinary code of your language: only conditions are data.</p>
+          </details>
+          <details>
+            <summary>Does cleanrules call a language model?</summary>
+            <p>No, and it never will: neither the core nor any binding calls a model. Agents will call cleanrules, through an MCP server and adapters (planned, phase O). <a href="agents.html">More</a></p>
+          </details>
+          <details>
+            <summary>Is it safe to load rules from a file I did not write?</summary>
+            <p>That is the design goal. Rules are data and are never executed as code; there is no <code>eval</code>. Regular expressions use Rust's <code>regex</code> syntax, which runs in linear time. Readers enforce limits on size (16 MiB), JSON nesting (1024) and node depth (256), and reject unknown and duplicate keys. Bindings will read only map keys and public data attributes, so a rule cannot reach into the process. The core has no <code>unsafe</code> code.</p>
+          </details>
+          <details>
+            <summary>How can eight languages behave identically?</summary>
+            <p>There is one engine. Bindings only convert data and call it. On top of that, the specification defines every observable behaviour, and the conformance vectors check it: each binding will run all of them twice, once through its JSON entry points and once converting the inputs into native data and using the idiomatic API.</p>
+          </details>
+          <details>
+            <summary>Will there be decision tables, a text DSL and YAML?</summary>
+            <p>Yes, in phase D: JSON and YAML loading in the core (so every language inherits it), a text DSL with its own parser aligned with fuzzytool's <code>rule_from_text</code>, and decision tables with DMN hit policies from rows, CSV or JSON.</p>
+          </details>
+          <details>
+            <summary>How fast is it?</summary>
+            <p>About 7.2 µs to evaluate 12 rules on one input, keeping every result tree, on an Apple M5; 6.4× and 6.7× faster than zen-engine 2.1.6 on one workload, while doing more work. Read the <a href="benchmarks.html">benchmarks page</a> for the method and the caveats before quoting either figure.</p>
+          </details>
+          <details>
+            <summary>What happened to RulePy?</summary>
+            <p><code>rulepy</code> was the first implementation, in Python. Its semantics were written down as the specification and harvested into conformance vectors, and its code was retired; it remains in the git tag <code>python-reference</code>. The Python package returns as a binding of the Rust core, under the name <code>cleanrules</code>.</p>
+          </details>
+          <details>
+            <summary>What is the licence, and how do I cite it?</summary>
+            <p>MIT. GitHub's “Cite this repository” button, driven by <a href="https://github.com/cleanrules/cleanrules/blob/main/CITATION.cff" rel="noopener"><code>CITATION.cff</code></a>, gives APA and BibTeX entries; a Zenodo DOI and a JOSS paper are planned with the 1.0 release. <a href="index.html#cite">BibTeX</a></p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+      <ul class="footer-links" aria-label="Site">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="format.html">Format</a></li>
+        <li><a href="benchmarks.html">Benchmarks</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+      </ul>
+      <p>MIT licensed · © 2026 Jose L. Salmeron · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>
+

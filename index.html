@@ -10,6 +10,7 @@
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icon-180.png">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
   <meta property="og:title" content="cleanrules — rules you can read, run and explain">
   <meta property="og:description" content="One Rust core, eight languages, every decision explained.">
   <meta property="og:url" content="https://cleanrules.github.io/">
@@ -29,26 +30,29 @@
 
   <header class="nav">
     <div class="wrap nav-inner">
-      <a class="brand" href="#top" aria-label="cleanrules home">
+      <a class="brand" href="index.html" aria-label="cleanrules home">
         <img src="assets/logo.svg" alt="" width="30" height="30">
         <span>cleanrules</span>
       </a>
-      <nav class="nav-links" aria-label="Main">
-        <a href="#agents">Agents</a>
-        <a href="#why">Why</a>
-        <a href="#explain">Explain</a>
-        <a href="#languages">Languages</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#cite">Cite</a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="index.html" aria-current="page">Overview</a>
+        <a href="guide.html">Guide</a>
+        <a href="format.html">Format</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="agents.html">Agents</a>
+        <a href="compare.html">Compare</a>
       </nav>
       <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
         <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
           <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
           <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
         </button>
         <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
-          GitHub
+          <span class="gh-label">GitHub</span>
         </a>
       </div>
     </div>
@@ -68,8 +72,9 @@
             data validation, ML explanations and guardrails for AI agents — and every decision tells you why.
           </p>
           <div class="cta">
-            <a class="btn btn-primary" href="#explain">See an explanation</a>
-            <a class="btn btn-ghost" href="#roadmap">Roadmap</a>
+            <a class="btn btn-primary" href="guide.html">Read the guide</a>
+            <a class="btn btn-ghost" href="#explain">See an explanation</a>
+            <a class="btn btn-ghost" href="#status">Status</a>
           </div>
           <ul class="truth-legend" aria-label="Three-valued logic">
             <li><span class="mark t">x</span> true</li>
@@ -101,8 +106,35 @@ print(decision.explain())</code></pre>
     - F.customer.years &gt; 5 is <b class="t">true</b> (customer.years = 7)
     - F.order.total &gt; 1000 is <b class="t">true</b> (order.total = 1500)</pre>
           </div>
-          <p class="caption">Real output of the Python reference implementation, which defines the semantics the Rust core will reproduce.</p>
+          <p class="caption">Real output of the Python reference implementation, whose semantics the Rust core now reproduces.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- Status at a glance -->
+    <section class="section alt" id="status">
+      <div class="wrap">
+        <p class="eyebrow">Status at a glance</p>
+        <h2>The Rust core is done. The bindings come next.</h2>
+        <p class="sub">Phases A (the contract between languages) and B (the Rust core) are complete. Nothing is published yet: the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
+        <div class="stats">
+          <div class="stat"><b>2,135</b><span>conformance vectors, all passing</span><small>1,948 through the core's runner (1,150 condition, 176 value, 302 evaluation, 317 explanation, 3 summary) and 187 document-reading cases. Every binding will run the same files.</small></div>
+          <div class="stat"><b>6 &times; 512</b><span>property tests</span><small><code>proptest</code>: evaluation never fails and gives reasons exactly for unknowns, De Morgan, strict mode, JSON round trips, decisions read back, explanation causes point the right way.</small></div>
+          <div class="stat"><b>7.2&nbsp;&micro;s</b><span>per input, 12 rules</span><small>One input under <code>first</code>, with every result tree kept for <code>explain()</code>. Apple M5, rustc 1.97.1, criterion. <a href="benchmarks.html">Method and caveats</a></small></div>
+          <div class="stat"><b>6.4&times; / 6.7&times;</b><span>vs zen-engine 2.1.6</span><small>1,000 evaluations under <code>first</code> / <code>collect</code>, on one workload and one machine, after checking both engines select the same rules. <a href="benchmarks.html#zen">Read the caveats</a></small></div>
+        </div>
+        <ul class="phase-strip" aria-label="Roadmap phases">
+          <li class="done">A · contract ✓</li>
+          <li class="done">B · Rust core ✓</li>
+          <li class="now">C · Python binding (C.1 wheels done; C.2 API under way)</li>
+          <li>D · rules as data</li>
+          <li>E–H · C/C++, JS, JVM, Go</li>
+          <li>I–L · validation, fuzzy &amp; audit, expert system, ML</li>
+          <li>N · Erlang</li>
+          <li>O · AI agents</li>
+          <li>M · 1.0</li>
+        </ul>
+        <p class="caption">No <code>unsafe</code> in the core (<code>unsafe_code = "forbid"</code>); <code>clippy</code> pedantic with <code>-D warnings</code>; CI configured for Linux, macOS and Windows. Source: <a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">CHANGELOG.md</a> and the roadmap in the repository.</p>
       </div>
     </section>
 
@@ -118,6 +150,7 @@ print(decision.explain())</code></pre>
             </div>
             <h3>Business rules</h3>
             <p>Priorities and DMN hit policies — <code>FIRST</code>, <code>PRIORITY</code>, <code>UNIQUE</code>, <code>ANY</code>, <code>RULE_ORDER</code>, <code>COLLECT</code> with aggregates — exact decimals and immutable outputs.</p>
+            <span class="chip ref">in the Rust core</span>
           </article>
           <article class="card">
             <div class="card-icon" aria-hidden="true">
@@ -125,6 +158,7 @@ print(decision.explain())</code></pre>
             </div>
             <h3>Expert systems</h3>
             <p>Forward chaining on a Rete network in Rust, deterministic agenda, truth maintenance and a derivation tree for every conclusion.</p>
+            <span class="chip planned">planned · phase K</span>
           </article>
           <article class="card">
             <div class="card-icon" aria-hidden="true">
@@ -132,6 +166,7 @@ print(decision.explain())</code></pre>
             </div>
             <h3>Data validation</h3>
             <p>The same rules, vectorised over Apache Arrow batches, with the same nulls, types and reasons as row-by-row evaluation — and an explanation per row.</p>
+            <span class="chip planned">planned · phase I</span>
           </article>
           <article class="card">
             <div class="card-icon" aria-hidden="true">
@@ -139,6 +174,7 @@ print(decision.explain())</code></pre>
             </div>
             <h3>ML explanations</h3>
             <p>Extract rules from models (trees, RuleFit, fuzzy rules via fuzzytool), measure fidelity and coverage, then run and audit them in any language.</p>
+            <span class="chip planned">planned · phase L</span>
           </article>
         </div>
       </div>
@@ -180,7 +216,7 @@ print(decision.explain())</code></pre>
             <p>Thin, optional adapters for the Claude Agent SDK, OpenAI Agents SDK, LangChain, Pydantic AI, the Vercel AI SDK, LangChain4j and Spring AI. Everything else connects through MCP.</p>
           </article>
         </div>
-        <p class="caption center">Planned: phase O of the roadmap.</p>
+        <p class="caption center">Planned: phase O of the roadmap. <a href="agents.html">How the agent integration is designed →</a></p>
       </div>
     </section>
 
@@ -204,11 +240,11 @@ print(decision.explain())</code></pre>
             <p>All semantics live in the Rust core. Bindings only build rules idiomatically, convert data and run your actions — so a rule written in Java decides exactly the same in Go.</p>
           </div>
           <div class="feature">
-            <h3><span class="fi t"></span>Fuzzy logic built in</h3>
+            <h3><span class="fi t"></span>Fuzzy logic built in <span class="chip planned">phase J</span></h3>
             <p>Swap the logic, keep the rules: t-norms, s-norms and complements from <a href="https://fuzzytool.github.io/" rel="noopener">fuzzytool</a>, with firing degrees and α-thresholds. Same <code>&amp;</code>, <code>|</code>, <code>~</code> operators.</p>
           </div>
           <div class="feature">
-            <h3><span class="fi u"></span>Static audit</h3>
+            <h3><span class="fi u"></span>Static audit <span class="chip planned">phase J</span></h3>
             <p>Find unsatisfiable conditions, shadowed rules, overlaps, contradictions and coverage gaps before they reach production.</p>
           </div>
           <div class="feature">
@@ -250,6 +286,7 @@ print(decision.explain())</code></pre>
               <button role="tab" aria-selected="true" aria-controls="sc-loyal" id="tab-loyal" data-input='{"customer": {"years": 3, "country": "ES", "newsletter": false}, "order": {"total": 1500}}'>3-year customer</button>
               <button role="tab" aria-selected="false" aria-controls="sc-missing" id="tab-missing" tabindex="-1" data-input='{"customer": {}, "order": {"total": 1500}}  — FIRST policy, rule vip only'>Missing data</button>
               <button role="tab" aria-selected="false" aria-controls="sc-summary" id="tab-summary" tabindex="-1" data-input="rules.summary() — static, nothing is evaluated">summary()</button>
+              <button role="tab" aria-selected="false" aria-controls="sc-json" id="tab-json" tabindex="-1" data-input="3-year customer — explain() written as JSON by the Rust core">JSON · Rust core</button>
             </div>
             <div class="window output">
               <div class="window-bar"><i></i><i></i><i></i><span id="demo-input">{"customer": {"years": 3, "country": "ES", "newsletter": false}, "order": {"total": 1500}}</span></div>
@@ -280,8 +317,66 @@ Fields read (4):
   customer.newsletter  conditions of loyal
   customer.country     conditions of blocked
 Outputs: discount</pre>
+<pre class="code scroll-pane" role="tabpanel" id="sc-json" aria-labelledby="tab-json" hidden><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;explanation&quot;: {
+    &quot;hit_policy&quot;: &quot;priority&quot;,
+    &quot;logic&quot;: &quot;boolean&quot;,
+    &quot;selected&quot;: [&quot;loyal&quot;],
+    &quot;rules&quot;: [
+      {
+        &quot;rule&quot;: &quot;vip&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 5}
+          },
+          &quot;at&quot;: &quot;/decision/results/0/when/children/0&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;value&quot;: 3}],
+          &quot;counterfactual&quot;: {&quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;op&quot;: &quot;gt&quot;, &quot;target&quot;: 5, &quot;gap&quot;: 2}
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;loyal&quot;,
+        &quot;status&quot;: &quot;selected&quot;,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;gt&quot;,
+            &quot;left&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;]},
+            &quot;right&quot;: {&quot;op&quot;: &quot;const&quot;, &quot;value&quot;: 2}
+          },
+          &quot;at&quot;: &quot;/decision/results/1/when/children/0&quot;,
+          &quot;truth&quot;: true,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;customer&quot;, &quot;years&quot;], &quot;value&quot;: 3}]
+        }
+      },
+      {
+        &quot;rule&quot;: &quot;blocked&quot;,
+        &quot;status&quot;: &quot;not_fired&quot;,
+        &quot;achievable&quot;: true,
+        &quot;requirement&quot;: {
+          &quot;condition&quot;: {
+            &quot;op&quot;: &quot;in&quot;,
+            &quot;operand&quot;: {&quot;op&quot;: &quot;field&quot;, &quot;path&quot;: [&quot;customer&quot;, &quot;country&quot;]},
+            &quot;values&quot;: [&quot;XX&quot;, &quot;YY&quot;]
+          },
+          &quot;at&quot;: &quot;/decision/results/2/when&quot;,
+          &quot;truth&quot;: false,
+          &quot;negated&quot;: false,
+          &quot;values&quot;: [{&quot;path&quot;: [&quot;customer&quot;, &quot;country&quot;], &quot;value&quot;: &quot;ES&quot;}]
+        }
+      }
+    ]
+  }
+}</code></pre>
             </div>
-            <p class="caption">Outputs captured from the Python reference implementation (<code>rulepy</code>, the predecessor of the Python binding).</p>
+            <p class="caption">The text outputs were captured from the Python reference implementation (<code>rulepy</code>, the predecessor of the Python binding). The last tab is real output of the Rust core for the first scenario: the same explanation as a JSON document. The core's text rendering arrives with the text DSL (task D.2). <a href="guide.html#explanations">How explanations work →</a></p>
           </div>
         </div>
       </div>
@@ -422,8 +517,24 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
       </div>
     </section>
 
+    <!-- Go deeper -->
+    <section class="section alt" id="docs">
+      <div class="wrap">
+        <p class="eyebrow">Go deeper</p>
+        <h2>Real examples, real numbers, plans labelled as plans.</h2>
+        <p class="sub">The pages below explain the semantics with examples run through the Rust core, quote the benchmarks with their caveats, and describe what is still planned as planned.</p>
+        <div class="cards five">
+          <a class="card" href="guide.html"><h3>Concepts guide</h3><p>Conditions as data, Kleene logic, unknowns and their reasons, strict mode, the six hit policies, explanations with counterfactuals, summaries.</p><span class="more">Read the guide →</span></a>
+          <a class="card" href="format.html"><h3>JSON format v1</h3><p>The contract between languages: value encoding, conditions, rules, decisions that are read back and verified, limits and error codes.</p><span class="more">See the format →</span></a>
+          <a class="card" href="benchmarks.html"><h3>Benchmarks</h3><p>Criterion measurements of the core and the comparison with zen-engine, with the workload, the machine and what the numbers do not say.</p><span class="more">See the numbers →</span></a>
+          <a class="card" href="agents.html"><h3>AI agents <span class="chip planned">planned</span></h3><p>MCP server, guardrails that allow, deny or ask, adapters, and LLM-proposed rules that are validated and approved before use.</p><span class="more">See the design →</span></a>
+          <a class="card" href="compare.html"><h3>Compare &amp; FAQ</h3><p>Where cleanrules sits next to Drools, zen-engine, CLIPS, OPA, Cedar, pandera, imodels and NeMo Guardrails, and common questions.</p><span class="more">Compare →</span></a>
+        </div>
+      </div>
+    </section>
+
     <!-- Roadmap -->
-    <section class="section alt" id="roadmap">
+    <section class="section" id="roadmap">
       <div class="wrap">
         <p class="eyebrow">Roadmap</p>
         <h2>Specification first, then the core, then every language.</h2>
@@ -431,7 +542,7 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
         <ol class="timeline">
           <li class="done"><span class="step">A</span><div><h3>Contract between languages</h3><p>JSON format and schemas, neutral data model, and conformance vectors harvested from the Python reference implementation.</p></div></li>
           <li class="done"><span class="step">B</span><div><h3>Rust core</h3><p>Everything above in Rust, passing 100% of the vectors. Property tests and benchmarks.</p></div></li>
-          <li class="now"><span class="step">C</span><div><h3>Python binding</h3><p>PyO3 wheels with the ergonomics of the reference: <code>F</code>, operators, pitfall protection. First public release.</p></div></li>
+          <li class="now"><span class="step">C</span><div><h3>Python binding</h3><p>PyO3 wheels (<code>abi3</code>, free-threaded <code>cp314t</code> and <code>abi3t</code>) are built and tested; next, the API with the ergonomics of the reference: <code>F</code>, operators, pitfall protection. First public release.</p></div></li>
           <li><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text DSL aligned with fuzzytool, decision tables.</p></div></li>
           <li><span class="step">E–H, N</span><div><h3>C/C++, JavaScript, JVM, Go, Erlang</h3><p>The C ABI first, then each binding with its own conformance runner; Erlang through a rustler NIF.</p></div></li>
           <li><span class="step">I–L</span><div><h3>Validation, fuzzy &amp; audit, expert system, ML</h3><p>Arrow batches, fuzzy norms, static audit, Rete, rule extraction from models.</p></div></li>
@@ -442,7 +553,7 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
     </section>
 
     <!-- Family + cite -->
-    <section class="section" id="cite">
+    <section class="section alt" id="cite">
       <div class="wrap two">
         <div>
           <p class="eyebrow">Family</p>
@@ -470,7 +581,17 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
 
   <footer class="footer">
     <div class="wrap footer-inner">
-      <a class="brand" href="#top"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+      <ul class="footer-links" aria-label="Site">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="format.html">Format</a></li>
+        <li><a href="benchmarks.html">Benchmarks</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+      </ul>
       <p>MIT licensed · © 2026 Jose L. Salmeron · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
     </div>
   </footer>
@@ -485,6 +606,7 @@ io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-latex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
   <script src="assets/main.js"></script>
 </body>
 </html>

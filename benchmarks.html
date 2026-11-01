@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Benchmarks — cleanrules</title>
+  <meta name="description" content="Criterion benchmarks of the cleanrules Rust core and a comparison with zen-engine 2.1.6 on one loan screening workload, with the method, the machine, the confidence intervals and the caveats.">
+  <meta name="theme-color" content="#0b0f14">
+  <link rel="canonical" href="https://cleanrules.github.io/benchmarks.html">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="cleanrules benchmarks">
+  <meta property="og:description" content="Rust core measurements and a zen-engine comparison, with method and caveats.">
+  <meta property="og:url" content="https://cleanrules.github.io/benchmarks.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" aria-label="cleanrules home">
+        <img src="assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="index.html">Overview</a>
+        <a href="guide.html">Guide</a>
+        <a href="format.html">Format</a>
+        <a href="benchmarks.html" aria-current="page">Benchmarks</a>
+        <a href="agents.html">Agents</a>
+        <a href="compare.html">Compare</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" id="top">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="eyebrow">Benchmarks</p>
+        <h1>Numbers, with the <span class="grad">method</span> and the <span class="grad">caveats</span>.</h1>
+        <p class="lead">The first measurements of the Rust core, taken on 2026-11-01 with <code>criterion</code>, and a comparison with <a href="https://crates.io/crates/zen-engine" rel="noopener">zen-engine</a> on the same rules. Every figure below is copied from the result files in <a href="https://github.com/cleanrules/cleanrules/tree/main/benchmarks/results" rel="noopener"><code>benchmarks/results/</code></a>.</p>
+        <div class="callout caveat">
+          <p><strong>Read these as a first data point, not a verdict.</strong> One workload, one machine, the Rust core only. They say nothing yet about other rule sets, other hardware, or the cost of crossing into Python, JavaScript or the JVM, which each binding will measure on its own. Compare runs on the same machine only.</p>
+        </div>
+        <nav aria-label="On this page">
+          <ul class="toc">
+            <li><a href="#method">Method</a></li>
+            <li><a href="#workload">Workload</a></li>
+            <li><a href="#core">Core results</a></li>
+            <li><a href="#zen">zen-engine comparison</a></li>
+            <li><a href="#reproduce">Reproduce</a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Method -->
+    <section class="section" id="method">
+      <div class="wrap">
+        <p class="eyebrow">Method</p>
+        <h2>Criterion, release profile, confidence intervals.</h2>
+        <div class="split even">
+          <div class="prose">
+            <p>The suites use <a href="https://crates.io/crates/criterion" rel="noopener">criterion</a> 0.8 (without its default features: no plots, no rayon). Each case reports criterion's estimate of the <strong>mean time per iteration</strong> and its <strong>95&nbsp;% confidence interval</strong>. Inputs are wrapped in <code>black_box</code>, and single-input cases cycle through the 1,000 applicants, so each iteration evaluates the next one.</p>
+            <p>Two suites live in <code>crates/core/benches/</code>:</p>
+            <ul>
+              <li><code>eval</code>: one input and batches of 1,000 under <code>first</code>, <code>priority</code> and <code>collect</code>; one condition tree; reading and writing the rule set as JSON.</li>
+              <li><code>explain</code>: explaining 1,000 decisions, with and without writing each explanation as JSON text; evaluating and explaining together; the summary of the rule set.</li>
+            </ul>
+            <p>Every evaluation keeps the full result tree of every rule, because that is what <code>explain()</code> needs and what a decision document records. Nothing in these numbers turns that off.</p>
+          </div>
+          <div class="table-wrap" style="margin-top: 0;">
+            <table class="data">
+              <caption>Machine and toolchain (from the result files)</caption>
+              <tbody>
+                <tr><td>Date</td><td>2026-11-01</td></tr>
+                <tr><td>CPU</td><td>Apple M5, 10 cores</td></tr>
+                <tr><td>Memory</td><td>32 GiB</td></tr>
+                <tr><td>OS</td><td>Darwin 27.0.0 arm64</td></tr>
+                <tr><td>Compiler</td><td>rustc 1.97.1 (8bab26f4f 2026-07-14)</td></tr>
+                <tr><td>Profile</td><td>bench (release)</td></tr>
+                <tr><td>Rival</td><td>zen-engine 2.1.6</td></tr>
+                <tr><td>Interval</td><td>criterion's 95&nbsp;% confidence interval of the mean time per iteration</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workload -->
+    <section class="section alt" id="workload">
+      <div class="wrap">
+        <p class="eyebrow">Workload</p>
+        <h2>Twelve loan screening rules, 1,000 applicants.</h2>
+        <p class="sub">Both suites and the comparison share one workload (<code>crates/core/benches/common</code>): a rule set that uses every family of node, and deterministic applicants from a fixed-seed linear congruential generator, so every run sees the same inputs. About one applicant in ten has no score, and one in twenty has a null income.</p>
+        <div class="split">
+          <div class="table-wrap" style="margin-top: 0;">
+            <table class="data">
+              <caption>The rules, in order. Each outputs its name and <code>rate = base_rate × n</code>, where n is its position (1–12).</caption>
+              <thead><tr><th>Rule</th><th>Condition</th></tr></thead>
+              <tbody>
+                <tr><td><code>underage</code></td><td><code>age &lt; 18</code></td></tr>
+                <tr><td><code>sanctioned</code></td><td><code>country in ["KP", "IR", "SY"]</code></td></tr>
+                <tr><td><code>bad_email</code></td><td class="wrap"><code>not email matches ^[^@\s]+@[^@\s]+\.[a-z]+$</code></td></tr>
+                <tr><td><code>high_debt</code></td><td><code>debt / income &gt; 0.6</code></td></tr>
+                <tr><td><code>low_score</code></td><td><code>score &lt; 500</code></td></tr>
+                <tr><td><code>prime</code></td><td class="wrap"><code>score &gt;= 750 and income &gt; 50000 and employment in ["employed", "self_employed"]</code></td></tr>
+                <tr><td><code>near_prime</code></td><td class="wrap"><code>score between 650 and 750 and income &gt; 30000</code></td></tr>
+                <tr><td><code>student</code></td><td><code>employment == "student" and age &lt; 26</code></td></tr>
+                <tr><td><code>senior</code></td><td><code>age &gt;= 65 and income &gt; 20000</code></td></tr>
+                <tr><td><code>partner</code></td><td><code>email ends_with "@example.com"</code></td></tr>
+                <tr><td><code>manual_review</code></td><td><code>score is_null or income is_null</code></td></tr>
+                <tr><td><code>default</code></td><td><code>true</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="prose">
+            <h3>Applicants</h3>
+            <ul>
+              <li><code>age</code>: an int from 16 to 85;</li>
+              <li><code>income</code>: a float from 5,000 to 124,000, null for about 1 in 20;</li>
+              <li><code>debt</code>: a decimal with two places, up to 89,999.99;</li>
+              <li><code>score</code>: an int from 300 to 849, missing for about 1 in 10;</li>
+              <li><code>country</code>: one of ES, FR, DE, US, KP, MX, IT;</li>
+              <li><code>employment</code>: employed, self_employed, student or retired;</li>
+              <li><code>email</code>: one of four addresses, one of them malformed;</li>
+              <li><code>base_rate</code>: the decimal 1.25.</li>
+            </ul>
+            <p>Missing scores and null incomes exercise unknown truth values and their reasons on every run, and the decimal <code>debt</code> exercises exact comparison and conversion to float for arithmetic.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core results -->
+    <section class="section" id="core">
+      <div class="wrap">
+        <p class="eyebrow">Core results</p>
+        <h2>About 7 µs to evaluate twelve rules and keep every tree.</h2>
+        <p class="sub">From <a href="https://github.com/cleanrules/cleanrules/blob/main/benchmarks/results/2026-11-01-core.json" rel="noopener"><code>2026-11-01-core.json</code></a>. The last column divides batch cases by 1,000; it is derived here, not measured separately.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Case</th><th>What it measures</th><th class="num">Estimate</th><th class="num">95&nbsp;% CI</th><th class="num">Per input</th></tr></thead>
+            <tbody>
+<tr><td><code>evaluate/one/first</code></td><td>evaluate one input, 12 rules, <code>first</code></td><td class="num">7.25 µs</td><td class="num">7.23 µs – 7.26 µs</td><td class="num"></td></tr>
+<tr><td><code>evaluate/batch_1000/first</code></td><td><code>evaluate_many</code> on 1,000 inputs, <code>first</code></td><td class="num">7.97 ms</td><td class="num">7.89 ms – 8.06 ms</td><td class="num">7.97 µs</td></tr>
+<tr><td><code>evaluate/one/priority</code></td><td>evaluate one input, <code>priority</code></td><td class="num">7.56 µs</td><td class="num">7.49 µs – 7.64 µs</td><td class="num"></td></tr>
+<tr><td><code>evaluate/batch_1000/priority</code></td><td><code>evaluate_many</code> on 1,000 inputs, <code>priority</code></td><td class="num">10.18 ms</td><td class="num">9.47 ms – 11.16 ms</td><td class="num">10.18 µs</td></tr>
+<tr><td><code>evaluate/one/collect</code></td><td>evaluate one input, <code>collect</code></td><td class="num">8.77 µs</td><td class="num">8.73 µs – 8.82 µs</td><td class="num"></td></tr>
+<tr><td><code>evaluate/batch_1000/collect</code></td><td><code>evaluate_many</code> on 1,000 inputs, <code>collect</code></td><td class="num">9.32 ms</td><td class="num">9.26 ms – 9.38 ms</td><td class="num">9.32 µs</td></tr>
+<tr><td><code>condition/prime</code></td><td>one condition tree: <code>prime</code>, two comparisons and an <code>in</code> under <code>and</code></td><td class="num">1.06 µs</td><td class="num">1.04 µs – 1.09 µs</td><td class="num"></td></tr>
+<tr><td><code>json/read_ruleset</code></td><td>read the 12-rule set from JSON text</td><td class="num">177.3 µs</td><td class="num">176.6 µs – 178.0 µs</td><td class="num"></td></tr>
+<tr><td><code>json/write_ruleset</code></td><td>write the 12-rule set to JSON text</td><td class="num">37.00 µs</td><td class="num">36.85 µs – 37.14 µs</td><td class="num"></td></tr>
+<tr><td><code>explain/batch_1000/first</code></td><td>explain 1,000 decisions, <code>first</code></td><td class="num">11.50 ms</td><td class="num">11.46 ms – 11.54 ms</td><td class="num">11.50 µs</td></tr>
+<tr><td><code>explain/batch_1000_json/first</code></td><td>explain 1,000 decisions and write each as JSON text, <code>first</code></td><td class="num">58.36 ms</td><td class="num">58.20 ms – 58.52 ms</td><td class="num">58.36 µs</td></tr>
+<tr><td><code>explain/evaluate_and_explain_1000/first</code></td><td>evaluate and explain 1,000 inputs, <code>first</code></td><td class="num">19.13 ms</td><td class="num">19.11 ms – 19.15 ms</td><td class="num">19.13 µs</td></tr>
+<tr><td><code>explain/batch_1000/collect</code></td><td>explain 1,000 decisions, <code>collect</code></td><td class="num">11.61 ms</td><td class="num">11.57 ms – 11.66 ms</td><td class="num">11.61 µs</td></tr>
+<tr><td><code>explain/batch_1000_json/collect</code></td><td>explain 1,000 decisions and write each as JSON text, <code>collect</code></td><td class="num">57.61 ms</td><td class="num">57.46 ms – 57.76 ms</td><td class="num">57.61 µs</td></tr>
+<tr><td><code>explain/evaluate_and_explain_1000/collect</code></td><td>evaluate and explain 1,000 inputs, <code>collect</code></td><td class="num">20.78 ms</td><td class="num">20.72 ms – 20.85 ms</td><td class="num">20.78 µs</td></tr>
+<tr><td><code>summary</code></td><td>summary of the rule set, written as JSON text</td><td class="num">20.72 µs</td><td class="num">20.42 µs – 21.19 µs</td><td class="num"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="split even">
+          <div class="prose">
+            <h3>What the numbers say</h3>
+            <ul>
+              <li>Evaluating one applicant against 12 rules, keeping all result trees, takes about <strong>7.2 µs</strong> under <code>first</code>, 7.6 µs under <code>priority</code> and 8.8 µs under <code>collect</code>, where every fired rule is selected and its payload evaluated.</li>
+              <li>Building an explanation from a decision takes about <strong>11.5 µs</strong>; evaluating and explaining together, about 19–21 µs per input.</li>
+              <li>Writing the explanation as JSON text costs about four times as much as building it (58 µs against 11.5 µs). The roadmap lists optimising it as a task of its own, to be justified by a benchmark.</li>
+            </ul>
+          </div>
+          <div class="prose">
+            <h3>What they do not say</h3>
+            <ul>
+              <li>The <code>evaluate/batch_1000/priority</code> interval is wide (9.47–11.16 ms): that case was noisy in this run, so its estimate is less precise than the others.</li>
+              <li>The suite's <code>evaluate/batch_1000/first</code> (7.97 ms) and the comparison's cleanrules case (7.22 ms) come from separate runs and loops (<code>evaluate_many</code> against a loop over <code>evaluate</code>); do not read the difference as a speed-up.</li>
+              <li>No parallelism is involved: everything runs on one thread.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- zen comparison -->
+    <section class="section alt" id="zen">
+      <div class="wrap">
+        <p class="eyebrow">Comparison</p>
+        <h2>zen-engine 2.1.6 on the same rules.</h2>
+        <p class="sub">zen-engine is a Rust decision engine for JDM decision tables. In <a href="https://github.com/cleanrules/cleanrules/tree/main/benchmarks/zen" rel="noopener"><code>benchmarks/zen</code></a> the same 12 rules become one zen decision table, compiled and evaluated without trace, on the same 1,000 applicants. Time is for 1,000 evaluations.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <caption>From <a href="https://github.com/cleanrules/cleanrules/blob/main/benchmarks/results/2026-11-01-zen.json" rel="noopener"><code>2026-11-01-zen.json</code></a></caption>
+            <thead><tr><th>Policy</th><th class="num">cleanrules</th><th class="num">95&nbsp;% CI</th><th class="num">zen-engine</th><th class="num">95&nbsp;% CI</th><th class="num">Factor</th></tr></thead>
+            <tbody>
+<tr><td><code>first</code></td><td class="num">7.22 ms</td><td class="num">7.22 ms – 7.23 ms</td><td class="num">46.42 ms</td><td class="num">46.37 ms – 46.47 ms</td><td class="num">6.4×</td></tr>
+<tr><td><code>collect</code></td><td class="num">8.51 ms</td><td class="num">8.50 ms – 8.52 ms</td><td class="num">56.70 ms</td><td class="num">56.62 ms – 56.79 ms</td><td class="num">6.7×</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="split even">
+          <div class="prose">
+            <h3>Agreement is checked before measuring</h3>
+            <p>For every one of the 1,000 applicants, under <code>first</code> and under <code>collect</code>, the benchmark asserts that both engines select the <strong>same rules</strong>, and that zen leaves its input unchanged. They agree on all of them; the check was verified to catch a deliberately altered row. The intervals do not overlap.</p>
+            <h3>How each side is driven</h3>
+            <ul>
+              <li>cleanrules: a loop calling <code>RuleSet::evaluate</code> on each input.</li>
+              <li>zen: a loop calling <code>Decision::evaluate</code> on a clone of each prepared input, polled to completion with a no-op waker, since a decision table has no asynchronous node; no executor is measured. Inputs are converted to zen's JSON once, before timing, with decimals as floats.</li>
+            </ul>
+          </div>
+          <div class="callout caveat" style="margin-top: 0;">
+            <p><strong>The engines do not do the same work.</strong> cleanrules evaluates every rule and keeps every result tree, so that the decision can be explained and written as an audit record. zen's first hit stops at the first matching row and keeps no trace. The factor therefore compares cleanrules doing more work against zen doing less.</p>
+            <p><strong>One workload, one machine.</strong> 6.4× under <code>first</code> and 6.7× under <code>collect</code> hold for this rule set on an Apple M5. Other rule sets, larger tables, zen features not used here, or other hardware may give different results. Nothing here measures the bindings.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reproduce -->
+    <section class="section" id="reproduce">
+      <div class="wrap">
+        <p class="eyebrow">Reproduce</p>
+        <h2>Run them on your machine.</h2>
+        <div class="split even">
+          <div class="window">
+            <div class="window-bar"><i></i><i></i><i></i><span>shell</span><button class="copy" type="button" data-copy="bench-cmd">Copy</button></div>
+<pre class="code" id="bench-cmd"><code class="language-bash">git clone https://github.com/cleanrules/cleanrules
+cd cleanrules
+
+# The core's suites
+cargo bench -p cleanrules --bench eval
+cargo bench -p cleanrules --bench explain
+
+# Save a baseline, then compare a later run with it
+cargo bench -p cleanrules -- --save-baseline mine
+cargo bench -p cleanrules -- --baseline mine
+
+# The zen-engine comparison (a separate crate, not built in CI)
+cargo bench --manifest-path benchmarks/zen/Cargo.toml</code></pre>
+          </div>
+          <div class="prose">
+            <p>The comparison is a separate crate outside the workspace, so the core never depends on zen-engine. On macOS 27, Xcode's <code>strip</code> breaks one of zen's procedural macros in the release profile, so that crate disables <code>strip</code> for build dependencies.</p>
+            <p>The project's rule is that nobody claims a performance improvement without a benchmark: changes to hot paths are measured against the stored baseline before and after. Each binding will add its own measurements of data conversion overhead as it lands.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+      <ul class="footer-links" aria-label="Site">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="format.html">Format</a></li>
+        <li><a href="benchmarks.html">Benchmarks</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+        <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+      </ul>
+      <p>MIT licensed · © 2026 Jose L. Salmeron · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>
+
