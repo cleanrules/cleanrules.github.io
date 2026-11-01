@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>cleanrules — an explainable rules engine with a Rust core</title>
-  <meta name="description" content="cleanrules is an explainable rules engine with one Rust core and bindings for Rust, C/C++, Python, JavaScript, Java/Scala and Go: business rules, expert systems, data validation and ML explanations.">
+  <meta name="description" content="cleanrules is an explainable rules engine with one Rust core and bindings for Rust, C/C++, Python, JavaScript, Java/Scala, Go and Erlang: business rules, expert systems, data validation, ML explanations and guardrails for AI agents.">
   <meta name="theme-color" content="#0b0f14">
   <link rel="canonical" href="https://cleanrules.github.io/">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icon-180.png">
   <meta property="og:type" content="website">
   <meta property="og:title" content="cleanrules — rules you can read, run and explain">
-  <meta property="og:description" content="One Rust core, seven languages, every decision explained.">
+  <meta property="og:description" content="One Rust core, eight languages, every decision explained.">
   <meta property="og:url" content="https://cleanrules.github.io/">
   <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -34,6 +34,7 @@
         <span>cleanrules</span>
       </a>
       <nav class="nav-links" aria-label="Main">
+        <a href="#agents">Agents</a>
         <a href="#why">Why</a>
         <a href="#explain">Explain</a>
         <a href="#languages">Languages</a>
@@ -63,8 +64,8 @@
           <h1>Rules you can <span class="grad">read, run</span> and <span class="grad">explain</span>.</h1>
           <p class="lead">
             cleanrules is a rules engine with <strong>one Rust core</strong> and the same semantics in
-            <strong>Rust, C/C++, Python, JavaScript, Java/Scala and Go</strong>. Business rules, expert systems,
-            data validation and ML explanations — and every decision tells you why.
+            <strong>Rust, C/C++, Python, JavaScript, Java/Scala, Go and Erlang</strong>. Business rules, expert systems,
+            data validation, ML explanations and guardrails for AI agents — and every decision tells you why.
           </p>
           <div class="cta">
             <a class="btn btn-primary" href="#explain">See an explanation</a>
@@ -143,8 +144,48 @@ print(decision.explain())</code></pre>
       </div>
     </section>
 
+    <!-- AI agents -->
+    <section class="section alt" id="agents">
+      <div class="wrap">
+        <p class="eyebrow">AI agents</p>
+        <h2>Deterministic decisions for agents that are not.</h2>
+        <p class="sub">The engine never calls a language model: agents call the engine. Through an MCP server or an adapter for their framework they get decisions that are reproducible, explained and auditable — and the explanation tells the model what would change the outcome.</p>
+        <div class="cards four">
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6M9 12h6M9 15h3"/></svg>
+            </div>
+            <h3>A tool for agents</h3>
+            <p>An MCP server, <code>cleanrules-mcp</code>, offers <code>evaluate</code>, <code>explain</code>, <code>summary</code> and <code>validate</code> over your rule sets, read-only, to Claude, the OpenAI Agents SDK, LangGraph or any MCP client.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <h3>Guardrails on tool calls</h3>
+            <p>Before an agent acts, a rule set decides <em>allow</em>, <em>deny</em> or <em>ask</em>, and tells the model why. The decision is an audit record that can be read back and verified.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 7h10M4 12h7M4 17h5"/><path d="M14 15l2.5 2.5L21 13"/></svg>
+            </div>
+            <h3>Rules from LLMs, verified</h3>
+            <p>Rules are data, never code. A rule a model proposes is validated, audited, tested against cases and approved by a person before it is used. No <code>eval</code>, ever.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.3 11l7.4-4M8.3 13l7.4 4"/></svg>
+            </div>
+            <h3>Adapters for frameworks</h3>
+            <p>Thin, optional adapters for the Claude Agent SDK, OpenAI Agents SDK, LangChain, Pydantic AI, the Vercel AI SDK, LangChain4j and Spring AI. Everything else connects through MCP.</p>
+          </article>
+        </div>
+        <p class="caption center">Planned: phase O of the roadmap.</p>
+      </div>
+    </section>
+
     <!-- Why -->
-    <section class="section alt" id="why">
+    <section class="section" id="why">
       <div class="wrap">
         <p class="eyebrow">Why cleanrules</p>
         <h2>Conditions are data, not opaque code.</h2>
@@ -159,7 +200,7 @@ print(decision.explain())</code></pre>
             <p>Missing fields, nulls, type mismatches and overflow become <em>unknown</em> with a structured reason, evaluated with Kleene logic. Strict mode turns them into errors when you want that.</p>
           </div>
           <div class="feature">
-            <h3><span class="fi c"></span>One core, seven languages</h3>
+            <h3><span class="fi c"></span>One core, eight languages</h3>
             <p>All semantics live in the Rust core. Bindings only build rules idiomatically, convert data and run your actions — so a rule written in Java decides exactly the same in Go.</p>
           </div>
           <div class="feature">
@@ -179,7 +220,7 @@ print(decision.explain())</code></pre>
     </section>
 
     <!-- Explain demo -->
-    <section class="section" id="explain">
+    <section class="section alt" id="explain">
       <div class="wrap">
         <p class="eyebrow">Explain</p>
         <h2>Every result answers “why?” — and “why not?”</h2>
@@ -247,7 +288,7 @@ Outputs: discount</pre>
     </section>
 
     <!-- Architecture + languages -->
-    <section class="section alt" id="languages">
+    <section class="section" id="languages">
       <div class="wrap">
         <p class="eyebrow">Languages</p>
         <h2>One Rust core. Thin, idiomatic bindings.</h2>
@@ -255,16 +296,18 @@ Outputs: discount</pre>
 
         <div class="arch">
           <svg viewBox="0 0 760 400" role="img" aria-labelledby="arch-title">
-            <title id="arch-title">Architecture: a Rust core used directly by Rust, Python and JavaScript, and through a C ABI by C/C++, Java/Scala and Go; one conformance suite checks them all</title>
+            <title id="arch-title">Architecture: a Rust core used directly by Rust, Python, JavaScript, Erlang and the MCP server for AI agents, and through a C ABI by C/C++, Java/Scala and Go; one conformance suite checks them all</title>
             <defs>
               <linearGradient id="core-g" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#06b6d4"/>
               </linearGradient>
             </defs>
             <g class="arch-lines">
-              <path d="M180 68 C180 100 380 90 380 118"/>
+              <path d="M84 68 C84 100 380 90 380 118"/>
+              <path d="M232 68 C232 100 380 90 380 118"/>
               <path d="M380 68 L380 118"/>
-              <path d="M580 68 C580 100 380 90 380 118"/>
+              <path d="M528 68 C528 100 380 90 380 118"/>
+              <path d="M676 68 C676 100 380 90 380 118"/>
               <path d="M380 174 L380 214"/>
               <path d="M380 258 C380 282 180 274 180 298"/>
               <path d="M380 258 L380 298"/>
@@ -275,9 +318,11 @@ Outputs: discount</pre>
               <path d="M490 146 L550 146"/>
             </g>
             <g class="arch-node">
-              <rect x="95" y="20" width="170" height="48" rx="12"/><text x="180" y="41">Rust</text><text class="s" x="180" y="57">native crate</text>
-              <rect x="295" y="20" width="170" height="48" rx="12"/><text x="380" y="41">Python</text><text class="s" x="380" y="57">PyO3 · abi3 wheels</text>
-              <rect x="495" y="20" width="170" height="48" rx="12"/><text x="580" y="41">JavaScript / TS</text><text class="s" x="580" y="57">napi-rs · wasm</text>
+              <rect x="16" y="20" width="136" height="48" rx="12"/><text x="84" y="41">Rust</text><text class="s" x="84" y="57">native crate</text>
+              <rect x="164" y="20" width="136" height="48" rx="12"/><text x="232" y="41">Python</text><text class="s" x="232" y="57">PyO3 · abi3 wheels</text>
+              <rect x="312" y="20" width="136" height="48" rx="12"/><text x="380" y="41">JS / TS</text><text class="s" x="380" y="57">napi-rs · wasm</text>
+              <rect x="460" y="20" width="136" height="48" rx="12"/><text x="528" y="41">Erlang</text><text class="s" x="528" y="57">rustler NIF</text>
+              <rect x="608" y="20" width="136" height="48" rx="12"/><text x="676" y="41">AI agents</text><text class="s" x="676" y="57">MCP server</text>
             </g>
             <g class="arch-node side">
               <rect x="40" y="124" width="170" height="44" rx="12"/><text x="125" y="143">fuzzytool</text><text class="s" x="125" y="158">norms reference</text>
@@ -298,12 +343,14 @@ Outputs: discount</pre>
         </div>
 
         <div class="lang-grid">
-          <div class="lang"><span class="lang-name">Rust</span><span class="chip planned">core in design</span><code>cargo add cleanrules</code></div>
-          <div class="lang"><span class="lang-name">Python</span><span class="chip ref">prototype done</span><code>pip install cleanrules</code></div>
+          <div class="lang"><span class="lang-name">Rust</span><span class="chip ref">core done</span><code>cargo add cleanrules</code></div>
+          <div class="lang"><span class="lang-name">Python</span><span class="chip planned">in progress</span><code>pip install cleanrules</code></div>
           <div class="lang"><span class="lang-name">C / C++</span><span class="chip planned">planned</span><code>find_package(cleanrules)</code></div>
           <div class="lang"><span class="lang-name">JavaScript / TS</span><span class="chip planned">planned</span><code>npm i cleanrules</code></div>
           <div class="lang"><span class="lang-name">Java / Scala</span><span class="chip planned">planned</span><code>io.github.cleanrules</code></div>
           <div class="lang"><span class="lang-name">Go</span><span class="chip planned">planned</span><code>github.com/cleanrules/…</code></div>
+          <div class="lang"><span class="lang-name">Erlang</span><span class="chip planned">planned</span><code>{deps, [cleanrules]}</code></div>
+          <div class="lang"><span class="lang-name">AI agents</span><span class="chip planned">planned</span><code>cleanrules-mcp</code></div>
         </div>
         <p class="caption center">Nothing is published yet: these are the intended package names for the first releases.</p>
 
@@ -314,6 +361,7 @@ Outputs: discount</pre>
             <button role="tab" aria-selected="false" data-lang="java" tabindex="-1">Java</button>
             <button role="tab" aria-selected="false" data-lang="go" tabindex="-1">Go</button>
             <button role="tab" aria-selected="false" data-lang="cpp" tabindex="-1">C++</button>
+            <button role="tab" aria-selected="false" data-lang="erlang" tabindex="-1">Erlang</button>
             <span class="preview-badge">API preview · subject to change</span>
           </div>
           <div class="window">
@@ -362,32 +410,39 @@ auto vip = cleanrules::Rule("vip")
 
 auto decision = cleanrules::RuleSet({vip}).evaluate(data);
 std::cout &lt;&lt; decision.explain() &lt;&lt; '\n';</code></pre>
+<pre class="code" data-lang="erlang" hidden><code class="language-erlang">Vip = cleanrules:rule(&lt;&lt;"vip"&gt;&gt;, #{
+    'when' =&gt; cleanrules:all([cleanrules:gt([customer, years], 5),
+                              cleanrules:gt([order, total], 1000)]),
+    then =&gt; #{discount =&gt; 0.15}}),
+
+{ok, Decision} = cleanrules:evaluate(cleanrules:ruleset([Vip]), Data),
+io:format("~ts~n", [cleanrules:explain(Decision)]).</code></pre>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Roadmap -->
-    <section class="section" id="roadmap">
+    <section class="section alt" id="roadmap">
       <div class="wrap">
         <p class="eyebrow">Roadmap</p>
         <h2>Specification first, then the core, then every language.</h2>
-        <p class="sub">The semantics were prototyped and tested in Python first. That knowledge becomes a written specification and thousands of conformance vectors before the Rust core is built against them.</p>
+        <p class="sub">The semantics were prototyped and tested in Python first. That knowledge became a written specification and 2,135 conformance vectors, and the Rust core now passes every one of them.</p>
         <ol class="timeline">
-          <li class="done"><span class="step">P</span><div><h3>Python reference implementation</h3><p>AST, Kleene logic, structured reasons, DMN hit policies, explanations with counterfactuals, summaries.</p></div></li>
-          <li class="now"><span class="step">A</span><div><h3>Contract between languages</h3><p>JSON format and schemas, neutral data model, conformance vectors harvested from the reference.</p></div></li>
-          <li><span class="step">B</span><div><h3>Rust core</h3><p>Everything above in Rust, passing 100% of the vectors. Property tests and benchmarks.</p></div></li>
-          <li><span class="step">C</span><div><h3>Python binding</h3><p>PyO3 wheels with the ergonomics of the reference: <code>F</code>, operators, pitfall protection. First public release.</p></div></li>
+          <li class="done"><span class="step">A</span><div><h3>Contract between languages</h3><p>JSON format and schemas, neutral data model, and conformance vectors harvested from the Python reference implementation.</p></div></li>
+          <li class="done"><span class="step">B</span><div><h3>Rust core</h3><p>Everything above in Rust, passing 100% of the vectors. Property tests and benchmarks.</p></div></li>
+          <li class="now"><span class="step">C</span><div><h3>Python binding</h3><p>PyO3 wheels with the ergonomics of the reference: <code>F</code>, operators, pitfall protection. First public release.</p></div></li>
           <li><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text DSL aligned with fuzzytool, decision tables.</p></div></li>
-          <li><span class="step">E–H</span><div><h3>C/C++, JavaScript, JVM, Go</h3><p>The C ABI first, then each binding with its own conformance runner.</p></div></li>
+          <li><span class="step">E–H, N</span><div><h3>C/C++, JavaScript, JVM, Go, Erlang</h3><p>The C ABI first, then each binding with its own conformance runner; Erlang through a rustler NIF.</p></div></li>
           <li><span class="step">I–L</span><div><h3>Validation, fuzzy &amp; audit, expert system, ML</h3><p>Arrow batches, fuzzy norms, static audit, Rete, rule extraction from models.</p></div></li>
-          <li><span class="step">1.0</span><div><h3>Synchronised release</h3><p>crates.io, PyPI, npm, Maven Central, Go modules, Conan and vcpkg. Paper and DOI.</p></div></li>
+          <li><span class="step">O</span><div><h3>AI agents</h3><p>An MCP server, guardrails for agent tool calls, adapters for agent frameworks, and verified rules proposed by LLMs.</p></div></li>
+          <li><span class="step">1.0</span><div><h3>Synchronised release</h3><p>crates.io, PyPI, npm, Maven Central, Go modules, Hex, Conan and vcpkg. Paper and DOI.</p></div></li>
         </ol>
       </div>
     </section>
 
     <!-- Family + cite -->
-    <section class="section alt" id="cite">
+    <section class="section" id="cite">
       <div class="wrap two">
         <div>
           <p class="eyebrow">Family</p>
@@ -428,6 +483,7 @@ std::cout &lt;&lt; decision.explain() &lt;&lt; '\n';</code></pre>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-latex.min.js"></script>
   <script src="assets/main.js"></script>
 </body>
