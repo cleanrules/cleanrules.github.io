@@ -78,7 +78,7 @@
         <h1>How cleanrules <span class="grad">decides</span> and <span class="grad">explains</span>.</h1>
         <p class="lead">One engine, one set of semantics, written down in a <a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">specification</a> and enforced by 2,135 conformance vectors. This guide walks through it from the condition tree to the explanation, with a real example for every idea.</p>
         <div class="callout real">
-          <p><strong>Every JSON output on this page is real output of the Rust core</strong>, produced by running the examples through <code>crates/core</code> and written with its own JSON writer. The two text renderings of <code>explain()</code> and <code>summary()</code> are output of the Python reference implementation (v1), whose semantics the core reproduces; the core's text form arrives with the text DSL (task D.2). Python code uses the Python binding, which runs today; for a hands-on tour with real Python output, read the <a href="manual/index.html">manual</a>.</p>
+          <p><strong>Every JSON output on this page is real output of the Rust core</strong>, produced by running the examples through <code>crates/core</code> and written with its own JSON writer. The text renderings of <code>explain()</code> and <code>summary()</code> are real output of the core too, printed through the Python binding. Python code uses the Python binding, which runs today; for a hands-on tour with real Python output, read the <a href="manual/index.html">manual</a>.</p>
         </div>
         <nav aria-label="On this page">
           <ul class="toc">
@@ -791,24 +791,24 @@
   }
 }</code></pre></div>
               <div class="window">
-                <div class="window-bar"><i></i><i></i><i></i><span>explain() as text</span><span class="src v1">Python reference</span></div>
-<pre class="term"><span class="hd">PRIORITY decision: selected 'e'</span>
-<span class="f">[ ]</span> a (not fired): (F.x &gt; 10) &amp; ~(F.y &lt;= 3)
+                <div class="window-bar"><i></i><i></i><i></i><span>explain() as text</span><span class="src">real output</span></div>
+<pre class="term"><span class="hd">HIT POLICY priority: selected e</span>
+<span class="f">[ ]</span> a (not fired): x &gt; 10 AND NOT y &lt;= 3
     would fire if all of these changed:
-    - F.x &gt; 10 is <b class="f">false</b> (x = 8); <b class="hint">short by 2</b>
-    - F.y &lt;= 3 is <b class="t">true</b> (y = 2), but the rule needs it false; <b class="hint">needs y &gt; 3 (short by 1)</b>
-<span class="f">[ ]</span> b (not fired): F.x.between(0, 5)
-    - F.x &lt;= 5 is <b class="f">false</b> (x = 8); <b class="hint">over by 3</b>
-<span class="f">[ ]</span> c (not fired): (F.x &gt; 1) &amp; ~(F.x &gt; 1)
+    - x &gt; 10 is <b class="f">false</b> (x = 8); <b class="hint">short by 2</b>
+    - y &lt;= 3 is <b class="t">true</b> (y = 2), but the rule needs it false; <b class="hint">needs y &gt; 3 (short by 1)</b>
+<span class="f">[ ]</span> b (not fired): x BETWEEN 0 AND 5
+    - x &lt;= 5 is <b class="f">false</b> (x = 8); <b class="hint">over by 3</b>
+<span class="f">[ ]</span> c (not fired): x &gt; 1 AND NOT x &gt; 1
     cannot fire by changing these conditions alone; they conflict:
-    - F.x &gt; 1 is <b class="t">true</b> (x = 8), but the rule needs it false; <b class="hint">needs x &lt;= 1 (over by 7)</b>
-<span class="t">[x]</span> d (fired, not selected): F.x &gt; 1
-    fired, but 'e' has a higher priority (5 &gt; 1)
-    - F.x &gt; 1 is <b class="t">true</b> (x = 8)
-<span class="t">[x]</span> e (selected): F.x &gt; 0
-    - F.x &gt; 0 is <b class="t">true</b> (x = 8)</pre>
+    - x &gt; 1 is <b class="t">true</b> (x = 8), but the rule needs it false; <b class="hint">needs x &lt;= 1 (over by 7)</b>
+<span class="t">[x]</span> d (fired, not selected): x &gt; 1
+    fired, but e has a higher priority (5 &gt; 1)
+    - x &gt; 1 is <b class="t">true</b> (x = 8)
+<span class="t">[x]</span> e (selected): x &gt; 0
+    - x &gt; 0 is <b class="t">true</b> (x = 8)</pre>
               </div>
-              <p class="caption">Text quoted from <code>spec/explain.md</code> (output of the Python v1, which writes conditions in Python syntax). The core's text rendering is fixed by snapshot tests once the text DSL lands (D.2).</p>
+              <p class="caption">Real output of the core, as <code>str(decision.explain())</code> prints it in Python: the same text in every language, with conditions in the rule syntax, and the text of <code>spec/explain.md</code>.</p>
             </div>
             <div class="window scroll" style="max-height: none;">
               <div class="window-bar"><i></i><i></i><i></i><span>explanation.json</span><span class="src">Rust core output</span></div>
@@ -1232,12 +1232,12 @@
             <p><code>summary()</code> describes a rule set statically: its configuration (policy, aggregate, logic, strictness); its rules with their priorities, output keys and whether they have an action; the <strong>fields</strong> it reads, in order of first appearance, each with the rules whose condition reads it and the <code>(rule, key)</code> pairs whose payload reads it; every output key; and the tags with their rules.</p>
             <p>The field list is also what a binding reads from native data: it converts <strong>only the paths the rule set reads</strong>, never the whole object. The planned MCP server will derive each rule set's input schema from it (<a href="agents.html">agents</a>).</p>
             <div class="window" style="margin-top: 20px;">
-              <div class="window-bar"><i></i><i></i><i></i><span>rules.summary() as text</span><span class="src v1">Python reference</span></div>
-<pre class="term"><span class="hd">RuleSet: 3 rules, hit policy PRIORITY, logic boolean</span>
-  priority  name     condition                                        outputs
-        10  vip      (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000)  discount
-         5  loyal    (F.customer.years &gt; 2) | F.customer.newsletter   discount
-        99  blocked  F.customer.country.is_in(['XX', 'YY'])           discount
+              <div class="window-bar"><i></i><i></i><i></i><span>rules.summary() as text</span><span class="src">real output</span></div>
+<pre class="term"><span class="hd">Rule set: 3 rules, hit policy priority, logic boolean</span>
+  priority  name     condition                                  outputs
+        10  vip      customer.years &gt; 5 AND order.total &gt; 1000  discount
+         5  loyal    customer.years &gt; 2 OR customer.newsletter  discount
+        99  blocked  customer.country IN ("XX", "YY")           discount
 Fields read (4):
   customer.years       conditions of vip, loyal
   order.total          conditions of vip
@@ -1333,7 +1333,7 @@ Outputs: discount</pre>
           </ul>
         </div>
       </div>
-      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+      <p class="footer-legal">Apache-2.0 licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
     </div>
   </footer>
 

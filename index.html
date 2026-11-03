@@ -333,27 +333,27 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
             </div>
             <div class="window output">
               <div class="window-bar"><i></i><i></i><i></i><span id="demo-input">{"customer": {"years": 3, "country": "ES", "newsletter": false}, "order": {"total": 1500}}</span></div>
-<pre class="term" role="tabpanel" id="sc-loyal" aria-labelledby="tab-loyal"><span class="hd">PRIORITY decision: selected 'loyal'</span>
-<span class="f">[ ]</span> vip (not fired): (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000)
-    - F.customer.years &gt; 5 is <b class="f">false</b> (customer.years = 3); <b class="hint">short by 2</b>
-<span class="t">[x]</span> loyal (selected): (F.customer.years &gt; 2) | F.customer.newsletter
-    - F.customer.years &gt; 2 is <b class="t">true</b> (customer.years = 3)
-<span class="f">[ ]</span> blocked (not fired): F.customer.country.is_in(['XX', 'YY'])
-    - F.customer.country.is_in(['XX', 'YY']) is <b class="f">false</b> (customer.country = 'ES')
+<pre class="term" role="tabpanel" id="sc-loyal" aria-labelledby="tab-loyal"><span class="hd">HIT POLICY priority: selected loyal</span>
+<span class="f">[ ]</span> vip (not fired): customer.years &gt; 5 AND order.total &gt; 1000
+    - customer.years &gt; 5 is <b class="f">false</b> (customer.years = 3); <b class="hint">short by 2</b>
+<span class="t">[x]</span> loyal (selected): customer.years &gt; 2 OR customer.newsletter
+    - customer.years &gt; 2 is <b class="t">true</b> (customer.years = 3)
+<span class="f">[ ]</span> blocked (not fired): customer.country IN ("XX", "YY")
+    - customer.country IN ("XX", "YY") is <b class="f">false</b> (customer.country = "ES")
 
 <span class="dim">decision.output  →  {'discount': 0.05}</span></pre>
-<pre class="term" role="tabpanel" id="sc-missing" aria-labelledby="tab-missing" hidden><span class="hd">FIRST decision: selected nothing</span>
-<span class="u">[?]</span> vip (unknown): (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000)
-    - F.customer.years &gt; 5 is <b class="u">unknown</b>: missing field customer.years
+<pre class="term" role="tabpanel" id="sc-missing" aria-labelledby="tab-missing" hidden><span class="hd">HIT POLICY first: selected no rule</span>
+<span class="u">[?]</span> vip (unknown): customer.years &gt; 5 AND order.total &gt; 1000
+    - customer.years &gt; 5 is <b class="u">unknown</b>: missing field customer.years
 
 <span class="dim"># A missing field is not False and not a crash: the rule is
 # unknown, the reason is structured, and strict=True would
 # raise MissingFieldError instead.</span></pre>
-<pre class="term" role="tabpanel" id="sc-summary" aria-labelledby="tab-summary" hidden><span class="hd">RuleSet: 3 rules, hit policy PRIORITY, logic boolean</span>
-  priority  name     condition                                        outputs
-        10  vip      (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000)  discount
-         5  loyal    (F.customer.years &gt; 2) | F.customer.newsletter   discount
-        99  blocked  F.customer.country.is_in(['XX', 'YY'])           discount
+<pre class="term" role="tabpanel" id="sc-summary" aria-labelledby="tab-summary" hidden><span class="hd">Rule set: 3 rules, hit policy priority, logic boolean</span>
+  priority  name     condition                                  outputs
+        10  vip      customer.years &gt; 5 AND order.total &gt; 1000  discount
+         5  loyal    customer.years &gt; 2 OR customer.newsletter  discount
+        99  blocked  customer.country IN ("XX", "YY")           discount
 Fields read (4):
   customer.years       conditions of vip, loyal
   order.total          conditions of vip
@@ -419,7 +419,7 @@ Outputs: discount</pre>
   }
 }</code></pre>
             </div>
-            <p class="caption">The text outputs were captured from the Python reference implementation (<code>rulepy</code>, v1), whose semantics the core reproduces; the core's text rendering arrives with the text DSL (task D.2). The Python binding returns the same explanation as objects (<a href="manual/explanations.html">manual</a>). The last tab is real output of the Rust core for the first scenario. <a href="guide.html#explanations">How explanations work →</a></p>
+            <p class="caption">Every tab is real output: the text tabs are what the Python binding prints, the same text in every language, written by the core with conditions in the rule syntax; the last tab is the Rust core's JSON for the first scenario. The Python binding also returns the explanation as objects (<a href="manual/explanations.html">manual</a>). <a href="guide.html#explanations">How explanations work →</a></p>
           </div>
         </div>
       </div>
@@ -666,9 +666,9 @@ if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt
       <div class="wrap">
         <p class="eyebrow">Roadmap</p>
         <h2>Specification first, then the core, then every language.</h2>
-        <p class="sub">The semantics were prototyped and tested in Python first. That knowledge became a written specification and 2,135 conformance vectors, and the Rust core now passes every one of them.</p>
+        <p class="sub">The semantics are a written specification and its conformance vectors, which the Rust core and every binding pass.</p>
         <ol class="timeline">
-          <li class="done"><span class="step">A</span><div><h3>Contract between languages</h3><p>JSON format and schemas, neutral data model, and conformance vectors harvested from the Python reference implementation.</p></div></li>
+          <li class="done"><span class="step">A</span><div><h3>Contract between languages</h3><p>JSON format and schemas, neutral data model, and the conformance vectors every language runs.</p></div></li>
           <li class="done"><span class="step">B</span><div><h3>Rust core</h3><p>Everything above in Rust, passing 100% of the vectors. Property tests and benchmarks.</p></div></li>
           <li class="done"><span class="step">C</span><div><h3>Python binding</h3><p>Wheels (<code>abi3</code>, free-threaded <code>cp314t</code> and <code>abi3t</code>), the API (<code>F</code>, rules, decisions, explanations, errors), reading of dataclasses, Pydantic models and pandas rows, actions, and a conformance runner that passes every vector. It will be the first public release.</p></div></li>
           <li class="now"><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text DSL aligned with fuzzytool, decision tables.</p></div></li>
@@ -771,7 +771,7 @@ if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt
           </ul>
         </div>
       </div>
-      <p class="footer-legal">MIT licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+      <p class="footer-legal">Apache-2.0 licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
     </div>
   </footer>
 

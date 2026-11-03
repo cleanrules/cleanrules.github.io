@@ -39,9 +39,9 @@ branch → `main` / root). `.nojekyll` disables Jekyll processing.
   through the Rust core (`crates/core`) and its own JSON writer; the worked
   explanation example equals conformance vector
   `explain/requirements/priority-example`.
-- Text renderings of `explain()` and `summary()` marked **Python reference**
-  are output of the Python v1 (`rulepy`, git tag `python-reference`); the
-  core's text rendering arrives with the text DSL (task D.2).
+- Text renderings of `explain()` and `summary()` marked **real output** were
+  printed by the Python binding: the core writes the same text in every
+  language.
 - Benchmark figures are copied from `benchmarks/results/*.json` in the code
   repository.
 - Python code on the manual and example pages was run with the Python binding
