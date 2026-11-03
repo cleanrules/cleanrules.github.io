@@ -98,7 +98,7 @@
           <table class="data">
             <thead><tr><th>Job</th><th>Tools often used</th><th>Where cleanrules aims to differ</th><th>Status in cleanrules</th></tr></thead>
             <tbody>
-              <tr><td>Business rules</td><td>Drools, zen-engine, rule-engine</td><td>The same engine and the same rules in eight languages; decision tables; static audit; explanations with <code>all</code>/<code>any</code> requirements and counterfactuals.</td><td><span class="chip ref">core today</span> rules, six hit policies, explanations · <span class="chip planned">planned</span> decision tables (D.3), audit (J.4), bindings (C, E–H, N)</td></tr>
+              <tr><td>Business rules</td><td>Drools, zen-engine, rule-engine</td><td>The same engine and the same rules in eight languages; decision tables; static audit; explanations with <code>all</code>/<code>any</code> requirements and counterfactuals.</td><td><span class="chip ref">core today</span> rules, six hit policies, explanations, decision tables, rule files in JSON, YAML and text; Python and C · <span class="chip planned">planned</span> audit (J.4), bindings (E–H, N)</td></tr>
               <tr><td>Expert systems</td><td>Drools, CLIPS, experta</td><td>Rete in Rust, truth maintenance, facts with degrees, a derivation tree for every conclusion.</td><td><span class="chip planned">planned · phase K</span></td></tr>
               <tr><td>Data validation</td><td>pandera, Great Expectations</td><td>The same rules as the business logic, vectorised over Apache Arrow, with an explanation per row.</td><td><span class="chip planned">planned · phase I</span></td></tr>
               <tr><td>ML explanations</td><td>imodels, alibi</td><td>Rules extracted from models that run and can be audited in any language (extraction in Python).</td><td><span class="chip planned">planned · phase L</span></td></tr>
@@ -134,7 +134,7 @@
           </div>
           <div class="feature">
             <h3><span class="fi u"></span>One conformance suite</h3>
-            <p>2,135 vectors with exact expected outputs, run by the core today and by every binding before it ships, once through JSON and once through native data.</p>
+            <p>2,508 vectors with exact expected outputs, run today by the core, the Python binding and the C ABI, and by every binding before it ships, once through JSON and once through native data.</p>
           </div>
           <div class="feature">
             <h3><span class="fi c"></span>A stable bridge to agents</h3>
@@ -151,7 +151,7 @@
         <div class="faq">
           <details>
             <summary>Can I use cleanrules today?</summary>
-            <p>From Rust and from Python, by building from <a href="https://github.com/cleanrules/cleanrules" rel="noopener">the repository</a> (<a href="manual/installation.html">installation</a>). The Rust core implements the whole specification and passes all 2,135 conformance vectors. The Python binding's API is done (conditions, rules, decisions, explanations, summaries, errors, actions) and it reads dicts, dataclasses, Pydantic models and pandas rows; it passes every conformance vector (all 2,135 through JSON, 1,948 with native Python data) and will be the first public release. Nothing is on a registry yet, and the API may change before the first release. The other languages follow (see the <a href="index.html#roadmap">roadmap</a>). The intended package names are <code>cleanrules</code> on crates.io, PyPI, npm and Hex, and <code>io.github.cleanrules:cleanrules</code> on Maven Central.</p>
+            <p>From Rust, Python and C, by building from <a href="https://github.com/cleanrules/cleanrules" rel="noopener">the repository</a> (<a href="manual/installation.html">installation</a>). The Rust core implements the whole specification and passes all 2,508 conformance vectors. The Python binding's API is done (conditions, rules, decisions, explanations, summaries, errors, actions, rule files, decision tables) and it reads dicts, dataclasses, Pydantic models and pandas rows; it passes every conformance vector (all 2,508 through JSON, 1,952 with native Python data) and will be the first public release. The C ABI (<code>cleanrules.h</code>, a static and a shared library) passes every vector too. Nothing is on a registry yet, and the API may change before the first release. The other languages follow (see the <a href="index.html#roadmap">roadmap</a>). The intended package names are <code>cleanrules</code> on crates.io, PyPI, npm and Hex, and <code>io.github.cleanrules:cleanrules</code> on Maven Central.</p>
           </details>
           <details>
             <summary>Why three truth values instead of true and false?</summary>
@@ -174,8 +174,8 @@
             <p>There is one engine. Bindings only convert data and call it. On top of that, the specification defines every observable behaviour, and the conformance vectors check it: each binding will run all of them twice, once through its JSON entry points and once converting the inputs into native data and using the idiomatic API.</p>
           </details>
           <details>
-            <summary>Will there be decision tables, a text DSL and YAML?</summary>
-            <p>Yes, in phase D: JSON and YAML loading in the core (so every language inherits it), a text DSL with its own parser aligned with fuzzytool's <code>rule_from_text</code>, and decision tables with DMN hit policies from rows, CSV or JSON.</p>
+            <summary>Are there decision tables, a text syntax and YAML?</summary>
+            <p>Yes, since phase D, in the core, so every language inherits them: JSON and YAML rule files, a text syntax with its own parser aligned with fuzzytool's <code>rule_from_text</code> (<code>RULE vip IF customer.years &gt; 5 THEN discount = 0.15</code>), and decision tables with DMN hit policies, read from JSON, YAML or CSV or built from rows and data frames. Rules can name their actions, which each program resolves in a registry of its own.</p>
           </details>
           <details>
             <summary>How fast is it?</summary>

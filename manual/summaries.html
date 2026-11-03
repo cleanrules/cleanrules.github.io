@@ -148,13 +148,31 @@ print(json.dumps(doc[&quot;summary&quot;][&quot;fields&quot;][1]))</code></pre>
 <pre class="term out">[&#x27;version&#x27;, &#x27;summary&#x27;] [&#x27;hit_policy&#x27;, &#x27;logic&#x27;, &#x27;rules&#x27;, &#x27;fields&#x27;, &#x27;outputs&#x27;, &#x27;tags&#x27;]
 {&quot;path&quot;: [&quot;order&quot;, &quot;total&quot;], &quot;conditions&quot;: [&quot;vip&quot;], &quot;payloads&quot;: [{&quot;rule&quot;: &quot;vip&quot;, &quot;key&quot;: &quot;cashback&quot;}]}</pre>
 </div>
-<p>The <a href="../examples/guardrail.html#more">agent guardrail example</a> uses a summary to list what a tool call must provide. A text rendering of summaries arrives with the text DSL (task D.2), and static audit (unsatisfiable conditions, shadowed rules, overlaps, gaps) with phase J.</p>
+<p>The <a href="../examples/guardrail.html#more">agent guardrail example</a> uses a summary to list what a tool call must provide. Static audit (unsatisfiable conditions, shadowed rules, overlaps, gaps) is planned for phase J.</p>
+<h2 id="text">A text rendering<a class="h-anchor" href="#text" aria-label="Link to this section">#</a></h2>
+<p><code>str()</code> of a summary is its text rendering, written by the core in the rule syntax, the same in every language:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">print(summary)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">Rule set: 3 rules, hit policy priority, logic boolean
+  priority  name     condition                                  outputs
+        10  vip      customer.years &gt; 5 AND order.total &gt; 1000  discount, cashback
+         5  loyal    customer.years &gt; 2 OR customer.newsletter  discount
+        99  blocked  customer.country IN (&quot;XX&quot;, &quot;YY&quot;)           discount
+Fields read (4):
+  customer.years       conditions of vip, loyal
+  order.total          conditions of vip; payloads of vip (cashback)
+  customer.newsletter  conditions of loyal
+  customer.country     conditions of blocked
+Outputs: discount, cashback
+Tags: compliance (blocked); pricing (vip, loyal); retention (loyal)</pre>
+</div>
 
 <nav class="pager" aria-label="Chapters"><a class="prev" href="explanations.html"><small>← Previous</small>Explanations and counterfactuals</a><a class="next" href="errors.html"><small>Next →</small>Errors</a></nav>
       </article>
       <aside class="doc-toc" aria-label="On this page">
         <h2>On this page</h2>
-        <ol><li><a href="#summary">Summarize a rule set</a></li><li><a href="#fields">Fields read</a></li><li><a href="#rest">Rules, outputs and tags</a></li><li><a href="#json">As JSON</a></li></ol>
+        <ol><li><a href="#summary">Summarize a rule set</a></li><li><a href="#fields">Fields read</a></li><li><a href="#rest">Rules, outputs and tags</a></li><li><a href="#json">As JSON</a></li><li><a href="#text">A text rendering</a></li></ol>
       </aside>
     </div>
   </main>

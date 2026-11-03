@@ -76,9 +76,9 @@
       <div class="wrap">
         <p class="eyebrow">JSON format · version 1</p>
         <h1>The contract <span class="grad">between languages</span>.</h1>
-        <p class="lead">A rule written in Java and read in Go is the same tree and decides the same way. That holds because every binding reads and writes one versioned JSON format, defined in <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/json-format.md" rel="noopener"><code>spec/json-format.md</code></a>, with <a href="https://github.com/cleanrules/cleanrules/tree/main/spec/schemas/v1" rel="noopener">JSON Schemas</a> for editors and 187 conformance vectors for readers.</p>
+        <p class="lead">A rule written in Java and read in Go is the same tree and decides the same way. That holds because every binding reads and writes one versioned JSON format, defined in <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/json-format.md" rel="noopener"><code>spec/json-format.md</code></a>, with <a href="https://github.com/cleanrules/cleanrules/tree/main/spec/schemas/v1" rel="noopener">JSON Schemas</a> for editors and 556 conformance vectors for readers.</p>
         <div class="callout real">
-          <p>The Rust core reads condition, rule, rule set and decision documents and writes all six kinds today. <strong>Every example output and error on this page was produced by the core</strong> from the input shown. Loading rule files in JSON and YAML from every binding is task D.1.</p>
+          <p>The Rust core reads condition, rule, rule set, decision table and decision documents and writes all seven kinds, in JSON and in YAML; the Python binding and the C ABI load and save them. <strong>Every example output and error on this page was produced by the core</strong> from the input shown. Rules also have a <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/text.md" rel="noopener">text syntax</a>, and decision tables a <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/tables.md" rel="noopener">CSV form</a>.</p>
         </div>
         <nav aria-label="On this page">
           <ul class="toc">
@@ -100,10 +100,10 @@
     <section class="section" id="documents">
       <div class="wrap">
         <p class="eyebrow">Documents and versioning</p>
-        <h2>One envelope, six kinds of content, strict readers.</h2>
+        <h2>One envelope, seven kinds of content, strict readers.</h2>
         <div class="split">
           <div class="prose">
-            <p>A document is UTF-8 JSON (RFC 8259) without a byte order mark. Its top level is an object with <code>"version": 1</code> and exactly one <strong>content key</strong>: <code>condition</code>, <code>rule</code>, <code>ruleset</code>, <code>decision</code>, <code>explanation</code> or <code>summary</code>. An optional <code>"$schema"</code> string is ignored by readers, so editors can find the schema. Writers put <code>version</code> first.</p>
+            <p>A document is UTF-8 JSON (RFC 8259) without a byte order mark. Its top level is an object with <code>"version": 1</code> and exactly one <strong>content key</strong>: <code>condition</code>, <code>rule</code>, <code>ruleset</code>, <code>decision</code>, <code>explanation</code>, <code>summary</code> or <code>decision_table</code>. An optional <code>"$schema"</code> string is ignored by readers, so editors can find the schema. Writers put <code>version</code> first.</p>
             <p>Readers are <strong>strict</strong>, because leniency would let readers in different languages build different trees:</p>
             <ul>
               <li>an unknown key, anywhere, is a <code>format_error</code>: ignoring it could silently change what a rule means;</li>
@@ -571,6 +571,9 @@
                   <tr><td>document size</td><td class="num">16 MiB</td><td>bytes of JSON text</td></tr>
                   <tr><td>JSON nesting</td><td class="num">1024</td><td>arrays and objects, the top-level object is 1, checked while parsing</td></tr>
                   <tr><td>node depth</td><td class="num">256</td><td>condition or payload nodes, the root is 1, before flattening</td></tr>
+                  <tr><td>YAML size</td><td class="num">1 MiB</td><td>bytes of YAML text</td></tr>
+                  <tr><td>text and CSV size</td><td class="num">4 MiB</td><td>bytes of rule syntax or CSV</td></tr>
+                  <tr><td>table size</td><td class="num">2,097,152</td><td>a decision table's cells and the nodes of their conditions, column copies included</td></tr>
                 </tbody>
               </table>
             </div>
@@ -584,7 +587,7 @@
               <li>shape and node depth, depth first in pre-order: an object's known keys in table order, then its unknown keys in text order (located by a JSON Pointer into the document as written);</li>
               <li>construction rules, in post-order: children before parents; in a rule, the condition, then payload values, then the rule's own rules; in a rule set, the rules, then its own rules.</li>
             </ol>
-            <p>Every implementation must report the same first error at the same location; the 187 reading vectors check it.</p>
+            <p>Every implementation must report the same first error at the same location; the 556 reading vectors check it.</p>
           </div>
         </div>
       </div>
@@ -606,14 +609,14 @@
                 <tr><td><code>decision_mismatch</code></td><td>a decision does not belong to its rule set</td><td><code>pointer</code></td></tr>
                 <tr><td><code>expression_error</code></td><td>a node breaks a construction rule</td><td><code>pointer</code> when read from JSON</td></tr>
                 <tr><td><code>rule_definition_error</code></td><td>a rule or rule set breaks a construction rule</td><td><code>rule</code>, <code>pointer</code></td></tr>
-                <tr><td><code>rule_syntax_error</code></td><td>the text DSL cannot be parsed (phase D)</td><td><code>line</code>, <code>column</code></td></tr>
-                <tr><td><code>registry_error</code></td><td>a name is not registered (a logic)</td><td><code>name</code>, <code>pointer</code></td></tr>
+                <tr><td><code>rule_syntax_error</code></td><td>a text in the rule syntax cannot be parsed</td><td><code>line</code>, <code>column</code></td></tr>
+                <tr><td><code>registry_error</code></td><td>a name is not registered: a logic, or a rule's named action</td><td><code>name</code>, <code>pointer</code></td></tr>
                 <tr><td><code>rule_not_found</code></td><td>a rule is looked up by an unknown name</td><td><code>name</code></td></tr>
                 <tr><td><code>evaluation_error</code></td><td>strict mode met a read error, or a batch is not a collection</td><td><code>rule</code>, <code>path</code>, <code>row</code></td></tr>
                 <tr><td><code>missing_field</code></td><td>strict mode met a missing field</td><td><code>rule</code>, <code>path</code>, <code>row</code></td></tr>
                 <tr><td><code>type_mismatch</code></td><td>strict mode met incompatible groups</td><td><code>rule</code>, <code>path</code>, <code>types</code>, <code>row</code></td></tr>
                 <tr><td><code>hit_policy_error</code></td><td><code>unique</code>/<code>any</code> conflict, non-number aggregate, single <code>output</code> of a multi-hit decision</td><td><code>rules</code>, <code>row</code></td></tr>
-                <tr><td><code>action_error</code></td><td>an action raised during <code>run</code> (task D.4)</td><td><code>rule</code>, <code>executed</code></td></tr>
+                <tr><td><code>action_error</code></td><td>an action raised during <code>run</code></td><td><code>rule</code>, <code>executed</code></td></tr>
                 <tr><td><code>unsupported</code></td><td>this build, logic or format version cannot do it</td><td>—</td></tr>
               </tbody>
             </table>
@@ -641,7 +644,7 @@
           <div class="stack">
             <div class="table-wrap" style="margin-top: 0;">
               <table class="data">
-                <caption>In each language (Rust and Python today; the other bindings are planned)</caption>
+                <caption>In each language (Rust, Python and C today; the other bindings are planned)</caption>
                 <thead><tr><th>Language</th><th>Form</th></tr></thead>
                 <tbody>
                   <tr><td>Python</td><td>exceptions under <code>cleanrules.CleanRulesError</code>, keeping builtin bases (<code>ExpressionError</code> is also a <code>TypeError</code> and <code>ValueError</code>)</td></tr>

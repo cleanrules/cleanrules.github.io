@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Installation — cleanrules manual</title>
-  <meta name="description" content="Build the Python binding and the Rust crate from source; the planned packages.">
+  <meta name="description" content="Build the Python binding, the Rust crate and the C library from source; the planned packages.">
   <meta name="theme-color" content="#0b0f14">
   <meta name="author" content="Jose L. Salmeron">
   <link rel="canonical" href="https://cleanrules.github.io/manual/installation.html">
@@ -13,7 +13,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="cleanrules">
   <meta property="og:title" content="Installation — cleanrules manual">
-  <meta property="og:description" content="Build the Python binding and the Rust crate from source; the planned packages.">
+  <meta property="og:description" content="Build the Python binding, the Rust crate and the C library from source; the planned packages.">
   <meta property="og:url" content="https://cleanrules.github.io/manual/installation.html">
   <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -83,7 +83,7 @@
       <article class="doc-content">
         <p class="crumbs"><a href="index.html">Manual</a> / Chapter 02</p>
         <h1>Installation</h1>
-<p class="lead">cleanrules is pre-alpha and not on any package registry yet. Today you build it from the repository: the Python binding with maturin, the Rust crate as a path or git dependency. This page shows both, and the package names each language will use once it is published.</p>
+<p class="lead">cleanrules is pre-alpha and not on any package registry yet. Today you build it from the repository: the Python binding with maturin, the Rust crate as a path or git dependency, and the C library with Cargo. This page shows all three, and the package names each language will use once it is published.</p>
 
 <h2 id="requirements">Requirements<a class="h-anchor" href="#requirements" aria-label="Link to this section">#</a></h2>
 <ul>
@@ -137,7 +137,16 @@ print(sys.version)</code></pre>
 cleanrules = { path = "../cleanrules/crates/core" }
 # or straight from the repository
 # cleanrules = { git = "https://github.com/cleanrules/cleanrules" }</code></pre></div>
-<p>The core depends only on <code>jiff</code> (dates and time zones, with a bundled time-zone database), <code>regex</code> and <code>thiserror</code>, and has no <code>unsafe</code> code (<code>unsafe_code = "forbid"</code>). Every Rust program in this manual uses a path dependency like the one above. The <a href="quickstart.html#rust">quick start</a> has a complete program.</p>
+<p>The core depends only on <code>jiff</code> (dates and time zones, with a bundled time-zone database), <code>regex</code> and <code>thiserror</code>, plus <code>saphyr-parser</code> behind the <code>yaml</code> feature, and has no <code>unsafe</code> code (<code>unsafe_code = "forbid"</code>). Every Rust program in this manual uses a path dependency like the one above. The <a href="quickstart.html#rust">quick start</a> has a complete program.</p>
+
+<h2 id="c">C, from source<a class="h-anchor" href="#c" aria-label="Link to this section">#</a></h2>
+<p>The C ABI is the crate <code>cleanrules-ffi</code> in <code>crates/ffi</code>: one header, <code>include/cleanrules.h</code>, over a static and a shared library. Build it with Cargo and link your program to it:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>terminal</span></div>
+<pre class="code"><code class="language-bash">cd cleanrules
+cargo build --release -p cleanrules-ffi
+cc -I crates/ffi/include program.c target/release/libcleanrules_ffi.a -lm -lpthread -ldl -o program
+# on macOS, -lm alone; on Windows, the libraries cargo rustc --print native-static-libs lists</code></pre></div>
+<p>The header documents who owns every pointer, how errors are returned and what may be shared between threads. The C programs of the <a href="../examples/index.html">worked examples</a> were built this way, and <a href="https://github.com/cleanrules/cleanrules/blob/main/docs/examples/discounts.c" rel="noopener"><code>docs/examples/discounts.c</code></a> in the repository shows native values, explanations and actions as C callbacks.</p>
 
 <h2 id="registries">Planned packages<a class="h-anchor" href="#registries" aria-label="Link to this section">#</a></h2>
 <p>Every language will be published together at 1.0 (task M.2), with one version number for all packages. These are the intended names; none of them exists yet.</p>
@@ -146,8 +155,8 @@ cleanrules = { path = "../cleanrules/crates/core" }
     <thead><tr><th>Language</th><th>Registry and name</th><th>Roadmap</th></tr></thead>
     <tbody>
       <tr><td>Rust</td><td>crates.io: <code>cleanrules</code></td><td>core done (phase B); not published</td></tr>
-      <tr><td>Python</td><td>PyPI: <code>cleanrules</code></td><td>phase C done; the first public release</td></tr>
-      <tr><td>C / C++</td><td>CMake package, Conan and vcpkg: <code>cleanrules</code></td><td>phase E (C ABI, header, RAII wrapper)</td></tr>
+      <tr><td>Python</td><td>PyPI: <code>cleanrules</code></td><td>phases C and D done; the first public release</td></tr>
+      <tr><td>C / C++</td><td>CMake package, Conan and vcpkg: <code>cleanrules</code></td><td>phase E: the C ABI is done; the RAII wrapper and packages are next</td></tr>
       <tr><td>JavaScript / TypeScript</td><td>npm: <code>cleanrules</code> (napi-rs for Node, wasm for browsers and Deno)</td><td>phase F</td></tr>
       <tr><td>Java / Scala</td><td>Maven Central: <code>io.github.cleanrules:cleanrules</code></td><td>phase G (Java FFM, a Scala layer)</td></tr>
       <tr><td>Go</td><td>module <code>github.com/cleanrules/cleanrules/bindings/go</code></td><td>phase H (cgo)</td></tr>
@@ -160,14 +169,14 @@ cleanrules = { path = "../cleanrules/crates/core" }
 <h2 id="develop">Running the tests<a class="h-anchor" href="#develop" aria-label="Link to this section">#</a></h2>
 <p>If you build from source, you can run the same checks the project runs:</p>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>terminal</span></div>
-<pre class="code"><code class="language-bash">cargo test --workspace                       # the core, its conformance vectors and property tests
+<pre class="code"><code class="language-bash">cargo test --workspace                       # the core, the C ABI, their conformance vectors and property tests
 cd bindings/python && uv run pytest          # the Python binding (builds the extension first)</code></pre></div>
 
 <nav class="pager" aria-label="Chapters"><a class="prev" href="index.html"><small>← Previous</small>Introduction</a><a class="next" href="quickstart.html"><small>Next →</small>Quick start</a></nav>
       </article>
       <aside class="doc-toc" aria-label="On this page">
         <h2>On this page</h2>
-        <ol><li><a href="#requirements">Requirements</a></li><li><a href="#python">Python, from source</a></li><li><a href="#rust">Rust, from source</a></li><li><a href="#registries">Planned packages</a></li><li><a href="#develop">Running the tests</a></li></ol>
+        <ol><li><a href="#requirements">Requirements</a></li><li><a href="#python">Python, from source</a></li><li><a href="#rust">Rust, from source</a></li><li><a href="#c">C, from source</a></li><li><a href="#registries">Planned packages</a></li><li><a href="#develop">Running the tests</a></li></ol>
       </aside>
     </div>
   </main>

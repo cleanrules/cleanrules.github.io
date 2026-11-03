@@ -266,10 +266,25 @@ except ActionError as err:
 <pre class="term out">action_error mail (&#x27;log&#x27;,) ConnectionError(&#x27;mail server unreachable&#x27;)
 &lt;Decision rule_order: selected [log, mail, audit]&gt; [&#x27;log&#x27;]</pre>
 </div>
-<p>Actions are code of the host language, so they are not written to JSON. Actions referenced by a registered name, so that rule files can name them safely, are planned (task D.4).</p>
+<p>An action given as code is not written to a rule file. A rule can instead <strong>name</strong> its action (<code>Rule(..., do="notify")</code>, or <code>DO notify</code> in the text syntax): the name is data, written with the rule, and the program resolves it in a mapping it supplies (<code>actions=</code> when loading, or <code>rules.bind(actions)</code>), never as an import path. An unknown name is a <code>RegistryError</code> before anything runs.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import loads
+
+promo_file = &quot;&quot;&quot;
+RULE vip IF customer.years &gt; 5 THEN discount = DECIMAL &quot;0.15&quot; DO notify
+RULE loyal IF customer.years &gt; 2 THEN discount = DECIMAL &quot;0.05&quot; DO notify
+&quot;&quot;&quot;
+named = loads(promo_file, format=&quot;text&quot;, actions={&quot;notify&quot;: notify})
+sent.clear()
+print(named.rules[0].action_name)
+print(named.run(customer), sent)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">notify
+&lt;Decision first: selected [vip]&gt; [(&#x27;vip&#x27;, &#x27;ana@example.com&#x27;, {&#x27;discount&#x27;: Decimal(&#x27;0.15&#x27;)})]</pre>
+</div>
 
 <h2 id="json">As JSON<a class="h-anchor" href="#json" aria-label="Link to this section">#</a></h2>
-<p>A rule set is also a JSON document. Each worked example shows its rule set in that form, written by the core, for instance the <a href="../examples/loan.html#rules">loan approval rules</a>. Loading rule files from Python is task D.1; the Rust core reads them today (<a href="json.html">Rules as JSON</a>).</p>
+<p>A rule set is also a JSON document. Each worked example shows its rule set in that form, written by the core, for instance the <a href="../examples/loan.html#rules">loan approval rules</a>. Python loads and saves rule files as JSON, YAML or text (<a href="json.html#files">Rule files</a>).</p>
 
 <nav class="pager" aria-label="Chapters"><a class="prev" href="conditions.html"><small>← Previous</small>Writing conditions</a><a class="next" href="hit-policies.html"><small>Next →</small>Hit policies and aggregates</a></nav>
       </article>

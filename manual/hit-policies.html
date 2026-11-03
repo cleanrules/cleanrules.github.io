@@ -209,7 +209,7 @@ vip selected None</pre>
 <ul>
   <li>Aggregates apply per payload key; DMN aggregates a single output column.</li>
   <li><code>count</code> counts non-null values; DMN engines differ on whether it counts matches or distinct outputs.</li>
-  <li><code>priority</code> uses each rule's priority, not DMN's ordered list of output values. Decision tables (task D.3) will compile output-value priorities into rule priorities.</li>
+  <li><code>priority</code> uses each rule's priority, not DMN's ordered list of output values; a decision table compiles its output-value priorities into rule priorities.</li>
   <li><code>collect</code> without an aggregate keeps rule order, so results are deterministic; DMN leaves the order unspecified.</li>
 </ul>
 

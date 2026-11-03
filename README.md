@@ -10,7 +10,7 @@ A static site with no build step. Pages:
 |---|---|
 | `index.html` | overview, start here, status, explanation demo, languages, roadmap, citation, author |
 | `manual/` | the manual: 15 chapters (introduction, installation, quick start, conditions, rules and actions, hit policies, evaluating data, explanations, summaries, errors, JSON, Python pitfalls, performance, Python and Rust API reference) |
-| `examples/` | eight worked examples, each in Python, Rust, JSON and seven planned languages |
+| `examples/` | eight worked examples, each in Python, Rust, JSON and C, with previews of six planned languages |
 | `guide.html` | concepts: conditions as data, nodes, Kleene logic, reasons, strict mode, rules, hit policies, explanations, counterfactuals, summaries |
 | `format.html` | the JSON format v1: values, conditions, rules, decisions read back and verified, limits, error codes, schemas |
 | `benchmarks.html` | method, workload, core results and the zen-engine comparison, with caveats |
@@ -46,9 +46,11 @@ branch → `main` / root). `.nojekyll` disables Jekyll processing.
   repository.
 - Python code on the manual and example pages was run with the Python binding
   built from the code repository, cell by cell, and its output pasted as printed.
-  Rust programs were compiled against `crates/core` and run.
+  Rust programs were compiled against `crates/core` and run, and C programs
+  against the C ABI (`crates/ffi`, its header and static library), next to the
+  example's JSON rule set.
 - For each worked example, the Python rules, the Rust rules and the JSON rule set
   were checked to be the same document, and Python's decision, explanation and
   summary documents equal the core's.
-- Code in TypeScript, Java, Scala, Go, C, C++ and Erlang, and anything marked
+- Code in TypeScript, Java, Scala, Go, C++ and Erlang, and anything marked
   **design preview**, is an API preview of a binding that does not exist yet.

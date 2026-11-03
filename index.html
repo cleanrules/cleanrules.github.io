@@ -127,7 +127,7 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
       <div class="wrap">
         <p class="eyebrow">Start here</p>
         <h2>A manual, worked examples and the reference.</h2>
-        <p class="sub">Every Python and Rust snippet on this site was run, and its output is pasted as printed. The planned languages are shown as clearly labelled design previews.</p>
+        <p class="sub">Every Python, Rust and C snippet on this site was run, and its output is pasted as printed. The planned languages are shown as clearly labelled design previews.</p>
         <div class="funnel">
           <a class="card" href="manual/index.html">
             <span class="ex-num">15 chapters</span>
@@ -140,7 +140,7 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
             <span class="ex-num">8 problems · 10 languages</span>
             <span class="big">Worked examples</span>
             <p>Loan approval, insurance premiums, shipping tables, fraud flags, order validation, eligibility deadlines, discount agreement and an AI-agent guardrail.</p>
-            <ul><li><span>Python, Rust and JSON that run</span></li><li><span>TypeScript, Java, Scala, Go, C, C++, Erlang previews</span></li></ul>
+            <ul><li><span>Python, Rust, JSON and C that run</span></li><li><span>TypeScript, Java, Scala, Go, C++, Erlang previews</span></li></ul>
             <span class="more">Browse the examples →</span>
           </a>
           <a class="card" href="guide.html">
@@ -158,11 +158,11 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
     <section class="section alt" id="status">
       <div class="wrap">
         <p class="eyebrow">Status at a glance</p>
-        <h2>The Rust core and the Python binding are done.</h2>
-        <p class="sub">Phases A (the contract between languages) and B (the Rust core) are complete, and phase C, the Python binding, is complete: its API, data reading and actions are done, and it passes every conformance vector. It builds from source today; next comes phase D, rules as data. Nothing is published yet: the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
+        <h2>The Rust core, the Python binding and the C ABI are done.</h2>
+        <p class="sub">Phases A (the contract between languages), B (the Rust core), C (the Python binding) and D (rules as data: JSON, YAML, a text syntax, decision tables and actions by name) are complete. In phase E, the C ABI is done; the C++ wrapper comes next. Everything builds from source today. Nothing is published yet: the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
         <div class="stats">
-          <div class="stat"><b>2,135</b><span>conformance vectors, all passing</span><small>1,948 through the core's runner (1,150 condition, 176 value, 302 evaluation, 317 explanation, 3 summary) and 187 document-reading cases. The Python binding passes them too: all 2,135 through JSON and 1,948 with native Python data.</small></div>
-          <div class="stat"><b>6 &times; 512</b><span>property tests</span><small><code>proptest</code>: evaluation never fails and gives reasons exactly for unknowns, De Morgan, strict mode, JSON round trips, decisions read back, explanation causes point the right way.</small></div>
+          <div class="stat"><b>2,508</b><span>conformance vectors, all passing</span><small>1,952 through the core's runner (1,151 condition, 178 value, 302 evaluation, 317 explanation, 4 summary) and 556 document-reading cases. The Python binding and the C ABI pass them too: all 2,508 through JSON, and 1,952 with native Python data.</small></div>
+          <div class="stat"><b>10 &times; 512</b><span>property tests</span><small><code>proptest</code>: evaluation never fails and gives reasons exactly for unknowns, De Morgan, strict mode, JSON, text and CSV round trips, decisions read back, explanation causes point the right way.</small></div>
           <div class="stat"><b>7.2&nbsp;&micro;s</b><span>per input, 12 rules</span><small>One input under <code>first</code>, with every result tree kept for <code>explain()</code>. Apple M5, rustc 1.97.1, criterion. <a href="benchmarks.html">Method and caveats</a></small></div>
           <div class="stat"><b>6.4&times; / 6.7&times;</b><span>vs zen-engine 2.1.6</span><small>1,000 evaluations under <code>first</code> / <code>collect</code>, on one workload and one machine, after checking both engines select the same rules. <a href="benchmarks.html#zen">Read the caveats</a></small></div>
         </div>
@@ -170,8 +170,9 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
           <li class="done">A · contract ✓</li>
           <li class="done">B · Rust core ✓</li>
           <li class="done">C · Python binding ✓</li>
-          <li class="now">D · rules as data (next)</li>
-          <li>E–H · C/C++, JS, JVM, Go</li>
+          <li class="done">D · rules as data ✓</li>
+          <li class="now">E · C ✓, C++ (next)</li>
+          <li>F–H · JS, JVM, Go</li>
           <li>I–L · validation, fuzzy &amp; audit, expert system, ML</li>
           <li>N · Erlang</li>
           <li>O · AI agents</li>
@@ -483,7 +484,8 @@ Outputs: discount</pre>
         <div class="lang-grid">
           <div class="lang"><span class="lang-name">Rust</span><span class="chip ref">core done</span><code>cargo add cleanrules</code></div>
           <div class="lang"><span class="lang-name">Python</span><span class="chip ref">runs from source</span><code>pip install cleanrules</code></div>
-          <div class="lang"><span class="lang-name">C / C++</span><span class="chip planned">planned</span><code>find_package(cleanrules)</code></div>
+          <div class="lang"><span class="lang-name">C</span><span class="chip ref">runs from source</span><code>#include &lt;cleanrules.h&gt;</code></div>
+          <div class="lang"><span class="lang-name">C++</span><span class="chip planned">planned</span><code>find_package(cleanrules)</code></div>
           <div class="lang"><span class="lang-name">JavaScript / TS</span><span class="chip planned">planned</span><code>npm i cleanrules</code></div>
           <div class="lang"><span class="lang-name">Java / Scala</span><span class="chip planned">planned</span><code>io.github.cleanrules</code></div>
           <div class="lang"><span class="lang-name">Go</span><span class="chip planned">planned</span><code>github.com/cleanrules/…</code></div>
@@ -625,7 +627,7 @@ cr::RuleSet rules({
 auto decision = rules.evaluate(cr::Value::from_json(R&quot;({&quot;customer&quot;: {&quot;years&quot;: 3}, &quot;order&quot;: {&quot;total&quot;: 1500}})&quot;));
 if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;</code></pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. It will wrap the C ABI, which runs today (<a href="examples/index.html">worked examples in C</a>). The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
 </div>
 <div role="tabpanel" id="ov-erl" aria-labelledby="tab-ov-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.erl</span><span class="src dp">design preview</span></div>
@@ -671,8 +673,9 @@ if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt
           <li class="done"><span class="step">A</span><div><h3>Contract between languages</h3><p>JSON format and schemas, neutral data model, and the conformance vectors every language runs.</p></div></li>
           <li class="done"><span class="step">B</span><div><h3>Rust core</h3><p>Everything above in Rust, passing 100% of the vectors. Property tests and benchmarks.</p></div></li>
           <li class="done"><span class="step">C</span><div><h3>Python binding</h3><p>Wheels (<code>abi3</code>, free-threaded <code>cp314t</code> and <code>abi3t</code>), the API (<code>F</code>, rules, decisions, explanations, errors), reading of dataclasses, Pydantic models and pandas rows, actions, and a conformance runner that passes every vector. It will be the first public release.</p></div></li>
-          <li class="now"><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text DSL aligned with fuzzytool, decision tables.</p></div></li>
-          <li><span class="step">E–H, N</span><div><h3>C/C++, JavaScript, JVM, Go, Erlang</h3><p>The C ABI first, then each binding with its own conformance runner; Erlang through a rustler NIF.</p></div></li>
+          <li class="done"><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text syntax aligned with fuzzytool, decision tables from JSON, CSV, rows and data frames, and actions by registered name.</p></div></li>
+          <li class="now"><span class="step">E</span><div><h3>C and C++</h3><p>The C ABI is done: a header generated by cbindgen, native values, actions as C callbacks, decision tables row by row, and every conformance vector, checked under Miri and sanitizers. Next: a C++ RAII header with CMake, Conan and vcpkg packages.</p></div></li>
+          <li><span class="step">F–H, N</span><div><h3>JavaScript, JVM, Go, Erlang</h3><p>Each binding with its own conformance runner; the JVM and Go over the C ABI, Erlang through a rustler NIF.</p></div></li>
           <li><span class="step">I–L</span><div><h3>Validation, fuzzy &amp; audit, expert system, ML</h3><p>Arrow batches, fuzzy norms, static audit, Rete, rule extraction from models.</p></div></li>
           <li><span class="step">O</span><div><h3>AI agents</h3><p>An MCP server, guardrails for agent tool calls, adapters for agent frameworks, and verified rules proposed by LLMs.</p></div></li>
           <li><span class="step">1.0</span><div><h3>Synchronised release</h3><p>crates.io, PyPI, npm, Maven Central, Go modules, Hex, Conan and vcpkg. Paper and DOI.</p></div></li>

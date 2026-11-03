@@ -76,7 +76,7 @@
       <div class="wrap">
         <p class="eyebrow">Concepts guide</p>
         <h1>How cleanrules <span class="grad">decides</span> and <span class="grad">explains</span>.</h1>
-        <p class="lead">One engine, one set of semantics, written down in a <a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">specification</a> and enforced by 2,135 conformance vectors. This guide walks through it from the condition tree to the explanation, with a real example for every idea.</p>
+        <p class="lead">One engine, one set of semantics, written down in a <a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">specification</a> and enforced by 2,508 conformance vectors. This guide walks through it from the condition tree to the explanation, with a real example for every idea.</p>
         <div class="callout real">
           <p><strong>Every JSON output on this page is real output of the Rust core</strong>, produced by running the examples through <code>crates/core</code> and written with its own JSON writer. The text renderings of <code>explain()</code> and <code>summary()</code> are real output of the core too, printed through the Python binding. Python code uses the Python binding, which runs today; for a hands-on tour with real Python output, read the <a href="manual/index.html">manual</a>.</p>
         </div>
@@ -509,7 +509,7 @@
             </div>
             <div class="prose">
               <p><strong>Payload values are expressions</strong>, not just constants: <code>"rate": base_rate × 2</code> is computed from the input when the rule is selected. A field in a payload passes through whatever the data holds, lists and maps included. Payload member order is significant: it is the order of the output's keys and the order in which values are evaluated.</p>
-              <p><strong>Actions</strong> (<code>do</code>) are code of the host language. <code>evaluate</code> is pure and never runs them, so a decision can be computed any number of times for explanations, validation or model predictions. <code>run</code> evaluates, then calls the actions of the selected rules in rule order (task D.4 adds actions by registered name).</p>
+              <p><strong>Actions</strong> (<code>do</code>) are code of the host language. <code>evaluate</code> is pure and never runs them, so a decision can be computed any number of times for explanations, validation or model predictions. <code>run</code> evaluates, then calls the actions of the selected rules in rule order. A rule can also name its action (<code>DO notify</code> in the text syntax), which is data: each program resolves the name in a registry it supplies, never as an import path.</p>
             </div>
           </div>
           <div class="stack">
@@ -655,7 +655,7 @@
             <ul>
               <li>Aggregates are per payload key; DMN aggregates one output column.</li>
               <li><code>count</code> counts non-null values; DMN engines differ on what <code>C#</code> counts.</li>
-              <li><code>priority</code> uses each rule's priority; decision tables (task D.3) will compile DMN's output-value priorities into rule priorities.</li>
+              <li><code>priority</code> uses each rule's priority; a decision table compiles DMN's output-value priorities into rule priorities.</li>
               <li><code>collect</code> without an aggregate keeps rule order, because results must be deterministic.</li>
             </ul>
           </div>

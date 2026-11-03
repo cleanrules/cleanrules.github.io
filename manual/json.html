@@ -91,9 +91,10 @@
   <table class="data">
     <thead><tr><th>Content</th><th>The core reads it</th><th>The core writes it</th><th>From Python today</th></tr></thead>
     <tbody>
-      <tr><td><code>condition</code></td><td>yes</td><td>yes</td><td>nodes pickle through it</td></tr>
-      <tr><td><code>rule</code>, <code>ruleset</code></td><td>yes</td><td>yes</td><td>loading and saving rule files is task D.1</td></tr>
-      <tr><td><code>decision</code></td><td>yes, checked against its rule set</td><td>yes</td><td><code>decision.to_dict()</code></td></tr>
+      <tr><td><code>condition</code></td><td>yes</td><td>yes</td><td><code>loads</code>, <code>dumps</code>; nodes pickle through it</td></tr>
+      <tr><td><code>rule</code>, <code>ruleset</code></td><td>yes</td><td>yes</td><td><code>load</code>, <code>loads</code>, <code>dump</code>, <code>dumps</code></td></tr>
+      <tr><td><code>decision_table</code></td><td>yes</td><td>yes</td><td>the same functions, which return a <code>DecisionTable</code></td></tr>
+      <tr><td><code>decision</code></td><td>yes, checked against its rule set</td><td>yes</td><td><code>decision.to_dict()</code>, <code>rules.read_decision(text)</code></td></tr>
       <tr><td><code>explanation</code></td><td>no (output only)</td><td>yes</td><td><code>explanation.to_dict()</code></td></tr>
       <tr><td><code>summary</code></td><td>no (output only)</td><td>yes</td><td><code>summary.to_dict()</code></td></tr>
     </tbody>
@@ -256,14 +257,32 @@ unsupported_version: this reader knows format version 1</pre>
   <li>Readers enforce limits on size, JSON nesting and node depth, so documents from untrusted sources are safe to read.</li>
 </ul>
 
-<h2 id="planned">Planned<a class="h-anchor" href="#planned" aria-label="Link to this section">#</a></h2>
-<p>Loading and saving rule files in JSON and YAML from every binding (D.1), a text DSL with its own parser (<code>IF … THEN …</code>, D.2) and decision tables from rows, CSV or JSON (D.3). Until D.1, Python builds rule sets in code, as every example in this manual does.</p>
+<h2 id="files">Rule files<a class="h-anchor" href="#files" aria-label="Link to this section">#</a></h2>
+<p><code>load</code>, <code>loads</code>, <code>dump</code> and <code>dumps</code> read and write conditions, rules and rule sets as JSON, YAML or the rule syntax (<code>format="text"</code>, files ending in <code>.rules</code>), and decision tables as JSON, YAML or CSV. The core does the reading and writing, so a file means the same in every language. A text with one rule and no settings reads as a <code>Rule</code>.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Python</span><span class="src">Python binding · runs</span></div>
+<pre class="code"><code class="language-python">from cleanrules import F, Rule, RuleSet, dumps, loads
+
+rules = RuleSet([Rule(&quot;vip&quot;, (F.customer.years &gt; 5) &amp; (F.order.total &gt; 1000), {&quot;discount&quot;: 0.15})])
+text = dumps(rules, format=&quot;text&quot;)
+print(text)
+
+same = loads(text, format=&quot;text&quot;)
+print(dict(same.evaluate({&quot;customer&quot;: {&quot;years&quot;: 7}, &quot;order&quot;: {&quot;total&quot;: 1500}}).output))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">HIT POLICY first
+
+RULE vip
+IF customer.years &gt; 5 AND order.total &gt; 1000
+THEN discount = 0.15e0
+{&#x27;discount&#x27;: 0.15}</pre>
+</div>
+<p>The text syntax is defined in <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/text.md" rel="noopener"><code>spec/text.md</code></a> and decision tables in <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/tables.md" rel="noopener"><code>spec/tables.md</code></a>.</p>
 
 <nav class="pager" aria-label="Chapters"><a class="prev" href="errors.html"><small>← Previous</small>Errors</a><a class="next" href="pitfalls.html"><small>Next →</small>Python pitfalls</a></nav>
       </article>
       <aside class="doc-toc" aria-label="On this page">
         <h2>On this page</h2>
-        <ol><li><a href="#documents">Documents</a></li><li><a href="#decisions">Writing a decision from Python</a></li><li><a href="#rust">Reading documents in Rust</a></li><li><a href="#versioning">Versioning</a></li><li><a href="#planned">Planned</a></li></ol>
+        <ol><li><a href="#documents">Documents</a></li><li><a href="#decisions">Writing a decision from Python</a></li><li><a href="#rust">Reading documents in Rust</a></li><li><a href="#versioning">Versioning</a></li><li><a href="#files">Rule files</a></li></ol>
       </aside>
     </div>
   </main>

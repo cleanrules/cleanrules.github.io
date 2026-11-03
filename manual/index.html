@@ -86,7 +86,7 @@
 <p class="lead">cleanrules is a rules engine whose conditions are data. You write a rule once, the Rust core evaluates it, and every decision comes with an explanation: which rules fired, which did not, why, and how far each input was from changing the outcome. This manual teaches you to use it, from installation to the API reference.</p>
 
 <div class="callout real">
-  <p><strong>Everything on these pages ran.</strong> The Python cells were executed with the Python binding built from source, and the Rust programs with the core crate (<code>crates/core</code>); the output under each one is what it printed. Nothing is published to a package registry yet, and the bindings for the other languages are planned: where this manual shows them, it says so.</p>
+  <p><strong>Everything on these pages ran.</strong> The Python cells were executed with the Python binding built from source, the Rust programs with the core crate (<code>crates/core</code>) and the C programs with the C ABI (<code>crates/ffi</code>); the output under each one is what it printed. Nothing is published to a package registry yet, and the bindings for the other languages are planned: where this manual shows them, it says so.</p>
 </div>
 
 <h2 id="at-a-glance">At a glance<a class="h-anchor" href="#at-a-glance" aria-label="Link to this section">#</a></h2>
@@ -136,10 +136,11 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
   <table class="data">
     <thead><tr><th>Language</th><th>State</th><th>On these pages</th></tr></thead>
     <tbody>
-      <tr><td>Rust</td><td><span class="chip ref">core done</span></td><td>Complete programs, run against <code>crates/core</code>. The crate implements the whole specification and passes all 2,135 conformance vectors.</td></tr>
-      <tr><td>Python</td><td><span class="chip ref">phase C done</span></td><td>Cells run with the binding built from source. Done: wheels (C.1); conditions, rules, rule sets, decisions, explanations, summaries and errors (C.2); reading dicts, dataclasses, Pydantic models, namedtuples, pandas rows and numpy values (C.3); actions, <code>run</code> and pickling (C.4); a conformance runner through which all 2,135 vectors pass via JSON and 1,948 with native Python data, plus <code>evaluate_tree</code> and <code>evaluate_value_tree</code> for single conditions (C.5). Next: phase D, rules as data. Not published yet.</td></tr>
-      <tr><td>JSON</td><td><span class="chip ref">format v1</span></td><td>Documents written by the core. The core reads and writes them today; loading rule files from every binding is task D.1.</td></tr>
-      <tr><td>TypeScript, Java, Scala, Go, C, C++, Erlang</td><td><span class="chip planned">planned</span></td><td>Design previews of the intended API, in the <a href="../examples/index.html">worked examples</a>. They do not run: their bindings do not exist yet.</td></tr>
+      <tr><td>Rust</td><td><span class="chip ref">core done</span></td><td>Complete programs, run against <code>crates/core</code>. The crate implements the whole specification and passes all 2,508 conformance vectors.</td></tr>
+      <tr><td>Python</td><td><span class="chip ref">phase C done</span></td><td>Cells run with the binding built from source. Done: wheels (C.1); conditions, rules, rule sets, decisions, explanations, summaries and errors (C.2); reading dicts, dataclasses, Pydantic models, namedtuples, pandas rows and numpy values (C.3); actions, <code>run</code> and pickling (C.4); a conformance runner through which all 2,508 vectors pass via JSON and 1,952 with native Python data, plus <code>evaluate_tree</code> and <code>evaluate_value_tree</code> for single conditions (C.5). Since phase D: rule files in JSON, YAML and text, decision tables and actions by registered name. Not published yet.</td></tr>
+      <tr><td>JSON</td><td><span class="chip ref">format v1</span></td><td>Documents written by the core. Python and C load and save them through the core.</td></tr>
+      <tr><td>C</td><td><span class="chip ref">C ABI done</span></td><td>Programs compiled against the C ABI (<code>crates/ffi</code>, header <code>cleanrules.h</code>) built from source and run, in the <a href="../examples/index.html">worked examples</a>. It passes every conformance vector. Not published yet.</td></tr>
+      <tr><td>TypeScript, Java, Scala, Go, C++, Erlang</td><td><span class="chip planned">planned</span></td><td>Design previews of the intended API, in the <a href="../examples/index.html">worked examples</a>. They do not run: their bindings do not exist yet.</td></tr>
     </tbody>
   </table>
 </div>
@@ -154,7 +155,7 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
 
 <h2 id="chapters">Chapters<a class="h-anchor" href="#chapters" aria-label="Link to this section">#</a></h2>
 <div class="ex-grid">
-<a class="ex-card" href="installation.html"><span class="ex-num">02</span><h3>Installation</h3><p>Build the Python binding and the Rust crate from source; the planned packages.</p><span class="more">Read →</span></a>
+<a class="ex-card" href="installation.html"><span class="ex-num">02</span><h3>Installation</h3><p>Build the Python binding, the Rust crate and the C library from source; the planned packages.</p><span class="more">Read →</span></a>
 <a class="ex-card" href="quickstart.html"><span class="ex-num">03</span><h3>Quick start</h3><p>One rule set from definition to explanation, in Python and in Rust.</p><span class="more">Read →</span></a>
 <a class="ex-card" href="conditions.html"><span class="ex-num">04</span><h3>Writing conditions</h3><p>F, operators and methods, constants, decimals, dates and regular expressions.</p><span class="more">Read →</span></a>
 <a class="ex-card" href="rules.html"><span class="ex-num">05</span><h3>Rules and rule sets</h3><p>Payloads, priorities, tags, metadata, and the checks run when you build them.</p><span class="more">Read →</span></a>
@@ -172,7 +173,7 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
 
 <h2 id="elsewhere">Elsewhere on the site<a class="h-anchor" href="#elsewhere" aria-label="Link to this section">#</a></h2>
 <ul>
-  <li><a href="../examples/index.html">Worked examples</a>: eight solved problems, each in Python, Rust, JSON and seven planned languages.</li>
+  <li><a href="../examples/index.html">Worked examples</a>: eight solved problems, each in Python, Rust, JSON and C, with previews of six planned languages.</li>
   <li><a href="../guide.html">Concepts</a>: the semantics in depth, with JSON output of the core for every idea.</li>
   <li><a href="../format.html">JSON format v1</a>: the reference for documents, value encoding, limits and error codes.</li>
   <li>The <a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">specification</a> in the repository is normative; this manual follows it.</li>

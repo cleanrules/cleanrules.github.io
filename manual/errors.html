@@ -162,8 +162,8 @@ hint: the rules are: a, b</pre>
       <tr><td><code>decision_mismatch</code></td><td>a decision does not belong to the rule set it is read with</td><td><code>pointer</code></td></tr>
       <tr><td><code>expression_error</code></td><td>a condition node breaks a construction rule</td><td><code>rule</code>, <code>node</code>; <code>pointer</code> from JSON</td></tr>
       <tr><td><code>rule_definition_error</code></td><td>a rule or rule set breaks a construction rule</td><td><code>rule</code>; <code>pointer</code> from JSON</td></tr>
-      <tr><td><code>rule_syntax_error</code></td><td>the text DSL cannot be parsed (planned, D.2)</td><td><code>line</code>, <code>column</code></td></tr>
-      <tr><td><code>registry_error</code></td><td>a name is not registered (a logic; later, an action)</td><td><code>name</code>, <code>available</code></td></tr>
+      <tr><td><code>rule_syntax_error</code></td><td>a text in the rule syntax cannot be parsed</td><td><code>line</code>, <code>column</code></td></tr>
+      <tr><td><code>registry_error</code></td><td>a name is not registered: a logic, or a rule's named action</td><td><code>name</code>, <code>available</code></td></tr>
       <tr><td><code>rule_not_found</code></td><td>a rule is looked up by a name the rule set does not have</td><td><code>name</code>, <code>available</code></td></tr>
       <tr><td><code>evaluation_error</code></td><td>strict mode cannot read a value (a getter raised), or a batch is not a collection of inputs</td><td><code>rule</code>, <code>path</code>, <code>node</code>, <code>row</code></td></tr>
       <tr><td><code>missing_field</code></td><td>strict mode met a field whose path cannot be resolved</td><td><code>rule</code>, <code>path</code>, <code>node</code>, <code>row</code></td></tr>
@@ -202,7 +202,7 @@ except CleanRulesError as err:
 </div>
 
 <h2 id="languages">The same error in every language<a class="h-anchor" href="#languages" aria-label="Link to this section">#</a></h2>
-<p>A strict rule set and an input without the field it reads. Python and Rust run; the other tabs are design previews of the planned bindings, following <code>spec/errors.md</code>.</p>
+<p>A strict rule set and an input without the field it reads. Python, Rust and C run; the other tabs are design previews of the planned bindings, following <code>spec/errors.md</code>.</p>
 <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
 <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-err-py" data-lang="py" aria-controls="err-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
@@ -211,7 +211,7 @@ except CleanRulesError as err:
 <button role="tab" id="tab-err-java" data-lang="java" aria-controls="err-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-err-scala" data-lang="scala" aria-controls="err-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-err-go" data-lang="go" aria-controls="err-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
-<button role="tab" id="tab-err-c" data-lang="c" aria-controls="err-c" aria-selected="false" tabindex="-1"><span class="pv"></span>C</button>
+<button role="tab" id="tab-err-c" data-lang="c" aria-controls="err-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
 <button role="tab" id="tab-err-cpp" data-lang="cpp" aria-controls="err-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
 <button role="tab" id="tab-err-erl" data-lang="erl" aria-controls="err-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
@@ -351,21 +351,42 @@ if errors.Is(err, cr.ErrEvaluation) &amp;&amp; errors.As(err, &amp;e) { // missi
 <p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
 </div>
 <div role="tabpanel" id="err-c" aria-labelledby="tab-err-c" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.c</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-c">/* Design preview: the C binding does not exist yet (phase E). */
-cr_decision *decision = NULL;
-cr_status st = cr_ruleset_evaluate_json(adult, &quot;{\&quot;customer\&quot;: {\&quot;name\&quot;: \&quot;Ana\&quot;}}&quot;, &amp;decision);
-if (st != CR_OK) {
-    const cr_error *err = cr_last_error();
-    printf(&quot;%s (parent: %s): %s\n&quot;, cr_status_name(st),
-           cr_status_name(cr_error_parent(st)), cr_error_message(err));
-    if (cr_error_parent(st) == CR_EVALUATION_ERROR) {
-        /* missing_field, type_mismatch or hit_policy_error: handle the input */
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.c</span><span class="src">C ABI · runs</span></div>
+<pre class="code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;cleanrules.h&gt;
+
+int main(void) {
+    const char *text = &quot;STRICT\n\nRULE adult IF customer.age &gt;= 18&quot;;
+    const char *input = &quot;{\&quot;customer\&quot;: {\&quot;name\&quot;: \&quot;Ana\&quot;}}&quot;;
+    cr_error *error = NULL;
+    cr_ruleset *adult = NULL;
+    cr_decision *decision = NULL;
+    if (cr_ruleset_read(text, strlen(text), CR_FORMAT_TEXT, NULL, &amp;adult, &amp;error) == CR_OK) {
+        cr_ruleset_evaluate(adult, input, strlen(input), NULL, &amp;decision, &amp;error);
     }
-}
-cr_decision_free(decision);</code></pre>
+    if (error != NULL) {
+        cr_status code = cr_error_code(error);
+        printf(&quot;code:    %s\n&quot;, cr_status_name(code));
+        printf(&quot;parent:  %s\n&quot;, cr_status_name(cr_error_parent(code)));
+        printf(&quot;message: %s\n&quot;, cr_error_message(error));
+        printf(&quot;json:    %s\n&quot;, cr_error_json(error));
+        if (cr_error_is(code, CR_EVALUATION_ERROR)) {
+            /* missing_field, type_mismatch or hit_policy_error: handle the input */
+        }
+    }
+    cr_error_free(error);
+    cr_decision_free(decision);
+    cr_ruleset_free(adult);
+    return 0;
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">code:    missing_field
+parent:  evaluation_error
+message: missing field customer.age
+json:    {&quot;code&quot;:&quot;missing_field&quot;,&quot;message&quot;:&quot;missing field customer.age&quot;,&quot;rule&quot;:&quot;adult&quot;,&quot;path&quot;:[&quot;customer&quot;,&quot;age&quot;],&quot;node&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;customer&quot;,&quot;age&quot;]}}</pre>
 </div>
-<p class="panel-note">Design preview: the C binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run. Every function takes an optional <code>cr_error **</code>; the error has a message, a hint and the JSON form of <code>spec/errors.md</code>.</p>
 </div>
 <div role="tabpanel" id="err-cpp" aria-labelledby="tab-err-cpp" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.cpp</span><span class="src dp">design preview</span></div>
@@ -404,7 +425,7 @@ end.</code></pre>
       <tr><td>JavaScript, TypeScript <span class="chip planned">planned</span></td><td><code>Error</code> subclasses with the names above and a <code>code</code> property; the cause is <code>cause</code></td></tr>
       <tr><td>C++ <span class="chip planned">planned</span></td><td>exceptions with the names above, deriving from <code>std::runtime_error</code>, with <code>code()</code></td></tr>
       <tr><td>Go <span class="chip planned">planned</span></td><td>one type, <code>*cleanrules.Error</code>, with a <code>Code</code> field and the context; each parent is a sentinel (<code>ErrEvaluation</code>, <code>ErrFormat</code>, …) for <code>errors.Is</code></td></tr>
-      <tr><td>C <span class="chip planned">planned</span></td><td>functions return a <code>cr_status</code>: <code>CR_OK</code> or one stable number per code; <code>cr_error_parent(code)</code> gives the parent; the message and context are read from the last error</td></tr>
+      <tr><td>C</td><td>functions return a <code>cr_status</code>: <code>CR_OK</code> or one stable number per code; <code>cr_error_parent(code)</code> gives the parent and <code>cr_error_is</code> tests the hierarchy; an optional <code>cr_error **</code> receives the message, hint and JSON form</td></tr>
       <tr><td>Erlang <span class="chip planned">planned</span></td><td><code>{ok, Value}</code> or <code>{error, #{code := ..., ...}}</code></td></tr>
     </tbody>
   </table>

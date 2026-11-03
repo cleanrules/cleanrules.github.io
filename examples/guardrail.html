@@ -128,7 +128,7 @@
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
-<button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="pv"></span>C</button>
+<button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
 <button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
@@ -514,41 +514,65 @@ func main() {
 <p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
 </div>
 <div role="tabpanel" id="rules-c" aria-labelledby="tab-rules-c" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.c</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-c">// Design preview: the C binding does not exist yet (phase E).
-#include &lt;stdio.h&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.c</span><span class="src">C ABI · runs</span></div>
+<pre class="code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
 #include &lt;cleanrules.h&gt;
 
-static int fail(cr_status status) {
-    fprintf(stderr, &quot;%s: %s\n&quot;, cr_status_name(status), cr_error_message(cr_last_error()));
+/* A whole file, or NULL. */
+static char *read_file(const char *path, size_t *len) {
+    FILE *file = fopen(path, &quot;rb&quot;);
+    char *text = NULL;
+    if (file != NULL &amp;&amp; fseek(file, 0, SEEK_END) == 0) {
+        long size = ftell(file);
+        if (size &gt;= 0 &amp;&amp; fseek(file, 0, SEEK_SET) == 0 &amp;&amp; (text = malloc((size_t)size + 1)) != NULL) {
+            *len = fread(text, 1, (size_t)size, file);
+        }
+    }
+    if (file != NULL) fclose(file);
+    return text;
+}
+
+static int fail(cr_error *error) {
+    fprintf(stderr, &quot;%s: %s\n&quot;, cr_status_name(cr_error_code(error)), cr_error_message(error));
+    cr_error_free(error);
     return 1;
 }
 
 int main(void) {
-    cr_ruleset *rules = NULL;
-    cr_decision *decision = NULL;
-    char *output = NULL;
-
     /* The rule set document shown in the JSON tab. */
-    cr_status status = cr_ruleset_read_file(&quot;guardrail.ruleset.json&quot;, &amp;rules);
-    if (status != CR_OK) return fail(status);
+    size_t len = 0;
+    char *text = read_file(&quot;guardrail.ruleset.json&quot;, &amp;len);
+    if (text == NULL) {
+        perror(&quot;guardrail.ruleset.json&quot;);
+        return 1;
+    }
+    cr_error *error = NULL;
+    cr_ruleset *rules = NULL;
+    cr_status status = cr_ruleset_read(text, len, CR_FORMAT_JSON, NULL, &amp;rules, &amp;error);
+    free(text);
+    if (status != CR_OK) return fail(error);
 
     const char *call =
         &quot;{\&quot;tool\&quot;: {\&quot;name\&quot;: \&quot;pay_invoice\&quot;, &quot;
         &quot;\&quot;args\&quot;: {\&quot;invoice\&quot;: \&quot;F-2026-118\&quot;, \&quot;amount\&quot;: {\&quot;$decimal\&quot;: \&quot;1250.00\&quot;}}}, &quot;
         &quot;\&quot;context\&quot;: {\&quot;hour\&quot;: 14}}&quot;;
-    status = cr_ruleset_evaluate_json(rules, call, &amp;decision);
-    if (status == CR_OK) status = cr_decision_output_json(decision, &amp;output);
-    if (status == CR_OK) puts(output);  /* a JSON object, or null */
-    else fail(status);
-
+    cr_decision *decision = NULL;
+    char *output = NULL;
+    if (cr_ruleset_evaluate(rules, call, strlen(call), NULL, &amp;decision, &amp;error) == CR_OK &amp;&amp;
+        cr_decision_output(decision, &amp;output, NULL, &amp;error) == CR_OK) {
+        puts(output);  /* a JSON object, or null */
+    }
     cr_string_free(output);
     cr_decision_free(decision);
     cr_ruleset_free(rules);
-    return status == CR_OK ? 0 : 1;
+    return error == NULL ? 0 : fail(error);
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;verdict&quot;:&quot;ask&quot;}</pre>
 </div>
-<p class="panel-note">Design preview: the C binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>guardrail.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.cpp</span><span class="src dp">design preview</span></div>
