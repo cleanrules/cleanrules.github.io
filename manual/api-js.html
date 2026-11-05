@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JavaScript API — cleanrules manual</title>
+  <meta name="description" content="The cleanrules package for JavaScript and TypeScript: conditions, rules, decisions, explanations, documents, tables, errors, the native layer and the WebAssembly build.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/api-js.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="JavaScript API — cleanrules manual">
+  <meta property="og:description" content="The cleanrules package for JavaScript and TypeScript: conditions, rules, decisions, explanations, documents, tables, errors, the native layer and the WebAssembly build.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/api-js.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop on">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html" aria-current="page">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">16 / 17</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li><li><a href="api-js.html" aria-current="page">JavaScript API</a></li><li><a href="api-cpp.html">C++ API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 16</p>
+        <h1>JavaScript API</h1>
+<p class="lead">The <code>cleanrules</code> package for JavaScript and TypeScript: conditions built with <code>F</code> and methods, rules and rule sets, decisions with native JavaScript values, structured explanations and summaries, documents, decision tables and errors. The same engine as every other language, in two builds with one API: a native addon for Node and a WebAssembly module for browsers, Deno and other runtimes.</p>
+<div class="callout">
+  <p><strong>Not on npm yet.</strong> <code>npm i cleanrules</code> does not work until the first release (task M.2); build the package from the repository (<a href="installation.html#javascript">installation</a>). This page is written from the package&#x27;s type declarations (<code>index.d.ts</code>) and its README at commit <code>01ea4a4</code>. Node 22.12 or later, Deno 2.6 or later, and browsers through the WebAssembly build.</p>
+</div>
+<h2 id="example">A first program<a class="h-anchor" href="#example" aria-label="Link to this section">#</a></h2>
+<p>A rule read from the rule syntax with <code>ruleFromText</code>, one built in code, a decision, why a rule did not fire, the explanation and summary as text, and the rule set written back. Run as TypeScript with Node 26 on the native addon; the WebAssembly build prints the same.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>api.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet, decimal, dumps, ruleFromText } from &#x27;cleanrules&#x27;
+
+const vip = ruleFromText(&#x27;RULE vip PRIORITY 10 IF customer.years &gt; 5 AND order.total &gt; 1000 THEN discount = 0.15&#x27;)
+const loyal = new Rule(&#x27;loyal&#x27;, F.customer.years.gt(2), { discount: decimal(&#x27;0.05&#x27;) }, { priority: 5 })
+const rules = new RuleSet([vip, loyal], { hitPolicy: &#x27;priority&#x27; })
+
+const decision = rules.evaluate({ customer: { years: 7 }, order: { total: 900 } })
+console.log(decision.fired, decision.output)
+console.log(decision.whyNot(&#x27;vip&#x27;).causes[0]?.counterfactual)
+console.log(String(decision.explain()))
+console.log(String(rules.summary()))
+console.log(dumps(rules, { format: &#x27;text&#x27; }))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[ &#x27;loyal&#x27; ] { discount: Decimal { text: &#x27;0.05&#x27; } }
+Counterfactual {
+  path: [ &#x27;order&#x27;, &#x27;total&#x27; ],
+  op: &#x27;gt&#x27;,
+  target: 1000,
+  gap: 100
+}
+HIT POLICY priority: selected loyal
+[ ] vip (not fired): customer.years &gt; 5 AND order.total &gt; 1000
+    - order.total &gt; 1000 is false (order.total = 900); short by 100
+[x] loyal (selected): customer.years &gt; 2
+    - customer.years &gt; 2 is true (customer.years = 7)
+Rule set: 2 rules, hit policy priority, logic boolean
+  priority  name   condition                                  outputs
+        10  vip    customer.years &gt; 5 AND order.total &gt; 1000  discount
+         5  loyal  customer.years &gt; 2                         discount
+Fields read (2):
+  customer.years  conditions of vip, loyal
+  order.total     conditions of vip
+Outputs: discount
+HIT POLICY priority
+
+RULE vip PRIORITY 10
+IF customer.years &gt; 5 AND order.total &gt; 1000
+THEN discount = 0.15
+
+RULE loyal PRIORITY 5
+IF customer.years &gt; 2
+THEN discount = 0.05</pre>
+</div>
+<p>Outputs come back as native values: <code>decimal(&#x27;0.05&#x27;)</code> is a <code>Decimal</code>, because JavaScript has no exact decimal. The explanation and the summary are the text every language prints. The <a href="../examples/index.html">worked examples</a> have a TypeScript tab each.</p>
+<h2 id="builds">Entry points and builds<a class="h-anchor" href="#builds" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Import</th><th>What</th></tr></thead>
+    <tbody>
+      <tr><td><code>cleanrules</code></td><td>The idiomatic API on this page, the errors, the marker values, <code>version</code> and <code>FORMAT_VERSION</code>.</td></tr>
+      <tr><td><code>cleanrules/native</code></td><td>The native layer the API is built on: rule sets read from documents, outputs and explanations as JSON text (<a href="#native">below</a>).</td></tr>
+      <tr><td><code>cleanrules/wasm</code></td><td>The WebAssembly build, initialised by hand with <code>await init(source)</code> (<a href="#wasm">below</a>).</td></tr>
+    </tbody>
+  </table>
+</div>
+<p><code>package.json</code> <code>exports</code> picks the build by condition: <code>node</code> (Node 22.12 or later) loads the native addon built with napi-rs; <code>deno</code> (Deno 2.6 or later) imports the WebAssembly module as a module source, so loading needs no permission; <code>browser</code> and any other runtime fetch it by URL with top-level <code>await</code>. The modules are ES modules; on Node, <code>require(&#x27;cleanrules&#x27;)</code> works too, through <code>require(esm)</code>. Both builds have the same classes, methods, options, errors and messages; the WebAssembly objects also have <code>free()</code>, and <code>[Symbol.dispose]()</code> works with both, so <code>using</code> does. Objects of one build do not mix with the other&#x27;s (a <code>TypeError</code> says so). Where no prebuilt addon fits the machine, <code>node --conditions=browser</code> runs the WebAssembly build.</p>
+<h2 id="conditions">Building conditions<a class="h-anchor" href="#conditions" aria-label="Link to this section">#</a></h2>
+<p>A condition is data, a tree of nodes the core evaluates, never a JavaScript function. fuzzytool&#x27;s operators <code>&amp;</code>, <code>|</code> and <code>~</code> are the methods <code>.and()</code>, <code>.or()</code> and <code>.not()</code>; every node is built by the core&#x27;s constructors, so a node it refuses fails at once with an <code>ExpressionError</code>.</p>
+<section class="api" id="F"><h3><span class="kind">const</span>F<span class="muted">: FieldRoot</span></h3>
+<p>The start of every field path: <code>F.customer.age.ge(18)</code>. Every property is a key, except a field&#x27;s own members; <code>then</code> is never a field (so <code>await</code> never takes one for a promise), and an index is refused: write <code>F.items.at(0).price</code>. <code>F as Fields&lt;Order&gt;</code> types it after the input, for completion and checked keys (types only: at run time it is <code>F</code>).</p></section>
+<section class="api" id="field"><h3><span class="kind">function</span>field<span class="muted">(...path: Array&lt;string | number&gt;): FieldRef</span></h3>
+<p>A field by its path: <code>field(&#x27;items&#x27;, 0, &#x27;price&#x27;)</code>. Strings are keys, numbers are indices.</p></section>
+<section class="api" id="constant"><h3><span class="kind">function</span>constant<span class="muted">(value: Constant): Const</span></h3>
+<p>A constant, where no node is involved: <code>constant(true)</code>. Values next to a node become constants by themselves (<code>F.x.gt(5)</code>).</p></section>
+<section class="api" id="and"><h3><span class="kind">function</span>and, or, not<span class="muted">(...operands: Expr[]): Expr</span></h3>
+<p><code>and(a, b, ...)</code> and <code>or(a, b, ...)</code> need at least two conditions; <code>not(x)</code> negates one. The same as the methods.</p></section>
+<section class="api" id="Expr"><h3><span class="kind">class</span>Expr</h3>
+<p>A node of a condition tree, immutable: assigning to one throws a <code>TypeError</code>. Comparing with <code>null</code> is refused (test missing values with <code>isNull()</code>); JavaScript operators are refused too: <code>F.age &gt;= 18</code> and <code>F.age + 1</code> throw an <code>ExpressionError</code>, and <code>===</code> compares objects (use <code>sameAs</code>).</p>
+<p class="muted">Comparisons and connectives</p><dl><dt>eq(other), ne, lt, le, gt, ge</dt><dd>Comparison with a node or a constant.</dd><dt>and(...others), or(...others), not()</dt><dd>Connectives.</dd><dt>isIn(values)</dt><dd>Membership in constants of one type group (an iterable, never a string).</dd><dt>between(low, high, { closed }?)</dt><dd>A range; <code>closed</code> is <code>&#x27;both&#x27;</code> (default), <code>&#x27;left&#x27;</code>, <code>&#x27;right&#x27;</code> or <code>&#x27;none&#x27;</code>.</dd><dt>isNull()</dt><dd>Missing or null; never unknown.</dd><dt>matches(pattern)</dt><dd>A regular expression search, in the Rust <code>regex</code> syntax (linear time).</dd><dt>startsWith(text), endsWith(text), contains(text)</dt><dd>String tests.</dd></dl>
+<p class="muted">Arithmetic</p><dl><dt>add(other), sub, mul, div</dt><dd>Arithmetic; a division by zero is unknown.</dd><dt>neg(), abs()</dt><dd>Negation and absolute value.</dd></dl>
+<p class="muted">Reading a node</p><dl><dt>tag</dt><dd>The node&#x27;s tag, such as <code>&#x27;gt&#x27;</code> or <code>&#x27;and&#x27;</code>.</dd><dt>kind</dt><dd><code>&#x27;condition&#x27;</code>, <code>&#x27;value&#x27;</code> or <code>&#x27;any&#x27;</code>.</dd><dt>children(), walk()</dt><dd>The direct children, and the node with its descendants in pre-order.</dd><dt>fieldPaths()</dt><dd>The paths of every field it reads, in order of first appearance.</dd><dt>sameAs(other)</dt><dd>Structural identity.</dd><dt>toString()</dt><dd>The canonical text, as explanations write it: <code>customer.age &gt;= 18 AND NOT blocked</code>.</dd><dt>toJSON()</dt><dd>Its JSON form, for <code>JSON.stringify</code> (see the pitfalls); <code>dumps(node)</code> writes it exactly.</dd></dl></section>
+<section class="api" id="Field"><h3><span class="kind">class</span>Field<span class="muted"> extends Expr</span></h3>
+<p>A value looked up in the input by path.</p>
+<p class="muted">Members</p><dl><dt>path</dt><dd>The keys and indices, outermost first.</dd><dt>at(...segments)</dt><dd>The field one or more segments further: <code>.at(0)</code> for an index, <code>.at(&#x27;and&#x27;)</code> for a key named like a method; <code>.at(&#x27;0&#x27;)</code> is the key <code>&quot;0&quot;</code>.</dd></dl></section>
+<section class="api" id="Const"><h3><span class="kind">class</span>Const<span class="muted"> extends Expr</span></h3>
+<p>A constant.</p>
+<p class="muted">Members</p><dl><dt>value</dt><dd>The constant, as a value given back.</dd></dl></section>
+<h2 id="rules">Rules and rule sets<a class="h-anchor" href="#rules" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Rule"><h3><span class="kind">class</span>Rule<span class="muted">(name: string, when: Expr, then?: Payload | null, options?: RuleOptions)</span></h3>
+<p>A named condition and its payload; immutable and checked as it is built (<code>RuleDefinitionError</code>, <code>ExpressionError</code> or <code>RegistryError</code>). The third argument is the payload (an object or a <code>Map</code> of nodes or constants, in order); options go in the fourth.</p>
+<p class="muted">Options</p><dl><dt>priority</dt><dd>Used by the <code>priority</code> hit policy; higher wins. 0 by default.</dd><dt>tags</dt><dd>Labels; kept sorted and without repeats.</dd><dt>description</dt><dd>A description.</dd><dt>metadata</dt><dd>Free-form data only (owner, ticket...).</dd><dt>do</dt><dd>The action: a function that <code>run</code> calls, or the name of one, which is data and <code>bind</code> resolves.</dd></dl>
+<p class="muted">Members</p><dl><dt>name, when, then, priority, tags, description, metadata</dt><dd>The rule, as the core keeps it.</dd><dt>do, actionName</dt><dd>The action&#x27;s code (given or bound), and its name if it names one.</dd><dt>toJSON()</dt><dd>The rule document <code>{ version, rule }</code>; an <code>UnsupportedError</code> for an action that is code without a name.</dd></dl></section>
+<section class="api" id="RuleSet"><h3><span class="kind">class</span>RuleSet<span class="muted">(rules: Iterable&lt;Rule&gt;, options?: RuleSetOptions)</span></h3>
+<p>Rules evaluated together under a hit policy; immutable, iterable and indexed by name. Hit policies and aggregates are named as in the format, in any case; an unknown option is a <code>TypeError</code>.</p>
+<p class="muted">Options</p><dl><dt>hitPolicy</dt><dd><code>&#x27;first&#x27;</code> (default), <code>&#x27;priority&#x27;</code>, <code>&#x27;unique&#x27;</code>, <code>&#x27;any&#x27;</code>, <code>&#x27;rule_order&#x27;</code> or <code>&#x27;collect&#x27;</code>.</dd><dt>aggregate</dt><dd>With <code>collect</code>: <code>&#x27;sum&#x27;</code>, <code>&#x27;min&#x27;</code>, <code>&#x27;max&#x27;</code> or <code>&#x27;count&#x27;</code>.</dd><dt>logic</dt><dd><code>&#x27;boolean&#x27;</code> (Kleene&#x27;s three-valued logic) by default.</dd><dt>strict</dt><dd>Throw instead of giving unknown for missing fields and type mismatches.</dd></dl>
+<p class="muted">Members</p><dl><dt>rules, length, [Symbol.iterator]</dt><dd>The rules, in order.</dd><dt>get(name), has(name), rule(name)</dt><dd><code>get</code> gives <code>undefined</code> for an unknown name, like <code>Map</code>; <code>rule</code> throws a <code>RuleNotFoundError</code> listing the rules.</dd><dt>hitPolicy, aggregate, logic, strict, fieldPaths()</dt><dd>Its configuration and the paths it reads; native data is read along these only.</dd><dt>evaluate(data)</dt><dd>A <code>Decision</code>; in strict mode, an <code>EvaluationError</code> for a missing field or a type mismatch.</dd><dt>evaluateMany(rows)</dt><dd>One decision per input; an error names its <code>row</code>.</dd><dt>readDecision(text, { format, limits }?)</dt><dd>A recorded decision (JSON or YAML), checked against the rule set.</dd><dt>bind(actions)</dt><dd>A rule set whose named actions are resolved in an object or <code>Map</code> of functions; every named action is checked.</dd><dt>run(data)</dt><dd>Evaluate, then call the selected rules&#x27; actions in rule order (see Decisions).</dd><dt>summary()</dt><dd>A <code>Summary</code>.</dd><dt>toJSON()</dt><dd>The rule set document <code>{ version, ruleset }</code>.</dd></dl></section>
+<h2 id="decisions">Decisions and actions<a class="h-anchor" href="#decisions" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Decision"><h3><span class="kind">class</span>Decision</h3>
+<p>The outcome of evaluating a rule set on one input; immutable.</p>
+<p class="muted">Members</p><dl><dt>ruleset, hitPolicy</dt><dd>Where it comes from.</dd><dt>results</dt><dd>Every rule&#x27;s <code>RuleResult</code>, in rule order.</dd><dt>selected, fired</dt><dd>The results the hit policy selected, and the names of the rules that fired.</dd><dt>output</dt><dd>The winner&#x27;s payload or the aggregate, as native values; <code>null</code> when nothing was selected. Throws a <code>HitPolicyError</code> for <code>rule_order</code>, and <code>collect</code> without an aggregate.</dd><dt>outputs, aggregated</dt><dd>The payloads of the selected rules, in rule order; the aggregate&#x27;s values with <code>collect</code>.</dd><dt>explain(), whyNot(name)</dt><dd>An <code>Explanation</code>, and one rule&#x27;s (a <code>RuleNotFoundError</code> for an unknown name).</dd><dt>toJSON()</dt><dd>The decision document; <code>RuleSet.readDecision</code> reads it back.</dd></dl></section>
+<section class="api" id="RuleResult"><h3><span class="kind">class</span>RuleResult</h3>
+<p>One rule&#x27;s result.</p>
+<p class="muted">Members</p><dl><dt>rule, fired, truth</dt><dd>The rule, whether it fired, and the truth of its condition (<code>&#x27;true&#x27;</code>, <code>&#x27;false&#x27;</code>, <code>&#x27;unknown&#x27;</code>).</dd><dt>output</dt><dd>Its evaluated payload when the hit policy needed it; otherwise <code>null</code>.</dd></dl></section>
+<section class="api" id="ActionContext"><h3><span class="kind">class</span>ActionContext</h3>
+<p>What an action receives. <code>evaluate</code> never calls actions; <code>run</code> refuses unbound names before reading anything, evaluates, and calls the selected rules&#x27; actions in rule order. Actions are synchronous: what they return is ignored, except a promise, which fails the run. An action that throws stops the run with an <code>ActionError</code> whose <code>cause</code> is what it threw, <code>context.executed</code> the rules whose actions ran, and <code>decision</code> the decision.</p>
+<p class="muted">Members</p><dl><dt>rule, data, result, output, decision</dt><dd>The rule, the input as given, its result, its evaluated payload and the decision.</dd><dt>tree</dt><dd>The <code>ResultTree</code> of the rule&#x27;s condition, made from the input already read.</dd></dl></section>
+<h2 id="explanations">Explanations and summaries<a class="h-anchor" href="#explanations" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Explanation"><h3><span class="kind">class</span>Explanation</h3>
+<p>The explanation of a decision. Everything comes from the core: evaluation, selection, explanation and their text.</p>
+<p class="muted">Members</p><dl><dt>rules</dt><dd>A <code>RuleExplanation</code> per rule.</dd><dt>selected</dt><dd>The names of the selected rules.</dd><dt>forRule(name)</dt><dd>One rule&#x27;s explanation.</dd><dt>toString()</dt><dd>The text every language shares.</dd><dt>toJSON()</dt><dd>The explanation document; the native layer&#x27;s <code>explain(&#x27;json&#x27;)</code> writes it exactly.</dd></dl></section>
+<section class="api" id="RuleExplanation"><h3><span class="kind">class</span>RuleExplanation</h3>
+<p>The explanation of one rule.</p>
+<p class="muted">Members</p><dl><dt>rule, status</dt><dd>Its name and <code>&#x27;selected&#x27;</code>, <code>&#x27;fired&#x27;</code>, <code>&#x27;not_fired&#x27;</code> or <code>&#x27;unknown&#x27;</code>.</dd><dt>requirement</dt><dd>A <code>Cause</code> or a <code>CauseGroup</code>.</dd><dt>causes</dt><dd>The causes of the requirement, in order, without their grouping.</dd><dt>note</dt><dd>A <code>Note</code> saying why a rule that fired was not selected.</dd><dt>achievable</dt><dd>Whether the rule could fire by changing the inputs it reads.</dd><dt>toString()</dt><dd>Its part of the explanation&#x27;s text.</dd></dl></section>
+<section class="api" id="Cause"><h3><span class="kind">class</span>Cause</h3>
+<p>A condition in a rule&#x27;s requirement, with what was read.</p>
+<p class="muted">Members</p><dl><dt>node, truth, negated, holds</dt><dd>The condition, its truth, whether the rule needs it false, and whether it went the way the rule needed.</dd><dt>values</dt><dd>The fields it read, as <code>[path, value]</code> pairs.</dd><dt>reason</dt><dd>A <code>Reason</code> when it is unknown: <code>code</code> (<code>&#x27;missing_field&#x27;</code>, <code>&#x27;type_mismatch&#x27;</code>...), <code>paths</code>, <code>types</code>, <code>detail</code>.</dd><dt>counterfactual</dt><dd>A <code>Counterfactual</code>: <code>path</code>, <code>op</code>, <code>target</code> and <code>gap</code> (a number, <code>bigint</code> or <code>Decimal</code>; <code>{ days }</code> between dates, <code>{ microseconds }</code> between datetimes).</dd><dt>toString()</dt><dd>Its line in the explanation.</dd></dl></section>
+<section class="api" id="CauseGroup"><h3><span class="kind">class</span>CauseGroup, Note</h3>
+<p>A <code>CauseGroup</code> holds requirements that must all hold (<code>kind</code> <code>&#x27;all&#x27;</code>) or any of which suffices (<code>&#x27;any&#x27;</code>), in <code>items</code>. A <code>Note</code> has <code>kind</code> (<code>&#x27;lower_priority&#x27;</code>, <code>&#x27;same_priority&#x27;</code>, <code>&#x27;any_agrees&#x27;</code>, <code>&#x27;earlier_rule&#x27;</code>), <code>winner</code>, <code>priority</code> and <code>winnerPriority</code>.</p></section>
+<section class="api" id="Summary"><h3><span class="kind">class</span>Summary</h3>
+<p>What a rule set reads and produces, without evaluating it (<code>ruleset.summary()</code>).</p>
+<p class="muted">Members</p><dl><dt>hitPolicy, aggregate, logic, strict</dt><dd>Its configuration.</dd><dt>rules</dt><dd>A <code>RuleSummary</code> each: <code>name</code>, <code>priority</code>, <code>outputs</code>, <code>action</code>, <code>actionName</code>.</dd><dt>fields</dt><dd>A <code>FieldUsage</code> each: <code>path</code>, <code>conditions</code> and the <code>[rule, key]</code> <code>payloads</code> that read it.</dd><dt>outputs, tags</dt><dd>The output keys, and each tag with its rules.</dd><dt>toString(), toJSON()</dt><dd>The text every language shares, and the summary document.</dd></dl></section>
+<h2 id="documents">Documents<a class="h-anchor" href="#documents" aria-label="Link to this section">#</a></h2>
+<p>Formats are <code>&#x27;json&#x27;</code> (the default), <code>&#x27;yaml&#x27;</code>, <code>&#x27;text&#x27;</code> (the rule syntax) and <code>&#x27;csv&#x27;</code> (decision tables); a file&#x27;s extension (<code>.json</code>, <code>.yaml</code>, <code>.yml</code>, <code>.rules</code>, <code>.csv</code>) gives its format unless <code>format</code> says. Reading is the core&#x27;s, strict and bounded: errors have a JSON Pointer or a line and column, and <code>limits</code> takes <code>maxSize</code>, <code>maxNesting</code>, <code>maxDepth</code>, <code>maxTableSize</code>, <code>maxYamlSize</code> and <code>maxTextSize</code>.</p>
+<section class="api" id="loads"><h3><span class="kind">function</span>loads<span class="muted">(text: string | Uint8Array, { format, limits, actions }?): Expr | Rule | RuleSet | DecisionTable</span></h3>
+<p>Read a document. A rule&#x27;s action is the name the document gives it, unbound unless <code>actions</code> binds it. Rules read from documents are the core&#x27;s own, so they write back exactly.</p></section>
+<section class="api" id="dumps"><h3><span class="kind">function</span>dumps<span class="muted">(value, { format, omitActions }?): string</span></h3>
+<p>The canonical document of a condition, rule, rule set or table. A rule whose action is code cannot be written (<code>UnsupportedError</code>) unless <code>omitActions</code>.</p></section>
+<section class="api" id="load"><h3><span class="kind">function</span>load, dump<span class="muted">(path: string | URL, options?): Promise</span></h3>
+<p><code>loads</code> of a file and <code>dumps</code> to a file, in Node (through <code>process.getBuiltinModule</code>) and Deno (with <code>--allow-read</code>, <code>--allow-write</code>). In browsers they reject with an <code>UnsupportedError</code> that names <code>loads</code> and <code>dumps</code>.</p></section>
+<section class="api" id="ruleFromText"><h3><span class="kind">function</span>ruleFromText<span class="muted">(text, { do, actions, limits }?): Rule</span></h3>
+<p>One rule in the text syntax (fuzzytool&#x27;s verb); <code>rule_1</code> without a <code>RULE</code> line. <code>do</code> is a function a name in the text (<code>DO notify</code>) is bound to.</p></section>
+<h2 id="tables">Decision tables and result trees<a class="h-anchor" href="#tables" aria-label="Link to this section">#</a></h2>
+<section class="api" id="DecisionTable"><h3><span class="kind">class</span>DecisionTable<span class="muted">(header: Iterable&lt;HeaderItem&gt;, rows: Iterable&lt;Iterable&lt;Cell&gt;&gt;, options?)</span></h3>
+<p>A decision table and the rule set it compiles into, built from a header and rows as a spreadsheet holds them, or read with <code>loads(text, { format: &#x27;csv&#x27; })</code>. A header item is a CSV header field&#x27;s text (<code>&#x27;RULE&#x27;</code>, <code>&#x27;PRIORITY&#x27;</code>, <code>&#x27;THEN key&#x27;</code>, an input expression), an input <code>Expr</code>, or a <code>TableOutput</code>. A string cell is read as in the CSV (<code>&#x27;&gt; 5&#x27;</code>, <code>&#x27;-&#x27;</code>, and <code>&quot;&#x27;VIP&#x27;&quot;</code> for the string); <code>null</code> is empty; any other value is a constant. Errors point into the grid (<code>/header/&lt;c&gt;</code>, <code>/rows/&lt;r&gt;/&lt;c&gt;</code>).</p>
+<p class="muted">Members</p><dl><dt>hitPolicy, aggregate, logic, strict</dt><dd>As a rule set&#x27;s; <code>&#x27;output_order&#x27;</code> is also a policy here.</dd><dt>inputs, outputs, rows</dt><dd>The input <code>Expr</code>s, the <code>TableOutput</code>s (<code>name</code>, <code>values</code>) and the <code>TableRow</code>s (<code>name</code>, <code>priority</code>, <code>description</code>, <code>inputs</code>, <code>outputs</code>).</dd><dt>ruleset</dt><dd>The <code>RuleSet</code> it compiles into.</dd><dt>evaluate, evaluateMany, summary, toJSON()</dt><dd>As a rule set&#x27;s.</dd></dl></section>
+<section class="api" id="evaluateTree"><h3><span class="kind">function</span>evaluateTree, evaluateValueTree<span class="muted">(node: Expr, data: unknown, { logic, strict }?): ResultTree</span></h3>
+<p>Evaluate one condition (or one value node) on native data. A <code>ResultTree</code> has <code>node</code>, <code>truth</code> (for a condition) or <code>value</code> (for a value), <code>reason</code>, <code>children</code> and <code>toJSON()</code>; a <code>between</code> has its two half comparisons as children.</p></section>
+<h2 id="values">Values<a class="h-anchor" href="#values" aria-label="Link to this section">#</a></h2>
+<p>Native data is read along the rule set&#x27;s field paths only, each object once. JavaScript has one number type, so a few values need a marker:</p>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>JavaScript</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>null</code>, an Invalid <code>Date</code>, <code>NaN</code>; <code>undefined</code></td><td>null; missing</td></tr>
+      <tr><td>an integer <code>number</code> within ±(2⁵³ − 1); any other <code>number</code></td><td>int; float (<code>-0</code> and infinities included)</td></tr>
+      <tr><td><code>float(x)</code>, <code>bigint</code>, <code>decimal(&quot;0.10&quot;)</code></td><td>float, int (null beyond 64 bits), exact decimal (null beyond 38 digits)</td></tr>
+      <tr><td><code>date(y, m, d)</code>, <code>datetime(...)</code>; <code>Temporal.PlainDate</code>, <code>Temporal.PlainDateTime</code></td><td>date, naive datetime</td></tr>
+      <tr><td><code>Date</code>, <code>Temporal.Instant</code>; <code>Temporal.ZonedDateTime</code></td><td>aware datetime in <code>Z</code>; in its zone</td></tr>
+      <tr><td><code>Array</code>; <code>Map</code>, plain objects and class instances</td><td>list; map (own enumerable string keys and getters)</td></tr>
+      <tr><td>bytes, <code>Set</code>, functions, anything else</td><td>opaque</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Values come back the same in Node, Deno and browsers: ints as <code>number</code> (beyond 2⁵³, <code>bigint</code>), floats as <code>number</code>, decimals as <code>Decimal</code> (its <code>text</code>), dates as <code>LocalDate</code> and <code>NaiveDateTime</code>, aware datetimes as <code>ZonedDateTime</code> (local fields, <code>offsetSeconds</code>, <code>timeZone</code>, <code>epochMicroseconds</code>, <code>toDate()</code>, <code>toTemporal()</code>, and the RFC 9557 text as <code>toString()</code>), lists as arrays and maps as frozen plain objects. A rule never reaches into the program: a field never reads a symbol, a <code>#</code> field, a method, a prototype, <code>constructor</code> or <code>__proto__</code>. A getter that throws gives a null with reason <code>read_error</code> (in strict mode, an <code>EvaluationError</code>).</p>
+<section class="api" id="decimal"><h3><span class="kind">function</span>decimal, float, date, datetime</h3>
+<p><code>decimal(&#x27;0.10&#x27;)</code>: an exact decimal. <code>float(2)</code>: the number as a float, not an int. <code>date(2026, 11, 4)</code>: a date (months from 1). <code>datetime(2026, 11, 4, 9, 30)</code>: a naive datetime. They return the marker classes <code>Decimal</code>, <code>Float</code>, <code>LocalDate</code> and <code>NaiveDateTime</code>, recognised by a brand, so markers made by another copy of the package work too.</p></section>
+<h2 id="errors">Errors<a class="h-anchor" href="#errors" aria-label="Link to this section">#</a></h2>
+<p>Every error is a <code>CleanRulesError</code> (an <code>Error</code>), with the class of its code, as in every language (<a href="errors.html">Errors</a>):</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>hierarchy</span></div>
+<pre class="code"><code class="language-text">CleanRulesError
+├── FormatError                 format_error, unsupported_version, limit_exceeded, decision_mismatch
+├── ExpressionError             expression_error
+├── RuleDefinitionError         rule_definition_error
+├── RuleSyntaxError             rule_syntax_error
+├── RegistryError               registry_error
+├── RuleNotFoundError           rule_not_found
+├── EvaluationError             evaluation_error
+│   ├── MissingFieldError       missing_field
+│   ├── TypeMismatchError       type_mismatch
+│   └── HitPolicyError          hit_policy_error
+├── ActionError                 action_error
+└── UnsupportedError            unsupported</code></pre></div>
+<section class="api" id="CleanRulesError"><h3><span class="kind">class</span>CleanRulesError<span class="muted"> extends Error</span></h3>
+<p>The base class of every error raised by cleanrules. Arguments the binding cannot take (an unknown format, a negative limit) are <code>TypeError</code>s and <code>RangeError</code>s instead.</p>
+<p class="muted">Members</p><dl><dt>code</dt><dd>The stable error code, such as <code>&#x27;missing_field&#x27;</code>.</dd><dt>message, hint</dt><dd>What failed, and how to fix it (or <code>null</code>).</dd><dt>context</dt><dd>The fields that apply: <code>rule</code>, <code>path</code>, <code>pointer</code>, <code>line</code>, <code>column</code>, <code>rules</code>, <code>types</code>, <code>row</code>, <code>name</code>, <code>available</code>, <code>executed</code>, <code>node</code>, <code>operation</code>, <code>reason</code>.</dd><dt>cause</dt><dd>The error or value that caused it.</dd><dt>decision</dt><dd>For an <code>ActionError</code>, the decision whose actions were running.</dd><dt>toJSON()</dt><dd>The error&#x27;s JSON form, as in <code>spec/errors.md</code>.</dd></dl></section>
+<h2 id="native">The native layer<a class="h-anchor" href="#native" aria-label="Link to this section">#</a></h2>
+<p><code>cleanrules/native</code> is what the idiomatic API is built on; it stays available. Rule sets are read from documents, and outputs, explanations and summaries come out as text in the JSON format:</p>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Name</th><th>What</th></tr></thead>
+    <tbody>
+      <tr><td><code>RuleSet.read(text, { format, limits }?)</code>, <code>RuleSet.fromDocument(doc)</code></td><td>a rule set; a rule document is a rule set of that rule, a CSV table is compiled</td></tr>
+      <tr><td><code>Document.read(text, { format, limits }?)</code></td><td>a condition, rule, rule set or decision table; <code>kind</code>, <code>write(format?)</code></td></tr>
+      <tr><td><code>ruleset.evaluate(data)</code>, <code>evaluateJson(text)</code>, <code>evaluateMany(rows)</code>, <code>evaluateManyJson(text)</code></td><td>decisions, from native data or JSON</td></tr>
+      <tr><td><code>ruleset.run(data, actions)</code></td><td>evaluate, then call the selected rules&#x27; actions with an <code>ActionCall</code> (<code>ruleName</code>, <code>position</code>, <code>input</code>, <code>truth</code>, <code>outputJson</code>, <code>decision</code>)</td></tr>
+      <tr><td><code>ruleset.write(format?)</code>, <code>summary(format?)</code>, <code>readDecision(text)</code></td><td>the document, the summary (text by default), a recorded decision</td></tr>
+      <tr><td><code>decision.outputJson()</code>, <code>outputsJson()</code>, <code>write(format?)</code>, <code>explain(format?)</code></td><td>outputs in the JSON format, the decision document, the explanation (text by default, or JSON or YAML)</td></tr>
+      <tr><td><code>Node.read(text)</code></td><td>one condition or value: <code>evaluateTree</code>, <code>evaluateValueTree</code> and their JSON forms</td></tr>
+    </tbody>
+  </table>
+</div>
+<h2 id="wasm">Initialising the WebAssembly module yourself<a class="h-anchor" href="#wasm" aria-label="Link to this section">#</a></h2>
+<p><code>cleanrules/wasm</code> has the exports of <code>cleanrules</code>, the native classes in <code>native</code>, and <code>init(source)</code>, for bundlers and CDNs that serve the module from a URL of their own. Importing it loads nothing; until <code>init</code> resolves, using what needs the module throws an <code>Error</code> whose <code>code</code> is <code>&#x27;ERR_CLEANRULES_NOT_INITIALISED&#x27;</code>, and <code>version</code> and <code>FORMAT_VERSION</code> are <code>undefined</code>. Calling <code>init</code> twice is harmless.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>browser.ts</span></div>
+<pre class="code"><code class="language-typescript">import { init, F, Rule, RuleSet } from &#x27;cleanrules/wasm&#x27;
+
+// A URL, a Request or Response, the bytes, or a compiled WebAssembly.Module.
+await init(new URL(&#x27;cleanrules_bg.wasm&#x27;, import.meta.url))
+// With Vite: import wasmUrl from &#x27;cleanrules/wasm/cleanrules_bg.wasm?url&#x27;; await init(wasmUrl)</code></pre></div>
+<p>With the plain <code>cleanrules</code> entry, webpack 5 and Vite copy the module in builds (in Vite&#x27;s development server, add <code>optimizeDeps: { exclude: [&#x27;cleanrules&#x27;] }</code>); esbuild does not follow <code>new URL(...)</code>, so copy <code>wasm/cleanrules_bg.wasm</code> next to the bundle or use <code>cleanrules/wasm</code>.</p>
+<h2 id="pitfalls">Pitfalls<a class="h-anchor" href="#pitfalls" aria-label="Link to this section">#</a></h2>
+<p>Most of these come from JavaScript itself. The program below shows the first five, and its output is real.</p>
+<ul>
+  <li><strong>An index is not a property.</strong> Property names are strings in JavaScript, so <code>F.items[0]</code> is ambiguous and throws, with the fix: write <code>F.items.at(0)</code> or <code>field(&#x27;items&#x27;, 0)</code>. <code>.at(&#x27;0&#x27;)</code> is the key <code>&quot;0&quot;</code>.</li>
+  <li><strong>Fields named like a method</strong> (<code>and</code>, <code>or</code>, <code>not</code>, <code>path</code>, <code>tag</code>...) or like a member of <code>Object.prototype</code> (<code>constructor</code>, <code>valueOf</code>, <code>toString</code>...) are reached with <code>.at(&#x27;and&#x27;)</code> or <code>field(&#x27;x&#x27;, &#x27;and&#x27;)</code>.</li>
+  <li><strong>The third argument of <code>new Rule</code> is the payload.</strong> <code>new Rule(&#x27;vip&#x27;, cond, { priority: 10 })</code> makes an output called <code>priority</code>; write <code>new Rule(&#x27;vip&#x27;, cond, null, { priority: 10 })</code>.</li>
+  <li><strong><code>1890.0</code> is the int 1890.</strong> JavaScript has one number type, and an integral <code>number</code> reads as an int. Wrap it in <code>float(x)</code> where a float matters, as in the <a href="../examples/fraud.html">fraud example</a>.</li>
+  <li><strong><code>JSON.stringify</code> of <code>toJSON()</code></strong> writes a float that holds an integer as <code>{&quot;$float&quot;: 1}</code>, so it reads back, but it loses the sign of <code>-0</code> and puts integer-like keys first, as any plain object does (a payload <code>{ b, &quot;10&quot; }</code> becomes <code>{ &quot;10&quot;, b }</code>, and a decision with that payload no longer matches its rule). <code>dumps</code>, and the native layer&#x27;s <code>write()</code> and <code>explain(&#x27;json&#x27;)</code>, write documents exactly. Give such payloads as a <code>Map</code>.</li>
+  <li><strong><code>cleanrules/wasm</code> needs <code>await init()</code></strong> before anything that uses the module; the plain <code>cleanrules</code> entry initialises itself.</li>
+  <li><strong>JavaScript operators are refused</strong>: <code>F.age &gt;= 18</code> and <code>F.age + 1</code> throw an <code>ExpressionError</code>, and <code>===</code> compares objects (use <code>sameAs</code>). <code>`${node}`</code> and <code>String(node)</code> give the node&#x27;s text.</li>
+  <li><strong>Actions are synchronous.</strong> A promise returned by an action fails the run with an <code>ActionError</code>.</li>
+</ul>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pitfalls.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, constant, dumps, field, float } from &#x27;cleanrules&#x27;
+
+// 1. An index is not a property: F.items[0] throws, with the fix.
+try {
+  F.items[0]
+} catch (err) {
+  console.log((err as Error).name, &#x27;-&#x27;, (err as Error).message)
+}
+console.log(String(F.items.at(0).price.gt(10)), &#x27;|&#x27;, String(field(&#x27;items&#x27;, 0, &#x27;price&#x27;).gt(10)))
+
+// 2. A field named like a method (and, or, not, path, tag...) needs .at().
+console.log(String(F.flags.at(&#x27;and&#x27;).eq(true)))
+
+// 3. The third argument of new Rule is the payload; options go fourth.
+const oops = new Rule(&#x27;vip&#x27;, F.years.gt(5), { priority: 10 })
+const meant = new Rule(&#x27;vip&#x27;, F.years.gt(5), null, { priority: 10 })
+console.log(oops.priority, Object.keys(oops.then), &#x27;|&#x27;, meant.priority, Object.keys(meant.then))
+
+// 4. 1890.0 is the int 1890 in JavaScript: float() keeps a float.
+console.log(dumps(F.amount.gt(1890)), &#x27;|&#x27;, dumps(F.amount.gt(float(1890))))
+
+// 5. JSON.stringify loses the sign of -0 and puts integer-like keys first; dumps keeps both.
+//    A payload with such keys goes in a Map: an object literal reorders them already.
+const rule = new Rule(&#x27;r&#x27;, F.x.gt(0), new Map([[&#x27;b&#x27;, constant(-0)], [&#x27;10&#x27;, constant(1)]]))
+console.log(JSON.stringify(rule.toJSON()))
+console.log(dumps(rule))</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">ExpressionError - items[0]: a property name is a key in JavaScript, so an index is ambiguous
+items[0].price &gt; 10 | items[0].price &gt; 10
+flags.and = TRUE
+0 [ &#x27;priority&#x27; ] | 10 []
+{&quot;version&quot;:1,&quot;condition&quot;:{&quot;op&quot;:&quot;gt&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;amount&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:1890}}} | {&quot;version&quot;:1,&quot;condition&quot;:{&quot;op&quot;:&quot;gt&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;amount&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:1890.0}}}
+{&quot;version&quot;:1,&quot;rule&quot;:{&quot;name&quot;:&quot;r&quot;,&quot;when&quot;:{&quot;op&quot;:&quot;gt&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;x&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:0}},&quot;then&quot;:{&quot;10&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:1},&quot;b&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:{&quot;$float&quot;:0}}}}}
+{&quot;version&quot;:1,&quot;rule&quot;:{&quot;name&quot;:&quot;r&quot;,&quot;when&quot;:{&quot;op&quot;:&quot;gt&quot;,&quot;left&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;x&quot;]},&quot;right&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:0}},&quot;then&quot;:{&quot;b&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:-0.0},&quot;10&quot;:{&quot;op&quot;:&quot;const&quot;,&quot;value&quot;:1}}}}</pre>
+</div>
+<h2 id="module">Module<a class="h-anchor" href="#module" aria-label="Link to this section">#</a></h2>
+<section class="api" id="version"><h3><span class="kind">const</span>version<span class="muted">: string</span></h3>
+<p>The version of the package (<code>0.0.0</code> until the first release).</p></section>
+<section class="api" id="FORMAT_VERSION"><h3><span class="kind">const</span>FORMAT_VERSION<span class="muted">: number</span></h3>
+<p>The version of the JSON format this build reads and writes (1).</p></section>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="api-rust.html"><small>← Previous</small>Rust API</a><a class="next" href="api-cpp.html"><small>Next →</small>C++ API</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#example">A first program</a></li><li><a href="#builds">Entry points and builds</a></li><li><a href="#conditions">Building conditions</a></li><li><a href="#rules">Rules and rule sets</a></li><li><a href="#decisions">Decisions and actions</a></li><li><a href="#explanations">Explanations and summaries</a></li><li><a href="#documents">Documents</a></li><li><a href="#tables">Tables and result trees</a></li><li><a href="#values">Values</a></li><li><a href="#errors">Errors</a></li><li><a href="#native">The native layer</a></li><li><a href="#wasm">cleanrules/wasm</a></li><li><a href="#pitfalls">Pitfalls</a></li><li><a href="#module">Module</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">Apache-2.0 licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

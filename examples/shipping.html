@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -107,18 +109,18 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
         <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
-<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
@@ -398,34 +400,36 @@ moon:     None</pre>
 <p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
 </div>
 <div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>shipping.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Rule, RuleSet, decimal } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>shipping.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet, decimal, float } from &#x27;cleanrules&#x27;
 
-const domestic = F.zone.eq(&quot;domestic&quot;);
-const eu = F.zone.eq(&quot;eu&quot;);
-const world = F.zone.eq(&quot;world&quot;);
+const domestic = F.zone.eq(&#x27;domestic&#x27;)
+const eu = F.zone.eq(&#x27;eu&#x27;)
+const world = F.zone.eq(&#x27;world&#x27;)
 
-const rates = new RuleSet(
-  [
-    new Rule(&quot;dom_small&quot;, domestic.and(F.weight_kg.le(2)), { carrier: &quot;post&quot;, price: decimal(&quot;4.90&quot;) }),
-    new Rule(&quot;dom_medium&quot;, domestic.and(F.weight_kg.between(2, 10, &quot;right&quot;)), {
-      carrier: &quot;post&quot;,
-      price: decimal(&quot;8.90&quot;),
-    }),
-    new Rule(&quot;dom_large&quot;, domestic.and(F.weight_kg.gt(10)), { carrier: &quot;courier&quot;, price: decimal(&quot;14.90&quot;) }),
-    new Rule(&quot;eu_small&quot;, eu.and(F.weight_kg.le(2)), { carrier: &quot;post&quot;, price: decimal(&quot;9.50&quot;) }),
-    new Rule(&quot;eu_large&quot;, eu.and(F.weight_kg.gt(2)), { carrier: &quot;courier&quot;, price: F.weight_kg.mul(2.5).add(12) }),
-    new Rule(&quot;world&quot;, world, { carrier: &quot;courier&quot;, price: F.weight_kg.mul(6).add(25) }),
-  ],
-  { hitPolicy: &quot;unique&quot; },
-);
+const table = [
+  new Rule(&#x27;dom_small&#x27;, domestic.and(F.weight_kg.le(2)), { carrier: &#x27;post&#x27;, price: decimal(&#x27;4.90&#x27;) }),
+  new Rule(
+    &#x27;dom_medium&#x27;,
+    domestic.and(F.weight_kg.between(2, 10, { closed: &#x27;right&#x27; })),
+    { carrier: &#x27;post&#x27;, price: decimal(&#x27;8.90&#x27;) },
+  ),
+  new Rule(&#x27;dom_large&#x27;, domestic.and(F.weight_kg.gt(10)), { carrier: &#x27;courier&#x27;, price: decimal(&#x27;14.90&#x27;) }),
+  new Rule(&#x27;eu_small&#x27;, eu.and(F.weight_kg.le(2)), { carrier: &#x27;post&#x27;, price: decimal(&#x27;9.50&#x27;) }),
+  new Rule(&#x27;eu_large&#x27;, eu.and(F.weight_kg.gt(2)), { carrier: &#x27;courier&#x27;, price: F.weight_kg.mul(2.5).add(12) }),
+  new Rule(&#x27;world&#x27;, world, { carrier: &#x27;courier&#x27;, price: F.weight_kg.mul(6).add(25) }),
+]
+const rates = new RuleSet(table, { hitPolicy: &#x27;unique&#x27; })
 
-const decision = rates.evaluate({ zone: &quot;eu&quot;, weight_kg: 3.4, order_total: 64.0 });
-console.log(decision.fired);
-console.log(decision.output);</code></pre>
+const parcel = { zone: &#x27;eu&#x27;, weight_kg: 3.4, order_total: float(64) }
+const decision = rates.evaluate(parcel)
+console.log(decision.fired, decision.output)
+console.log(rates.evaluate({ zone: &#x27;moon&#x27;, weight_kg: 1 }).output)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[ &#x27;eu_large&#x27; ] { carrier: &#x27;courier&#x27;, price: 20.5 }
+null</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>. <code>float(64)</code> keeps the order total a float, as in the JSON input.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>shipping.java</span><span class="src dp">design preview</span></div>
@@ -599,40 +603,75 @@ int main(void) {
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>shipping.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>shipping.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>shipping.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
 
 namespace cr = cleanrules;
-using cr::F;
 
 int main() {
-    auto domestic = F(&quot;zone&quot;) == &quot;domestic&quot;;
-    auto eu = F(&quot;zone&quot;) == &quot;eu&quot;;
-    auto weight = F(&quot;weight_kg&quot;);
-    auto rate = [](const char* carrier, auto price) {
-        return cr::Value{{&quot;carrier&quot;, carrier}, {&quot;price&quot;, price}};
-    };
+    auto rates = cr::ruleset::read(R&quot;rules(
+        HIT POLICY unique
 
-    cr::RuleSet rates({
-        cr::Rule(&quot;dom_small&quot;, domestic &amp; (weight &lt;= 2)).then(rate(&quot;post&quot;, cr::Decimal(&quot;4.90&quot;))),
-        cr::Rule(&quot;dom_medium&quot;, domestic &amp; weight.between(2, 10, cr::Closed::right))
-            .then(rate(&quot;post&quot;, cr::Decimal(&quot;8.90&quot;))),
-        cr::Rule(&quot;dom_large&quot;, domestic &amp; (weight &gt; 10)).then(rate(&quot;courier&quot;, cr::Decimal(&quot;14.90&quot;))),
-        cr::Rule(&quot;eu_small&quot;, eu &amp; (weight &lt;= 2)).then(rate(&quot;post&quot;, cr::Decimal(&quot;9.50&quot;))),
-        cr::Rule(&quot;eu_large&quot;, eu &amp; (weight &gt; 2)).then(rate(&quot;courier&quot;, weight * 2.5 + 12)),
-        cr::Rule(&quot;world&quot;, F(&quot;zone&quot;) == &quot;world&quot;).then(rate(&quot;courier&quot;, weight * 6 + 25)),
-    }, {.hit_policy = cr::HitPolicy::unique});
+        RULE dom_small
+        IF zone = &quot;domestic&quot; AND weight_kg &lt;= 2
+        THEN carrier = &quot;post&quot;, price = 4.90
 
-    auto decision = rates.evaluate(cr::Value::from_json(
-        R&quot;({&quot;zone&quot;: &quot;eu&quot;, &quot;weight_kg&quot;: 3.4, &quot;order_total&quot;: 64.0})&quot;));
-    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
-    std::cout &lt;&lt; &#x27;\n&#x27;;
-    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+        RULE dom_medium
+        IF zone = &quot;domestic&quot; AND weight_kg BETWEEN 2 AND 10 CLOSED RIGHT
+        THEN carrier = &quot;post&quot;, price = 8.90
+
+        RULE dom_large
+        IF zone = &quot;domestic&quot; AND weight_kg &gt; 10
+        THEN carrier = &quot;courier&quot;, price = 14.90
+
+        RULE eu_small
+        IF zone = &quot;eu&quot; AND weight_kg &lt;= 2
+        THEN carrier = &quot;post&quot;, price = 9.50
+
+        RULE eu_large
+        IF zone = &quot;eu&quot; AND weight_kg &gt; 2
+        THEN carrier = &quot;courier&quot;, price = weight_kg * 2.5e0 + 12
+
+        RULE world
+        IF zone = &quot;world&quot;
+        THEN carrier = &quot;courier&quot;, price = weight_kg * 6 + 25
+    )rules&quot;, cr::format::text);
+
+    auto parcel = cr::value::map({{&quot;zone&quot;, &quot;eu&quot;}, {&quot;weight_kg&quot;, 3.4}, {&quot;order_total&quot;, 64.0}});
+    auto decision = rates.evaluate(parcel);
+    std::cout &lt;&lt; decision.output_json() &lt;&lt; &quot;\n\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
+
+    // No rule fired: the output is a plain null.
+    auto moon = rates.evaluate(cr::value::map({{&quot;zone&quot;, &quot;moon&quot;}, {&quot;weight_kg&quot;, 1}}));
+    std::cout &lt;&lt; &quot;\nmoon: &quot; &lt;&lt; moon.output_json() &lt;&lt; &quot;\n&quot;;
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;carrier&quot;:&quot;courier&quot;,&quot;price&quot;:20.5}
+
+HIT POLICY unique: selected eu_large
+[ ] dom_small (not fired): zone = &quot;domestic&quot; AND weight_kg &lt;= 2
+    would fire if all of these changed:
+    - zone = &quot;domestic&quot; is false (zone = &quot;eu&quot;)
+    - weight_kg &lt;= 2 is false (weight_kg = 3.4e0); over by 1.4
+[ ] dom_medium (not fired): zone = &quot;domestic&quot; AND weight_kg BETWEEN 2 AND 10 CLOSED RIGHT
+    - zone = &quot;domestic&quot; is false (zone = &quot;eu&quot;)
+[ ] dom_large (not fired): zone = &quot;domestic&quot; AND weight_kg &gt; 10
+    would fire if all of these changed:
+    - zone = &quot;domestic&quot; is false (zone = &quot;eu&quot;)
+    - weight_kg &gt; 10 is false (weight_kg = 3.4e0); short by 6.6
+[ ] eu_small (not fired): zone = &quot;eu&quot; AND weight_kg &lt;= 2
+    - weight_kg &lt;= 2 is false (weight_kg = 3.4e0); over by 1.4
+[x] eu_large (selected): zone = &quot;eu&quot; AND weight_kg &gt; 2
+    because all of these hold:
+    - zone = &quot;eu&quot; is true (zone = &quot;eu&quot;)
+    - weight_kg &gt; 2 is true (weight_kg = 3.4e0)
+[ ] world (not fired): zone = &quot;world&quot;
+    - zone = &quot;world&quot; is false (zone = &quot;eu&quot;)
+
+moon: null</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the C library, installed with CMake from the repository (<code>find_package(cleanrules)</code>), and run. The rules are written in the rule syntax and read as the same document as the JSON tab; the decision and explanation equal the core&#x27;s documents below, and the explanation text is the one every language prints. <a href="../manual/installation.html#cpp">Build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>shipping.erl</span><span class="src dp">design preview</span></div>
@@ -1102,7 +1141,7 @@ hint: make the conditions mutually exclusive, or use first or priority
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -1120,6 +1159,8 @@ hint: make the conditions mutually exclusive, or use first or priority
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

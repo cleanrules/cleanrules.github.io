@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -119,18 +121,18 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
         <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
-<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
@@ -380,43 +382,53 @@ strict: missing_field in rule missing_email at [&quot;customer&quot;,&quot;email
 <p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
 </div>
 <div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Rule, RuleSet, date } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet, date } from &#x27;cleanrules&#x27;
 
 const checks = [
-  new Rule(&quot;missing_email&quot;, F.customer.email.isNull(), { field: &quot;customer.email&quot;, problem: &quot;missing&quot; }),
+  new Rule(&#x27;missing_email&#x27;, F.customer.email.isNull(), { field: &#x27;customer.email&#x27;, problem: &#x27;missing&#x27; }),
   new Rule(
-    &quot;bad_email&quot;,
-    F.customer.email.matches(&quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;).not(),
-    { field: &quot;customer.email&quot;, problem: &quot;malformed&quot; },
+    &#x27;bad_email&#x27;,
+    F.customer.email.matches(String.raw`^[^@\s]+@[^@\s]+\.[a-z]{2,}$`).not(),
+    { field: &#x27;customer.email&#x27;, problem: &#x27;malformed&#x27; },
   ),
-  new Rule(&quot;bad_quantity&quot;, F.quantity.le(0), { field: &quot;quantity&quot;, problem: &quot;not positive&quot; }),
+  new Rule(&#x27;bad_quantity&#x27;, F.quantity.le(0), { field: &#x27;quantity&#x27;, problem: &#x27;not positive&#x27; }),
   new Rule(
-    &quot;total_mismatch&quot;,
+    &#x27;total_mismatch&#x27;,
     F.quantity.mul(F.unit_price).sub(F.total).abs().gt(0.01),
-    { field: &quot;total&quot;, problem: &quot;does not match quantity x price&quot; },
+    { field: &#x27;total&#x27;, problem: &#x27;does not match quantity x price&#x27; },
   ),
-  new Rule(&quot;ships_before_order&quot;, F.ship_date.lt(F.order_date), {
-    field: &quot;ship_date&quot;,
-    problem: &quot;before the order date&quot;,
-  }),
-];
-const validator = new RuleSet(checks, { hitPolicy: &quot;rule_order&quot; });
+  new Rule(
+    &#x27;ships_before_order&#x27;,
+    F.ship_date.lt(F.order_date),
+    { field: &#x27;ship_date&#x27;, problem: &#x27;before the order date&#x27; },
+  ),
+]
+const validator = new RuleSet(checks, { hitPolicy: &#x27;rule_order&#x27; })
 
 const order = {
-  customer: { name: &quot;Ana&quot; },
-  quantity: &quot;3&quot;,
+  customer: { name: &#x27;Ana&#x27; },
+  quantity: &#x27;3&#x27;,
   unit_price: 19.99,
   total: 59.97,
-  order_date: date(&quot;2026-10-30&quot;),
-  ship_date: date(&quot;2026-10-28&quot;),
-};
-const decision = validator.evaluate(order);
-console.log(decision.fired);
-for (const problem of decision.outputs) console.log(problem);</code></pre>
+  order_date: date(2026, 10, 30),
+  ship_date: date(2026, 10, 28),
+}
+const decision = validator.evaluate(order)
+console.log(decision.fired)
+for (const problem of decision.outputs) console.log(&#x27; &#x27;, problem)
+for (const rule of decision.explain().rules) {
+  if (rule.status === &#x27;unknown&#x27;) console.log(rule.rule, rule.causes[0]?.reason?.code, rule.causes[0]?.reason?.types)
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[ &#x27;missing_email&#x27;, &#x27;ships_before_order&#x27; ]
+  { field: &#x27;customer.email&#x27;, problem: &#x27;missing&#x27; }
+  { field: &#x27;ship_date&#x27;, problem: &#x27;before the order date&#x27; }
+bad_email missing_field []
+bad_quantity type_mismatch [ &#x27;string&#x27;, &#x27;number&#x27; ]
+total_mismatch type_mismatch [ &#x27;string&#x27;, &#x27;number&#x27; ]</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.java</span><span class="src dp">design preview</span></div>
@@ -614,39 +626,70 @@ int main(void) {
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>orders.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
 
 namespace cr = cleanrules;
-using cr::F;
 
 int main() {
-    auto problem = [](const char* field, const char* what) {
-        return cr::Value{{&quot;field&quot;, field}, {&quot;problem&quot;, what}};
-    };
-    auto email = F(&quot;customer&quot;)[&quot;email&quot;];
-    cr::RuleSet validator({
-        cr::Rule(&quot;missing_email&quot;, email.is_null()).then(problem(&quot;customer.email&quot;, &quot;missing&quot;)),
-        cr::Rule(&quot;bad_email&quot;, !email.matches(R&quot;(^[^@\s]+@[^@\s]+\.[a-z]{2,}$)&quot;))
-            .then(problem(&quot;customer.email&quot;, &quot;malformed&quot;)),
-        cr::Rule(&quot;bad_quantity&quot;, F(&quot;quantity&quot;) &lt;= 0).then(problem(&quot;quantity&quot;, &quot;not positive&quot;)),
-        cr::Rule(&quot;total_mismatch&quot;, (F(&quot;quantity&quot;) * F(&quot;unit_price&quot;) - F(&quot;total&quot;)).abs() &gt; 0.01)
-            .then(problem(&quot;total&quot;, &quot;does not match quantity x price&quot;)),
-        cr::Rule(&quot;ships_before_order&quot;, F(&quot;ship_date&quot;) &lt; F(&quot;order_date&quot;))
-            .then(problem(&quot;ship_date&quot;, &quot;before the order date&quot;)),
-    }, {.hit_policy = cr::HitPolicy::rule_order});
+    auto validator = cr::ruleset::read(R&quot;rules(
+        HIT POLICY rule_order
 
-    auto decision = validator.evaluate(cr::Value::from_json(R&quot;({
-        &quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;}, &quot;quantity&quot;: &quot;3&quot;, &quot;unit_price&quot;: 19.99, &quot;total&quot;: 59.97,
-        &quot;order_date&quot;: {&quot;$date&quot;: &quot;2026-10-30&quot;}, &quot;ship_date&quot;: {&quot;$date&quot;: &quot;2026-10-28&quot;}})&quot;));
-    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
-    std::cout &lt;&lt; &#x27;\n&#x27;;
-    for (const auto&amp; output : decision.outputs()) std::cout &lt;&lt; output.to_json() &lt;&lt; &#x27;\n&#x27;;
+        RULE missing_email
+        IF customer.email IS NULL
+        THEN field = &quot;customer.email&quot;, problem = &quot;missing&quot;
+
+        RULE bad_email
+        IF NOT customer.email MATCHES &quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;
+        THEN field = &quot;customer.email&quot;, problem = &quot;malformed&quot;
+
+        RULE bad_quantity
+        IF quantity &lt;= 0
+        THEN field = &quot;quantity&quot;, problem = &quot;not positive&quot;
+
+        RULE total_mismatch
+        IF ABS(quantity * unit_price - total) &gt; 0.01e0
+        THEN field = &quot;total&quot;, problem = &quot;does not match quantity x price&quot;
+
+        RULE ships_before_order
+        IF ship_date &lt; order_date
+        THEN field = &quot;ship_date&quot;, problem = &quot;before the order date&quot;
+    )rules&quot;, cr::format::text);
+
+    auto order = cr::value::map({
+        {&quot;customer&quot;, cr::value::map({{&quot;name&quot;, &quot;Ana&quot;}})},
+        {&quot;quantity&quot;, &quot;3&quot;},
+        {&quot;unit_price&quot;, 19.99},
+        {&quot;total&quot;, 59.97},
+        {&quot;order_date&quot;, cr::date{2026, 10, 30}},
+        {&quot;ship_date&quot;, cr::date{2026, 10, 28}},
+    });
+    auto decision = validator.evaluate(order);
+    auto problems = decision.outputs();
+    for (std::size_t i = 0; i &lt; problems.size(); ++i) {
+        std::cout &lt;&lt; problems[i][&quot;field&quot;].as_string() &lt;&lt; &quot;: &quot; &lt;&lt; problems[i][&quot;problem&quot;].as_string()
+                  &lt;&lt; &quot;\n&quot;;
+    }
+    std::cout &lt;&lt; &quot;\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">customer.email: missing
+ship_date: before the order date
+
+HIT POLICY rule_order: selected missing_email, ships_before_order
+[x] missing_email (selected): customer.email IS NULL
+    - customer.email IS NULL is true
+[?] bad_email (unknown): NOT customer.email MATCHES &quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot;
+    - customer.email MATCHES &quot;^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$&quot; is unknown: missing field customer.email
+[?] bad_quantity (unknown): quantity &lt;= 0
+    - quantity &lt;= 0 is unknown (quantity = &quot;3&quot;): type mismatch: string vs number
+[?] total_mismatch (unknown): ABS(quantity * unit_price - total) &gt; 0.01e0
+    - ABS(quantity * unit_price - total) &gt; 0.01e0 is unknown (quantity = &quot;3&quot;, unit_price = 19.99e0, total = 59.97e0): type mismatch: arithmetic needs numbers
+[x] ships_before_order (selected): ship_date &lt; order_date
+    - ship_date &lt; order_date is true (ship_date = DATE &quot;2026-10-28&quot;, order_date = DATE &quot;2026-10-30&quot;)</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the C library, installed with CMake from the repository (<code>find_package(cleanrules)</code>), and run. The rules are written in the rule syntax and read as the same document as the JSON tab; the decision and explanation equal the core&#x27;s documents below, and the explanation text is the one every language prints. <a href="../manual/installation.html#cpp">Build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>orders.erl</span><span class="src dp">design preview</span></div>
@@ -1065,7 +1108,7 @@ TypeMismatchError row 2 bad_quantity (&#x27;string&#x27;, &#x27;number&#x27;)</p
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -1083,6 +1126,8 @@ TypeMismatchError row 2 bad_quantity (&#x27;string&#x27;, &#x27;number&#x27;)</p
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html" aria-current="page">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -73,10 +75,10 @@
     <div class="wrap doc-layout">
       <aside class="doc-side" aria-label="Manual chapters">
         <details open>
-          <summary>Chapters <span class="muted">10 / 15</span></summary>
+          <summary>Chapters <span class="muted">10 / 17</span></summary>
           <nav aria-label="Chapters">
             <h2>Manual</h2>
-            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html" aria-current="page">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li></ol>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html" aria-current="page">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li><li><a href="api-js.html">JavaScript API</a></li><li><a href="api-cpp.html">C++ API</a></li></ol>
           </nav>
         </details>
       </aside>
@@ -202,17 +204,17 @@ except CleanRulesError as err:
 </div>
 
 <h2 id="languages">The same error in every language<a class="h-anchor" href="#languages" aria-label="Link to this section">#</a></h2>
-<p>A strict rule set and an input without the field it reads. Python, Rust and C run; the other tabs are design previews of the planned bindings, following <code>spec/errors.md</code>.</p>
+<p>A strict rule set and an input without the field it reads. Python, Rust, TypeScript, C and C++ run; the Java, Scala, Go and Erlang tabs are design previews of the planned bindings, following <code>spec/errors.md</code>.</p>
 <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
 <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-err-py" data-lang="py" aria-controls="err-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-err-rs" data-lang="rs" aria-controls="err-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
-<button role="tab" id="tab-err-ts" data-lang="ts" aria-controls="err-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-err-ts" data-lang="ts" aria-controls="err-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-err-java" data-lang="java" aria-controls="err-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-err-scala" data-lang="scala" aria-controls="err-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-err-go" data-lang="go" aria-controls="err-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-err-c" data-lang="c" aria-controls="err-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-err-cpp" data-lang="cpp" aria-controls="err-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-err-cpp" data-lang="cpp" aria-controls="err-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-err-erl" data-lang="erl" aria-controls="err-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="err-py" aria-labelledby="tab-err-py">
@@ -286,20 +288,30 @@ message: missing field customer.age</pre>
 </div>
 </div>
 <div role="tabpanel" id="err-ts" aria-labelledby="tab-err-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { EvaluationError, F, Rule, RuleSet } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { EvaluationError, F, Rule, RuleSet } from &#x27;cleanrules&#x27;
 
-const adult = new RuleSet([new Rule(&quot;adult&quot;, F.customer.age.ge(18))], { strict: true });
+const adult = new RuleSet([new Rule(&#x27;adult&#x27;, F.customer.age.ge(18))], { strict: true })
 try {
-  adult.evaluate({ customer: { name: &quot;Ana&quot; } });
+  adult.evaluate({ customer: { name: &#x27;Ana&#x27; } })
 } catch (err) {
-  // MissingFieldError extends EvaluationError, which extends CleanRulesError.
-  if (!(err instanceof EvaluationError)) throw err;
-  console.log(err.name, err.code, err.rule, err.path, err.message);
+  if (!(err instanceof EvaluationError)) throw err
+  console.log(&#x27;class:  &#x27;, err.name, &#x27;&lt;&#x27;, Object.getPrototypeOf(err.constructor).name)
+  console.log(&#x27;code:   &#x27;, err.code)
+  console.log(&#x27;rule:   &#x27;, err.context.rule)
+  console.log(&#x27;path:   &#x27;, err.context.path)
+  console.log(&#x27;message:&#x27;, err.message)
+  console.log(&#x27;json:   &#x27;, JSON.stringify(err))
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">class:   MissingFieldError &lt; EvaluationError
+code:    missing_field
+rule:    adult
+path:    [ &#x27;customer&#x27;, &#x27;age&#x27; ]
+message: missing field customer.age
+json:    {&quot;code&quot;:&quot;missing_field&quot;,&quot;message&quot;:&quot;missing field customer.age&quot;,&quot;rule&quot;:&quot;adult&quot;,&quot;path&quot;:[&quot;customer&quot;,&quot;age&quot;],&quot;node&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;customer&quot;,&quot;age&quot;]}}</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 on the JavaScript binding built from the repository. The context fields are in <code>err.context</code>, because an error&#x27;s <code>name</code> is its class; <code>JSON.stringify</code> writes the JSON form of <code>spec/errors.md</code>, the same as the C tab&#x27;s (<a href="api-js.html#errors">JavaScript API</a>).</p>
 </div>
 <div role="tabpanel" id="err-java" aria-labelledby="tab-err-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.java</span><span class="src dp">design preview</span></div>
@@ -389,16 +401,44 @@ json:    {&quot;code&quot;:&quot;missing_field&quot;,&quot;message&quot;:&quot;m
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run. Every function takes an optional <code>cr_error **</code>; the error has a message, a hint and the JSON form of <code>spec/errors.md</code>.</p>
 </div>
 <div role="tabpanel" id="err-cpp" aria-labelledby="tab-err-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-cr::RuleSet adult({cr::Rule(&quot;adult&quot;, F(&quot;customer&quot;)[&quot;age&quot;] &gt;= 18)}, {.strict = true});
-try {
-    adult.evaluate(cr::Value::from_json(R&quot;({&quot;customer&quot;: {&quot;name&quot;: &quot;Ana&quot;}})&quot;));
-} catch (const cr::EvaluationError&amp; e) {  // MissingFieldError derives from EvaluationError
-    std::cout &lt;&lt; e.code() &lt;&lt; &#x27; &#x27; &lt;&lt; e.rule().value_or(&quot;-&quot;) &lt;&lt; &quot;: &quot; &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
+#include &lt;iostream&gt;
+
+namespace cr = cleanrules;
+
+int main() {
+    auto adult = cr::ruleset::read(R&quot;(
+        STRICT
+        RULE adult IF customer.age &gt;= 18
+    )&quot;, cr::format::text);
+    auto input = cr::value::map({{&quot;customer&quot;, cr::value::map({{&quot;name&quot;, &quot;Ana&quot;}})}});
+
+    // An exception: missing_field_error derives from evaluation_error.
+    try {
+        (void)adult.evaluate(input);
+    } catch (const cr::evaluation_error &amp;e) {
+        std::cout &lt;&lt; &quot;code:    &quot; &lt;&lt; cr::name(e.code()) &lt;&lt; &quot;\n&quot;;
+        std::cout &lt;&lt; &quot;parent:  &quot; &lt;&lt; cr::name(cr::parent(e.code())) &lt;&lt; &quot;\n&quot;;
+        std::cout &lt;&lt; &quot;message: &quot; &lt;&lt; e.what() &lt;&lt; &quot;\n&quot;;
+        std::cout &lt;&lt; &quot;json:    &quot; &lt;&lt; e.json() &lt;&lt; &quot;\n&quot;;
+    }
+
+    // Or a value: the error_info overloads never throw a cleanrules::error.
+    cr::error_info error;
+    if (!adult.evaluate(input, error)) {
+        std::cout &lt;&lt; &quot;is an evaluation_error: &quot; &lt;&lt; std::boolalpha
+                  &lt;&lt; error.is(cr::errc::evaluation_error) &lt;&lt; &quot;\n&quot;;
+    }
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">code:    missing_field
+parent:  evaluation_error
+message: missing field customer.age
+json:    {&quot;code&quot;:&quot;missing_field&quot;,&quot;message&quot;:&quot;missing field customer.age&quot;,&quot;rule&quot;:&quot;adult&quot;,&quot;path&quot;:[&quot;customer&quot;,&quot;age&quot;],&quot;node&quot;:{&quot;op&quot;:&quot;field&quot;,&quot;path&quot;:[&quot;customer&quot;,&quot;age&quot;]}}
+is an evaluation_error: true</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code>, installed with CMake from the repository, and run. Each call that can fail has an overload that throws and one that takes an <code>error_info</code> (<a href="api-cpp.html#errors">C++ API</a>).</p>
 </div>
 <div role="tabpanel" id="err-erl" aria-labelledby="tab-err-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>errors.erl</span><span class="src dp">design preview</span></div>
@@ -422,8 +462,8 @@ end.</code></pre>
       <tr><td>Python</td><td>exception classes with the names above, under <code>cleanrules.CleanRulesError</code>; the cause is <code>__cause__</code></td></tr>
       <tr><td>Rust</td><td>one <code>#[non_exhaustive]</code> <code>Error</code> with <code>code()</code>, <code>message()</code>, <code>hint()</code>, <code>context()</code> and <code>source()</code>; <code>ErrorCode::is_a</code> tests the hierarchy</td></tr>
       <tr><td>Java, Scala <span class="chip planned">planned</span></td><td>unchecked exceptions named with <code>Exception</code> (<code>CleanRulesException</code>, <code>MissingFieldException</code>, …) with <code>code()</code>; the cause is <code>getCause()</code></td></tr>
-      <tr><td>JavaScript, TypeScript <span class="chip planned">planned</span></td><td><code>Error</code> subclasses with the names above and a <code>code</code> property; the cause is <code>cause</code></td></tr>
-      <tr><td>C++ <span class="chip planned">planned</span></td><td>exceptions with the names above, deriving from <code>std::runtime_error</code>, with <code>code()</code></td></tr>
+      <tr><td>JavaScript, TypeScript</td><td><code>Error</code> subclasses with the names above, under <code>CleanRulesError</code>, with <code>code</code>, <code>hint</code>, <code>context</code> and <code>toJSON()</code>; the cause is <code>cause</code></td></tr>
+      <tr><td>C++</td><td>exceptions named in snake case (<code>cleanrules::error</code>, <code>missing_field_error</code>, …), deriving from <code>std::runtime_error</code>, with <code>code()</code>, <code>hint()</code> and <code>json()</code>; or, from the overloads that take an <code>error_info</code>, the same error as a value</td></tr>
       <tr><td>Go <span class="chip planned">planned</span></td><td>one type, <code>*cleanrules.Error</code>, with a <code>Code</code> field and the context; each parent is a sentinel (<code>ErrEvaluation</code>, <code>ErrFormat</code>, …) for <code>errors.Is</code></td></tr>
       <tr><td>C</td><td>functions return a <code>cr_status</code>: <code>CR_OK</code> or one stable number per code; <code>cr_error_parent(code)</code> gives the parent and <code>cr_error_is</code> tests the hierarchy; an optional <code>cr_error **</code> receives the message, hint and JSON form</td></tr>
       <tr><td>Erlang <span class="chip planned">planned</span></td><td><code>{ok, Value}</code> or <code>{error, #{code := ..., ...}}</code></td></tr>
@@ -452,7 +492,7 @@ end.</code></pre>
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -470,6 +510,8 @@ end.</code></pre>
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

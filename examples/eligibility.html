@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -111,18 +113,18 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
         <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
-<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
@@ -301,33 +303,40 @@ fn main() -&gt; Result&lt;()&gt; {
 <p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
 </div>
 <div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Rule, RuleSet, date, decimal } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet, date, decimal } from &#x27;cleanrules&#x27;
 
-const deadline = Temporal.ZonedDateTime.from(&quot;2026-12-15T14:00[Europe/Madrid]&quot;);
+const madrid = (local: string) =&gt; Temporal.PlainDateTime.from(local).toZonedDateTime(&#x27;Europe/Madrid&#x27;)
 const grant = new Rule(
-  &quot;housing_grant&quot;,
-  F.residence_since.le(date(&quot;2024-11-01&quot;))
-    .and(F.birth_date.le(date(&quot;2008-11-01&quot;)))
+  &#x27;housing_grant&#x27;,
+  F.residence_since
+    .le(date(2024, 11, 1))
+    .and(F.birth_date.le(date(2008, 11, 1)))
     .and(F.household_income.lt(28_000))
-    .and(F.submitted_at.le(deadline)),
-  { grant: decimal(&quot;1500.00&quot;) },
-  { description: &quot;Two years of residence, adult, low income, before the deadline&quot; },
-);
-const rules = new RuleSet([grant]);
+    .and(F.submitted_at.le(madrid(&#x27;2026-12-15T14:00&#x27;))),
+  { grant: decimal(&#x27;1500.00&#x27;) },
+  { description: &#x27;Two years of residence, adult, low income, before the deadline&#x27; },
+)
+const rules = new RuleSet([grant])
 
 const applicant = {
-  residence_since: date(&quot;2025-01-20&quot;),
-  birth_date: date(&quot;1999-04-02&quot;),
+  residence_since: date(2025, 1, 20),
+  birth_date: date(1999, 4, 2),
   household_income: 26_500,
-  submitted_at: Temporal.ZonedDateTime.from(&quot;2026-12-16T09:30[Europe/Madrid]&quot;),
-};
-const decision = rules.evaluate(applicant);
-console.log(decision.fired);
-console.log(decision.output);</code></pre>
+  submitted_at: madrid(&#x27;2026-12-16T09:30&#x27;),
+}
+const decision = rules.evaluate(applicant)
+console.log(decision.fired, decision.output)
+
+for (const cause of decision.whyNot(&#x27;housing_grant&#x27;).causes) {
+  if (!cause.holds) console.log(String(cause.node), &#x27;- gap&#x27;, cause.counterfactual?.gap)
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[] null
+residence_since &lt;= DATE &quot;2024-11-01&quot; - gap { days: 80 }
+submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot; - gap { microseconds: 70200000000 }</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>. Node 26 has <code>Temporal</code>; where a runtime has none, a Temporal polyfill works, since the binding recognises Temporal values by their tag.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.java</span><span class="src dp">design preview</span></div>
@@ -520,38 +529,45 @@ int main(void) {
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>eligibility.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
-#include &lt;chrono&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
 
 namespace cr = cleanrules;
-using cr::F;
 
 int main() {
-    using namespace std::chrono;
-    auto deadline = zoned_time{&quot;Europe/Madrid&quot;, local_days{2026y / December / 15} + 14h};
-    cr::RuleSet rules({
-        cr::Rule(&quot;housing_grant&quot;,
-                 (F(&quot;residence_since&quot;) &lt;= year_month_day{2024y / November / 1})
-                     &amp; (F(&quot;birth_date&quot;) &lt;= year_month_day{2008y / November / 1})
-                     &amp; (F(&quot;household_income&quot;) &lt; 28000)
-                     &amp; (F(&quot;submitted_at&quot;) &lt;= deadline))
-            .then({{&quot;grant&quot;, cr::Decimal(&quot;1500.00&quot;)}})
-            .description(&quot;Two years of residence, adult, low income, before the deadline&quot;),
-    });
+    auto rules = cr::ruleset::read(R&quot;rules(
+        RULE housing_grant
+          DESCRIPTION &quot;Two years of residence, adult, low income, before the deadline&quot;
+        IF residence_since &lt;= DATE &quot;2024-11-01&quot;
+          AND birth_date &lt;= DATE &quot;2008-11-01&quot;
+          AND household_income &lt; 28000
+          AND submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;
+        THEN grant = 1500.00
+    )rules&quot;, cr::format::text);
 
-    auto decision = rules.evaluate(cr::Value::from_json(R&quot;({
-        &quot;residence_since&quot;: {&quot;$date&quot;: &quot;2025-01-20&quot;}, &quot;birth_date&quot;: {&quot;$date&quot;: &quot;1999-04-02&quot;},
-        &quot;household_income&quot;: 26500,
-        &quot;submitted_at&quot;: {&quot;$datetime&quot;: &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;}})&quot;));
-    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
-    std::cout &lt;&lt; &#x27;\n&#x27;;
-    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+    auto applicant = cr::value::map({
+        {&quot;residence_since&quot;, cr::date{2025, 1, 20}},
+        {&quot;birth_date&quot;, cr::date{1999, 4, 2}},
+        {&quot;household_income&quot;, 26500},
+        // 2026-12-16T09:30:00+01:00 in Madrid: seconds since the epoch, microseconds,
+        // the UTC offset in seconds and the IANA zone.
+        {&quot;submitted_at&quot;, cr::aware_datetime{1797409800, 0, 3600, &quot;Europe/Madrid&quot;}},
+    });
+    auto decision = rules.evaluate(applicant);
+    std::cout &lt;&lt; &quot;output: &quot; &lt;&lt; decision.output_json() &lt;&lt; &quot;\n\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">output: null
+
+HIT POLICY first: selected no rule
+[ ] housing_grant (not fired): residence_since &lt;= DATE &quot;2024-11-01&quot; AND birth_date &lt;= DATE &quot;2008-11-01&quot; AND household_income &lt; 28000 AND submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;
+    Two years of residence, adult, low income, before the deadline
+    would fire if all of these changed:
+    - residence_since &lt;= DATE &quot;2024-11-01&quot; is false (residence_since = DATE &quot;2025-01-20&quot;); over by 80 days
+    - submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot; is false (submitted_at = DATETIME &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;); over by 19 hours 30 minutes</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the C library, installed with CMake from the repository (<code>find_package(cleanrules)</code>), and run. The rules are written in the rule syntax and read as the same document as the JSON tab; the decision and explanation equal the core&#x27;s documents below, and the explanation text is the one every language prints. <a href="../manual/installation.html#cpp">Build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.erl</span><span class="src dp">design preview</span></div>
@@ -806,7 +822,7 @@ unknown [&#x27;missing_field&#x27;]</pre>
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -824,6 +840,8 @@ unknown [&#x27;missing_field&#x27;]</pre>
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

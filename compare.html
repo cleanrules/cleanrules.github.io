@@ -46,6 +46,8 @@
             <a href="format.html">JSON format v1</a>
             <a href="manual/api-python.html">Python API</a>
             <a href="manual/api-rust.html">Rust API</a>
+            <a href="manual/api-js.html">JavaScript API</a>
+            <a href="manual/api-cpp.html">C++ API</a>
             <a href="manual/errors.html">Error codes</a>
             <a href="benchmarks.html">Benchmarks</a>
           </div>
@@ -134,7 +136,7 @@
           </div>
           <div class="feature">
             <h3><span class="fi u"></span>One conformance suite</h3>
-            <p>2,508 vectors with exact expected outputs, run today by the core, the Python binding and the C ABI, and by every binding before it ships, once through JSON and once through native data.</p>
+            <p>2,508 vectors with exact expected outputs, run today by the core and by the Python, C, C++ and JavaScript bindings, and by every binding before it ships, through JSON and through native data.</p>
           </div>
           <div class="feature">
             <h3><span class="fi c"></span>A stable bridge to agents</h3>
@@ -151,7 +153,7 @@
         <div class="faq">
           <details>
             <summary>Can I use cleanrules today?</summary>
-            <p>From Rust, Python and C, by building from <a href="https://github.com/cleanrules/cleanrules" rel="noopener">the repository</a> (<a href="manual/installation.html">installation</a>). The Rust core implements the whole specification and passes all 2,508 conformance vectors. The Python binding's API is done (conditions, rules, decisions, explanations, summaries, errors, actions, rule files, decision tables) and it reads dicts, dataclasses, Pydantic models and pandas rows; it passes every conformance vector (all 2,508 through JSON, 1,952 with native Python data) and will be the first public release. The C ABI (<code>cleanrules.h</code>, a static and a shared library) passes every vector too. Nothing is on a registry yet, and the API may change before the first release. The other languages follow (see the <a href="index.html#roadmap">roadmap</a>). The intended package names are <code>cleanrules</code> on crates.io, PyPI, npm and Hex, and <code>io.github.cleanrules:cleanrules</code> on Maven Central.</p>
+            <p>From Rust, Python, C, C++ and JavaScript or TypeScript, by building from <a href="https://github.com/cleanrules/cleanrules" rel="noopener">the repository</a> (<a href="manual/installation.html">installation</a>). The Rust core implements the whole specification and passes all 2,508 conformance vectors. The Python binding's API is done (conditions, rules, decisions, explanations, summaries, errors, actions, rule files, decision tables) and it reads dicts, dataclasses, Pydantic models and pandas rows; it passes every conformance vector (all 2,508 through JSON, 1,952 with native Python data) and will be the first public release. The C ABI (<code>cleanrules.h</code>, a static and a shared library) passes every vector too, and so does the header-only C++17 layer (<code>cleanrules.hpp</code>, with a CMake package, a Conan recipe and a vcpkg port built from the repository). The JavaScript package, a native addon for Node and a WebAssembly build for browsers and Deno, passes every vector on both builds; its npm packaging is being prepared. Nothing is on a registry yet, and the API may change before the first release. The other languages follow (see the <a href="index.html#roadmap">roadmap</a>). The intended package names are <code>cleanrules</code> on crates.io, PyPI, npm and Hex, and <code>io.github.cleanrules:cleanrules</code> on Maven Central.</p>
           </details>
           <details>
             <summary>Why three truth values instead of true and false?</summary>
@@ -195,7 +197,7 @@
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -213,6 +215,8 @@
             <li><a href="format.html">JSON format v1</a></li>
             <li><a href="manual/api-python.html">Python API</a></li>
             <li><a href="manual/api-rust.html">Rust API</a></li>
+            <li><a href="manual/api-js.html">JavaScript API</a></li>
+            <li><a href="manual/api-cpp.html">C++ API</a></li>
             <li><a href="manual/errors.html">Errors</a></li>
             <li><a href="benchmarks.html">Benchmarks</a></li>
           </ul>

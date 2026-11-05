@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -106,18 +108,18 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
         <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
-<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
@@ -301,24 +303,30 @@ hit_policy_error: [&quot;student_id&quot;, &quot;academic_email&quot;, &quot;und
 <p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
 </div>
 <div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>discounts.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Rule, RuleSet } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>discounts.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet } from &#x27;cleanrules&#x27;
 
-const education = { plan: &quot;education&quot;, discount_pct: 50 };
+const education = { plan: &#x27;education&#x27;, discount_pct: 50 }
 const channels = [
-  new Rule(&quot;student_id&quot;, F.student_id.isNull().not(), education),
-  new Rule(&quot;academic_email&quot;, F.email.endsWith(&quot;.edu&quot;).or(F.email.endsWith(&quot;.ac.uk&quot;)), education),
-  new Rule(&quot;under_26&quot;, F.age.lt(26), education),
-];
-const rules = new RuleSet(channels, { hitPolicy: &quot;any&quot; });
+  new Rule(&#x27;student_id&#x27;, F.student_id.isNull().not(), education),
+  new Rule(&#x27;academic_email&#x27;, F.email.endsWith(&#x27;.edu&#x27;).or(F.email.endsWith(&#x27;.ac.uk&#x27;)), education),
+  new Rule(&#x27;under_26&#x27;, F.age.lt(26), education),
+]
+const rules = new RuleSet(channels, { hitPolicy: &#x27;any&#x27; })
 
-const customer = { student_id: &quot;S-1188&quot;, email: &quot;ana@uni.edu&quot;, age: 23 };
-const decision = rules.evaluate(customer);
-console.log(decision.fired);
-console.log(decision.output);</code></pre>
+const customer = { student_id: &#x27;S-1188&#x27;, email: &#x27;ana@uni.edu&#x27;, age: 23 }
+const decision = rules.evaluate(customer)
+console.log(decision.fired, decision.output)
+for (const rule of decision.explain().rules) {
+  console.log(rule.rule.padEnd(15), rule.status.padEnd(9), rule.note?.kind ?? &#x27;&#x27;)
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[ &#x27;student_id&#x27;, &#x27;academic_email&#x27;, &#x27;under_26&#x27; ] { plan: &#x27;education&#x27;, discount_pct: 50 }
+student_id      selected  
+academic_email  fired     any_agrees
+under_26        fired     any_agrees</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>discounts.java</span><span class="src dp">design preview</span></div>
@@ -473,31 +481,47 @@ int main(void) {
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>discounts.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>discounts.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>discounts.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
 
 namespace cr = cleanrules;
-using cr::F;
 
 int main() {
-    const cr::Value education = {{&quot;plan&quot;, &quot;education&quot;}, {&quot;discount_pct&quot;, 50}};
-    cr::RuleSet rules({
-        cr::Rule(&quot;student_id&quot;, !F(&quot;student_id&quot;).is_null()).then(education),
-        cr::Rule(&quot;academic_email&quot;, F(&quot;email&quot;).ends_with(&quot;.edu&quot;) | F(&quot;email&quot;).ends_with(&quot;.ac.uk&quot;))
-            .then(education),
-        cr::Rule(&quot;under_26&quot;, F(&quot;age&quot;) &lt; 26).then(education),
-    }, {.hit_policy = cr::HitPolicy::any});
+    auto rules = cr::ruleset::read(R&quot;rules(
+        HIT POLICY any
 
-    auto decision = rules.evaluate(cr::Value::from_json(
-        R&quot;({&quot;student_id&quot;: &quot;S-1188&quot;, &quot;email&quot;: &quot;ana@uni.edu&quot;, &quot;age&quot;: 23})&quot;));
-    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
-    std::cout &lt;&lt; &#x27;\n&#x27;;
-    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+        RULE student_id
+        IF NOT student_id IS NULL
+        THEN plan = &quot;education&quot;, discount_pct = 50
+
+        RULE academic_email
+        IF email ENDS WITH &quot;.edu&quot; OR email ENDS WITH &quot;.ac.uk&quot;
+        THEN plan = &quot;education&quot;, discount_pct = 50
+
+        RULE under_26
+        IF age &lt; 26
+        THEN plan = &quot;education&quot;, discount_pct = 50
+    )rules&quot;, cr::format::text);
+
+    auto customer = cr::value::map({{&quot;student_id&quot;, &quot;S-1188&quot;}, {&quot;email&quot;, &quot;ana@uni.edu&quot;}, {&quot;age&quot;, 23}});
+    auto decision = rules.evaluate(customer);
+    std::cout &lt;&lt; decision.output_json() &lt;&lt; &quot;\n\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;plan&quot;:&quot;education&quot;,&quot;discount_pct&quot;:50}
+
+HIT POLICY any: selected student_id
+[x] student_id (selected): NOT student_id IS NULL
+    - student_id IS NULL is false (student_id = &quot;S-1188&quot;)
+[x] academic_email (fired, not selected): email ENDS WITH &quot;.edu&quot; OR email ENDS WITH &quot;.ac.uk&quot;
+    fired; its output agrees with student_id, which comes first
+    - email ENDS WITH &quot;.edu&quot; is true (email = &quot;ana@uni.edu&quot;)
+[x] under_26 (fired, not selected): age &lt; 26
+    fired; its output agrees with student_id, which comes first
+    - age &lt; 26 is true (age = 23)</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the C library, installed with CMake from the repository (<code>find_package(cleanrules)</code>), and run. The rules are written in the rule syntax and read as the same document as the JSON tab; the decision and explanation equal the core&#x27;s documents below, and the explanation text is the one every language prints. <a href="../manual/installation.html#cpp">Build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>discounts.erl</span><span class="src dp">design preview</span></div>
@@ -741,7 +765,7 @@ hint: give them the same payload, or use first, priority or collect
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -759,6 +783,8 @@ hint: give them the same payload, or use first, priority or collect
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -120,18 +122,18 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
         <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
-<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
@@ -347,29 +349,36 @@ output: {&quot;premium&quot;:608.0}</pre>
 <p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
 </div>
 <div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Rule, RuleSet } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet } from &#x27;cleanrules&#x27;
 
 const rules = new RuleSet(
   [
-    new Rule(&quot;base&quot;, F.age.ge(18), { premium: 420 }),
-    new Rule(&quot;young_driver&quot;, F.age.lt(25), { premium: 380 }),
-    new Rule(&quot;senior_driver&quot;, F.age.ge(75), { premium: 150 }),
-    new Rule(&quot;recent_claims&quot;, F.claims_3y.ge(2), { premium: 260 }),
-    new Rule(&quot;city_zone&quot;, F.zone.isIn([&quot;urban&quot;, &quot;metro&quot;]), { premium: 90 }),
-    new Rule(&quot;no_claims_bonus&quot;, F.claims_3y.eq(0).and(F.years_licensed.ge(5)), { premium: -110 }),
-    new Rule(&quot;high_value_car&quot;, F.car_value.gt(40_000), { premium: F.car_value.mul(0.004) }),
+    new Rule(&#x27;base&#x27;, F.age.ge(18), { premium: 420 }),
+    new Rule(&#x27;young_driver&#x27;, F.age.lt(25), { premium: 380 }),
+    new Rule(&#x27;senior_driver&#x27;, F.age.ge(75), { premium: 150 }),
+    new Rule(&#x27;recent_claims&#x27;, F.claims_3y.ge(2), { premium: 260 }),
+    new Rule(&#x27;city_zone&#x27;, F.zone.isIn([&#x27;urban&#x27;, &#x27;metro&#x27;]), { premium: 90 }),
+    new Rule(&#x27;no_claims_bonus&#x27;, F.claims_3y.eq(0).and(F.years_licensed.ge(5)), { premium: -110 }),
+    new Rule(&#x27;high_value_car&#x27;, F.car_value.gt(40_000), { premium: F.car_value.mul(0.004) }),
   ],
-  { hitPolicy: &quot;collect&quot;, aggregate: &quot;sum&quot; },
-);
+  { hitPolicy: &#x27;collect&#x27;, aggregate: &#x27;sum&#x27; },
+)
 
-const driver = { age: 31, claims_3y: 0, years_licensed: 9, zone: &quot;urban&quot;, car_value: 52_000 };
-const decision = rules.evaluate(driver);
-console.log(decision.fired);
-console.log(decision.output);</code></pre>
+const driver = { age: 31, claims_3y: 0, years_licensed: 9, zone: &#x27;urban&#x27;, car_value: 52_000 }
+const decision = rules.evaluate(driver)
+console.log(decision.fired)
+console.log(decision.output)
+for (const result of decision.selected) console.log(result.rule.name.padEnd(16), result.output)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[ &#x27;base&#x27;, &#x27;city_zone&#x27;, &#x27;no_claims_bonus&#x27;, &#x27;high_value_car&#x27; ]
+{ premium: 608 }
+base             { premium: 420 }
+city_zone        { premium: 90 }
+no_claims_bonus  { premium: -110 }
+high_value_car   { premium: 208 }</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.java</span><span class="src dp">design preview</span></div>
@@ -546,35 +555,62 @@ int main(void) {
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>insurance.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
 
 namespace cr = cleanrules;
-using cr::F;
 
 int main() {
-    auto premium = [](auto amount) { return cr::Value{{&quot;premium&quot;, amount}}; };
-    cr::RuleSet rules({
-        cr::Rule(&quot;base&quot;, F(&quot;age&quot;) &gt;= 18).then(premium(420)),
-        cr::Rule(&quot;young_driver&quot;, F(&quot;age&quot;) &lt; 25).then(premium(380)),
-        cr::Rule(&quot;senior_driver&quot;, F(&quot;age&quot;) &gt;= 75).then(premium(150)),
-        cr::Rule(&quot;recent_claims&quot;, F(&quot;claims_3y&quot;) &gt;= 2).then(premium(260)),
-        cr::Rule(&quot;city_zone&quot;, F(&quot;zone&quot;).is_in({&quot;urban&quot;, &quot;metro&quot;})).then(premium(90)),
-        cr::Rule(&quot;no_claims_bonus&quot;, (F(&quot;claims_3y&quot;) == 0) &amp; (F(&quot;years_licensed&quot;) &gt;= 5))
-            .then(premium(-110)),
-        cr::Rule(&quot;high_value_car&quot;, F(&quot;car_value&quot;) &gt; 40000).then(premium(F(&quot;car_value&quot;) * 0.004)),
-    }, {.hit_policy = cr::HitPolicy::collect, .aggregate = cr::Aggregate::sum});
+    auto rules = cr::ruleset::read(R&quot;rules(
+        HIT POLICY collect
+        AGGREGATE sum
 
-    auto decision = rules.evaluate(cr::Value::from_json(
-        R&quot;({&quot;age&quot;: 31, &quot;claims_3y&quot;: 0, &quot;years_licensed&quot;: 9, &quot;zone&quot;: &quot;urban&quot;, &quot;car_value&quot;: 52000})&quot;));
-    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
-    std::cout &lt;&lt; &#x27;\n&#x27;;
-    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+        RULE base            IF age &gt;= 18                           THEN premium = 420
+        RULE young_driver    IF age &lt; 25                            THEN premium = 380
+        RULE senior_driver   IF age &gt;= 75                           THEN premium = 150
+        RULE recent_claims   IF claims_3y &gt;= 2                      THEN premium = 260
+        RULE city_zone       IF zone IN (&quot;metro&quot;, &quot;urban&quot;)          THEN premium = 90
+        RULE no_claims_bonus IF claims_3y = 0 AND years_licensed &gt;= 5 THEN premium = -110
+        RULE high_value_car  IF car_value &gt; 40000                   THEN premium = car_value * 0.004e0
+    )rules&quot;, cr::format::text);
+
+    auto driver = cr::value::map({
+        {&quot;age&quot;, 31}, {&quot;claims_3y&quot;, 0}, {&quot;years_licensed&quot;, 9}, {&quot;zone&quot;, &quot;urban&quot;}, {&quot;car_value&quot;, 52000},
+    });
+    auto decision = rules.evaluate(driver);
+    std::cout &lt;&lt; decision.output_json() &lt;&lt; &quot;\n&quot;;
+    for (std::size_t i : decision.selected()) {
+        std::cout &lt;&lt; &quot;  &quot; &lt;&lt; decision.rule_name(i) &lt;&lt; &quot; &quot; &lt;&lt; decision.rule_output(i).to_json() &lt;&lt; &quot;\n&quot;;
+    }
+    std::cout &lt;&lt; &quot;\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;premium&quot;:608.0}
+  base {&quot;premium&quot;:420}
+  city_zone {&quot;premium&quot;:90}
+  no_claims_bonus {&quot;premium&quot;:-110}
+  high_value_car {&quot;premium&quot;:208.0}
+
+HIT POLICY collect AGGREGATE sum: selected base, city_zone, no_claims_bonus, high_value_car
+[x] base (selected): age &gt;= 18
+    - age &gt;= 18 is true (age = 31)
+[ ] young_driver (not fired): age &lt; 25
+    - age &lt; 25 is false (age = 31); over by 6
+[ ] senior_driver (not fired): age &gt;= 75
+    - age &gt;= 75 is false (age = 31); short by 44
+[ ] recent_claims (not fired): claims_3y &gt;= 2
+    - claims_3y &gt;= 2 is false (claims_3y = 0); short by 2
+[x] city_zone (selected): zone IN (&quot;metro&quot;, &quot;urban&quot;)
+    - zone IN (&quot;metro&quot;, &quot;urban&quot;) is true (zone = &quot;urban&quot;)
+[x] no_claims_bonus (selected): claims_3y = 0 AND years_licensed &gt;= 5
+    because all of these hold:
+    - claims_3y = 0 is true (claims_3y = 0)
+    - years_licensed &gt;= 5 is true (years_licensed = 9)
+[x] high_value_car (selected): car_value &gt; 40000
+    - car_value &gt; 40000 is true (car_value = 52000)</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the C library, installed with CMake from the repository (<code>find_package(cleanrules)</code>), and run. The rules are written in the rule syntax and read as the same document as the JSON tab; the decision and explanation equal the core&#x27;s documents below, and the explanation text is the one every language prints. <a href="../manual/installation.html#cpp">Build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.erl</span><span class="src dp">design preview</span></div>
@@ -961,7 +997,7 @@ except MissingFieldError as err:
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -979,6 +1015,8 @@ except MissingFieldError as err:
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

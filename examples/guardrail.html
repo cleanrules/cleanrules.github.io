@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -118,18 +120,18 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
         <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
-<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
@@ -346,44 +348,49 @@ fn main() -&gt; Result&lt;()&gt; {
 <p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
 </div>
 <div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Const, Rule, RuleSet, decimal } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet, constant, decimal } from &#x27;cleanrules&#x27;
 
 const guard = new RuleSet(
   [
     new Rule(
-      &quot;deny_destructive_shell&quot;,
-      F.tool.name.eq(&quot;bash&quot;).and(F.tool.args.command.matches(&quot;\\brm\\s+-[a-zA-Z]*r&quot;)),
-      { verdict: &quot;deny&quot; },
-      { priority: 100, tags: [&quot;safety&quot;], description: &quot;Never let the agent delete recursively&quot; },
+      &#x27;deny_destructive_shell&#x27;,
+      F.tool.name.eq(&#x27;bash&#x27;).and(F.tool.args.command.matches(String.raw`\brm\s+-[a-zA-Z]*r`)),
+      { verdict: &#x27;deny&#x27; },
+      { priority: 100, tags: [&#x27;safety&#x27;], description: &#x27;Never let the agent delete recursively&#x27; },
     ),
     new Rule(
-      &quot;deny_outside_hours&quot;,
-      F.tool.name.isIn([&quot;deploy&quot;, &quot;pay_invoice&quot;]).and(F.context.hour.between(8, 20, &quot;left&quot;).not()),
-      { verdict: &quot;deny&quot; },
-      { priority: 80, tags: [&quot;safety&quot;] },
+      &#x27;deny_outside_hours&#x27;,
+      F.tool.name.isIn([&#x27;deploy&#x27;, &#x27;pay_invoice&#x27;]).and(F.context.hour.between(8, 20, { closed: &#x27;left&#x27; }).not()),
+      { verdict: &#x27;deny&#x27; },
+      { priority: 80, tags: [&#x27;safety&#x27;] },
     ),
     new Rule(
-      &quot;ask_large_payment&quot;,
-      F.tool.name.eq(&quot;pay_invoice&quot;).and(F.tool.args.amount.gt(decimal(&quot;500.00&quot;))),
-      { verdict: &quot;ask&quot; },
-      { priority: 50, tags: [&quot;money&quot;] },
+      &#x27;ask_large_payment&#x27;,
+      F.tool.name.eq(&#x27;pay_invoice&#x27;).and(F.tool.args.amount.gt(decimal(&#x27;500.00&#x27;))),
+      { verdict: &#x27;ask&#x27; },
+      { priority: 50, tags: [&#x27;money&#x27;] },
     ),
-    new Rule(&quot;allow&quot;, Const(true), { verdict: &quot;allow&quot; }),
+    new Rule(&#x27;allow&#x27;, constant(true), { verdict: &#x27;allow&#x27; }),
   ],
-  { hitPolicy: &quot;priority&quot; },
-);
+  { hitPolicy: &#x27;priority&#x27; },
+)
 
 const call = {
-  tool: { name: &quot;pay_invoice&quot;, args: { invoice: &quot;F-2026-118&quot;, amount: decimal(&quot;1250.00&quot;) } },
+  tool: { name: &#x27;pay_invoice&#x27;, args: { invoice: &#x27;F-2026-118&#x27;, amount: decimal(&#x27;1250.00&#x27;) } },
   context: { hour: 14 },
-};
-const decision = guard.evaluate(call);
-console.log(decision.fired);
-console.log(decision.output);</code></pre>
+}
+const decision = guard.evaluate(call)
+console.log(decision.selected[0]?.rule.name, decision.output)
+console.log(guard.summary().tags)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">ask_large_payment { verdict: &#x27;ask&#x27; }
+{
+  money: [ &#x27;ask_large_payment&#x27; ],
+  safety: [ &#x27;deny_destructive_shell&#x27;, &#x27;deny_outside_hours&#x27; ]
+}</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.java</span><span class="src dp">design preview</span></div>
@@ -575,42 +582,68 @@ int main(void) {
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>guardrail.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
 
 namespace cr = cleanrules;
-using cr::F;
 
 int main() {
-    auto tool = F(&quot;tool&quot;)[&quot;name&quot;];
-    auto args = F(&quot;tool&quot;)[&quot;args&quot;];
-    cr::RuleSet guard({
-        cr::Rule(&quot;deny_destructive_shell&quot;,
-                 (tool == &quot;bash&quot;) &amp; args[&quot;command&quot;].matches(R&quot;(\brm\s+-[a-zA-Z]*r)&quot;))
-            .then({{&quot;verdict&quot;, &quot;deny&quot;}}).priority(100).tags({&quot;safety&quot;})
-            .description(&quot;Never let the agent delete recursively&quot;),
-        cr::Rule(&quot;deny_outside_hours&quot;,
-                 tool.is_in({&quot;deploy&quot;, &quot;pay_invoice&quot;})
-                     &amp; !F(&quot;context&quot;)[&quot;hour&quot;].between(8, 20, cr::Closed::left))
-            .then({{&quot;verdict&quot;, &quot;deny&quot;}}).priority(80).tags({&quot;safety&quot;}),
-        cr::Rule(&quot;ask_large_payment&quot;,
-                 (tool == &quot;pay_invoice&quot;) &amp; (args[&quot;amount&quot;] &gt; cr::Decimal(&quot;500.00&quot;)))
-            .then({{&quot;verdict&quot;, &quot;ask&quot;}}).priority(50).tags({&quot;money&quot;}),
-        cr::Rule(&quot;allow&quot;, cr::Const(true)).then({{&quot;verdict&quot;, &quot;allow&quot;}}),
-    }, {.hit_policy = cr::HitPolicy::priority});
+    auto guard = cr::ruleset::read(R&quot;rules(
+        HIT POLICY priority
 
-    auto decision = guard.evaluate(cr::Value::from_json(R&quot;({
-        &quot;tool&quot;: {&quot;name&quot;: &quot;pay_invoice&quot;,
-                 &quot;args&quot;: {&quot;invoice&quot;: &quot;F-2026-118&quot;, &quot;amount&quot;: {&quot;$decimal&quot;: &quot;1250.00&quot;}}},
-        &quot;context&quot;: {&quot;hour&quot;: 14}})&quot;));
-    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
-    std::cout &lt;&lt; &#x27;\n&#x27;;
-    if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;
+        RULE deny_destructive_shell PRIORITY 100 TAGS safety
+          DESCRIPTION &quot;Never let the agent delete recursively&quot;
+        IF tool.name = &quot;bash&quot; AND tool.args.command MATCHES &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+        THEN verdict = &quot;deny&quot;
+
+        RULE deny_outside_hours PRIORITY 80 TAGS safety
+        IF tool.name IN (&quot;deploy&quot;, &quot;pay_invoice&quot;) AND NOT context.hour BETWEEN 8 AND 20 CLOSED LEFT
+        THEN verdict = &quot;deny&quot;
+
+        RULE ask_large_payment PRIORITY 50 TAGS money
+        IF tool.name = &quot;pay_invoice&quot; AND tool.args.amount &gt; 500.00
+        THEN verdict = &quot;ask&quot;
+
+        RULE allow
+        IF TRUE
+        THEN verdict = &quot;allow&quot;
+    )rules&quot;, cr::format::text);
+
+    auto call = cr::value::map({
+        {&quot;tool&quot;, cr::value::map({
+                     {&quot;name&quot;, &quot;pay_invoice&quot;},
+                     {&quot;args&quot;, cr::value::map({{&quot;invoice&quot;, &quot;F-2026-118&quot;},
+                                              {&quot;amount&quot;, cr::value::decimal(&quot;1250.00&quot;)}})},
+                 })},
+        {&quot;context&quot;, cr::value::map({{&quot;hour&quot;, 14}})},
+    });
+    auto decision = guard.evaluate(call);
+    std::cout &lt;&lt; &quot;verdict: &quot; &lt;&lt; decision.output()[&quot;verdict&quot;].as_string() &lt;&lt; &quot;\n\n&quot;;
+    std::cout &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">verdict: ask
+
+HIT POLICY priority: selected ask_large_payment
+[ ] deny_destructive_shell (not fired): tool.name = &quot;bash&quot; AND tool.args.command MATCHES &quot;\\brm\\s+-[a-zA-Z]*r&quot;
+    Never let the agent delete recursively
+    would fire if all of these changed:
+    - tool.name = &quot;bash&quot; is false (tool.name = &quot;pay_invoice&quot;)
+    - tool.args.command MATCHES &quot;\\brm\\s+-[a-zA-Z]*r&quot; is unknown: missing field tool.args.command
+[ ] deny_outside_hours (not fired): tool.name IN (&quot;deploy&quot;, &quot;pay_invoice&quot;) AND NOT context.hour BETWEEN 8 AND 20 CLOSED LEFT
+    would fire if any of these changed:
+    - context.hour &gt;= 8 is true (context.hour = 14), but the rule needs it false; needs context.hour &lt; 8 (over by 6)
+    - context.hour &lt; 20 is true (context.hour = 14), but the rule needs it false; needs context.hour &gt;= 20 (short by 6)
+[x] ask_large_payment (selected): tool.name = &quot;pay_invoice&quot; AND tool.args.amount &gt; 500.00
+    because all of these hold:
+    - tool.name = &quot;pay_invoice&quot; is true (tool.name = &quot;pay_invoice&quot;)
+    - tool.args.amount &gt; 500.00 is true (tool.args.amount = 1250.00)
+[x] allow (fired, not selected): TRUE
+    fired, but ask_large_payment has a higher priority (50 &gt; 0)
+    - TRUE is true</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the C library, installed with CMake from the repository (<code>find_package(cleanrules)</code>), and run. The rules are written in the rule syntax and read as the same document as the JSON tab; the decision and explanation equal the core&#x27;s documents below, and the explanation text is the one every language prints. <a href="../manual/installation.html#cpp">Build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>guardrail.erl</span><span class="src dp">design preview</span></div>
@@ -1041,7 +1074,7 @@ tool.args.amount read by (&#x27;ask_large_payment&#x27;,)
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -1059,6 +1092,8 @@ tool.args.amount read by (&#x27;ask_large_payment&#x27;,)
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

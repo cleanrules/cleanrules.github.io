@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Worked examples — cleanrules</title>
-  <meta name="description" content="Eight worked examples of cleanrules: loan approval, insurance premium, shipping rates, fraud flags, order validation, eligibility with dates, discount agreement and an AI-agent guardrail, in Python, Rust, JSON and C, with previews of six planned languages.">
+  <meta name="description" content="Eight worked examples of cleanrules: loan approval, insurance premium, shipping rates, fraud flags, order validation, eligibility with dates, discount agreement and an AI-agent guardrail, in Python, Rust, TypeScript, JSON, C and C++, with previews of four planned languages.">
   <meta name="theme-color" content="#0b0f14">
   <meta name="author" content="Jose L. Salmeron">
   <link rel="canonical" href="https://cleanrules.github.io/examples/index.html">
@@ -13,7 +13,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="cleanrules">
   <meta property="og:title" content="Worked examples — cleanrules">
-  <meta property="og:description" content="Eight worked examples of cleanrules: loan approval, insurance premium, shipping rates, fraud flags, order validation, eligibility with dates, discount agreement and an AI-agent guardrail, in Python, Rust, JSON and C, with previews of six planned languages.">
+  <meta property="og:description" content="Eight worked examples of cleanrules: loan approval, insurance premium, shipping rates, fraud flags, order validation, eligibility with dates, discount agreement and an AI-agent guardrail, in Python, Rust, TypeScript, JSON, C and C++, with previews of four planned languages.">
   <meta property="og:url" content="https://cleanrules.github.io/examples/index.html">
   <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -75,7 +77,7 @@
       <div class="wrap">
         <p class="eyebrow">Worked examples</p>
         <h1>Eight problems, <span class="grad">solved and explained</span>.</h1>
-        <p class="lead">Each example states a problem, writes its rules in ten languages, and shows the real decision and explanation for one input, then what changes when the input does. Python and Rust run; the JSON is written by the core; the other languages are design previews.</p>
+        <p class="lead">Each example states a problem, writes its rules in ten languages, and shows the real decision and explanation for one input, then what changes when the input does. Python, Rust, TypeScript, C and C++ run, built from the repository; the JSON is written by the core; Java, Scala, Go and Erlang are design previews.</p>
       </div>
     </section>
     <section class="section no-reveal" id="gallery">
@@ -134,7 +136,9 @@
           <li>The <strong>Rust</strong> programs are compiled against the core crate and run; their output is pasted as printed.</li>
           <li>The <strong>JSON</strong> rule set is written by the core from the Python rules. The build checks that the Rust program's rule set writes the identical document, and that Python's decision, explanation and summary documents equal the core's for the same input.</li>
           <li>The <strong>C</strong> programs are compiled against the C ABI built from source and run next to the JSON rule set; their output is pasted as printed.</li>
-          <li><strong>TypeScript, Java, Scala, Go, C++ and Erlang</strong> are design previews: their bindings do not exist yet (phases E to N), so their code shows the intended API and does not run. The result they would print is the core's.</li>
+          <li>The <strong>TypeScript</strong> programs are run with Node 26 (as TypeScript, type-checked with <code>tsc</code>) on the JavaScript binding built from source, both its native addon and its WebAssembly build, and their output is pasted as printed. Each one's rule set was checked to write the same document as the JSON tab, and its decision, explanation and summary to equal the core's.</li>
+          <li>The <strong>C++</strong> programs are compiled against <code>cleanrules.hpp</code> and the C library, installed with CMake from source, and run. Their rules are written in the rule syntax, and were checked to read as the JSON rule set, with a decision, explanation and summary equal to the core's. Their output is pasted as printed.</li>
+          <li><strong>Java, Scala, Go and Erlang</strong> are design previews: their bindings do not exist yet (phases G, H and N), so their code shows the intended API and does not run. The result they would print is the core's.</li>
         </ul>
         <p>The concepts behind each example are taught in the <a href="../manual/index.html">manual</a>.</p>
       </div>
@@ -146,7 +150,7 @@
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -164,6 +168,8 @@
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

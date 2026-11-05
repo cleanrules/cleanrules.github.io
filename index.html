@@ -46,6 +46,8 @@
             <a href="format.html">JSON format v1</a>
             <a href="manual/api-python.html">Python API</a>
             <a href="manual/api-rust.html">Rust API</a>
+            <a href="manual/api-js.html">JavaScript API</a>
+            <a href="manual/api-cpp.html">C++ API</a>
             <a href="manual/errors.html">Error codes</a>
             <a href="benchmarks.html">Benchmarks</a>
           </div>
@@ -127,20 +129,20 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
       <div class="wrap">
         <p class="eyebrow">Start here</p>
         <h2>A manual, worked examples and the reference.</h2>
-        <p class="sub">Every Python, Rust and C snippet on this site was run, and its output is pasted as printed. The planned languages are shown as clearly labelled design previews.</p>
+        <p class="sub">Every Python, Rust, C, C++ and TypeScript snippet on this site was run, and its output is pasted as printed. The planned languages are shown as clearly labelled design previews.</p>
         <div class="funnel">
           <a class="card" href="manual/index.html">
-            <span class="ex-num">15 chapters</span>
+            <span class="ex-num">17 chapters</span>
             <span class="big">The manual</span>
-            <p>Install from source, write conditions and rules, choose a hit policy, handle missing data, read explanations and errors. Python and Rust, with real output.</p>
-            <ul><li><span>Quick start</span></li><li><span>Writing conditions</span></li><li><span>Explanations and counterfactuals</span></li><li><span>Python and Rust API reference</span></li></ul>
+            <p>Install from source, write conditions and rules, choose a hit policy, handle missing data, read explanations and errors. Python and Rust, with real output, and API references for Python, Rust, JavaScript and C++.</p>
+            <ul><li><span>Quick start</span></li><li><span>Writing conditions</span></li><li><span>Explanations and counterfactuals</span></li><li><span>Python, Rust, JavaScript and C++ API</span></li></ul>
             <span class="more">Open the manual →</span>
           </a>
           <a class="card" href="examples/index.html">
             <span class="ex-num">8 problems · 10 languages</span>
             <span class="big">Worked examples</span>
             <p>Loan approval, insurance premiums, shipping tables, fraud flags, order validation, eligibility deadlines, discount agreement and an AI-agent guardrail.</p>
-            <ul><li><span>Python, Rust, JSON and C that run</span></li><li><span>TypeScript, Java, Scala, Go, C++, Erlang previews</span></li></ul>
+            <ul><li><span>Python, Rust, TypeScript, JSON, C and C++ that run</span></li><li><span>Java, Scala, Go, Erlang previews</span></li></ul>
             <span class="more">Browse the examples →</span>
           </a>
           <a class="card" href="guide.html">
@@ -158,10 +160,10 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
     <section class="section alt" id="status">
       <div class="wrap">
         <p class="eyebrow">Status at a glance</p>
-        <h2>The Rust core, the Python binding and the C ABI are done.</h2>
-        <p class="sub">Phases A (the contract between languages), B (the Rust core), C (the Python binding) and D (rules as data: JSON, YAML, a text syntax, decision tables and actions by name) are complete. In phase E, the C ABI is done; the C++ wrapper comes next. Everything builds from source today. Nothing is published yet: the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
+        <h2>The Rust core, Python, C, C++ and JavaScript are done; the JVM is next.</h2>
+        <p class="sub">Phases A (the contract between languages), B (the Rust core), C (the Python binding), D (rules as data: JSON, YAML, a text syntax, decision tables and actions by name) and E (the C ABI and a header-only C++17 wrapper, with a CMake package, a Conan recipe and a vcpkg port) and F (JavaScript and TypeScript: a native addon for Node, prebuilt per platform with a glibc 2.28 floor, and a WebAssembly build for browsers and Deno, sharing one idiomatic API and passing the conformance suite) are complete. Phase G, Java (25 and later, through the FFM API over the C ABI) and Scala, has started. That is 55 of the 93 tasks of the roadmap. Everything builds from source today, and nothing is published to any registry yet (crates.io, PyPI, npm, Conan, vcpkg): the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
         <div class="stats">
-          <div class="stat"><b>2,508</b><span>conformance vectors, all passing</span><small>1,952 through the core's runner (1,151 condition, 178 value, 302 evaluation, 317 explanation, 4 summary) and 556 document-reading cases. The Python binding and the C ABI pass them too: all 2,508 through JSON, and 1,952 with native Python data.</small></div>
+          <div class="stat"><b>2,508</b><span>conformance vectors, all passing</span><small>1,952 through the core's runner (1,151 condition, 178 value, 302 evaluation, 317 explanation, 4 summary) and 556 document-reading cases. Every binding passes them too: Python and C++ all 2,508 through JSON and 1,952 with native data, the C ABI all 2,508, and JavaScript all 2,508 with native data on the addon and on WebAssembly (2,480 also through JSON; grids are native data only).</small></div>
           <div class="stat"><b>10 &times; 512</b><span>property tests</span><small><code>proptest</code>: evaluation never fails and gives reasons exactly for unknowns, De Morgan, strict mode, JSON, text and CSV round trips, decisions read back, explanation causes point the right way.</small></div>
           <div class="stat"><b>7.2&nbsp;&micro;s</b><span>per input, 12 rules</span><small>One input under <code>first</code>, with every result tree kept for <code>explain()</code>. Apple M5, rustc 1.97.1, criterion. <a href="benchmarks.html">Method and caveats</a></small></div>
           <div class="stat"><b>6.4&times; / 6.7&times;</b><span>vs zen-engine 2.1.6</span><small>1,000 evaluations under <code>first</code> / <code>collect</code>, on one workload and one machine, after checking both engines select the same rules. <a href="benchmarks.html#zen">Read the caveats</a></small></div>
@@ -171,11 +173,14 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
           <li class="done">B · Rust core ✓</li>
           <li class="done">C · Python binding ✓</li>
           <li class="done">D · rules as data ✓</li>
-          <li class="now">E · C ✓, C++ (next)</li>
-          <li>F–H · JS, JVM, Go</li>
+          <li class="done">E · C and C++ ✓</li>
+          <li class="done">F · JavaScript ✓</li>
+          <li class="now">G · JVM</li>
+          <li>H · Go</li>
           <li>I–L · validation, fuzzy &amp; audit, expert system, ML</li>
           <li>N · Erlang</li>
           <li>O · AI agents</li>
+          <li>V · visualisation</li>
           <li>M · 1.0</li>
         </ul>
         <p class="caption">No <code>unsafe</code> in the core (<code>unsafe_code = "forbid"</code>); <code>clippy</code> pedantic with <code>-D warnings</code>; CI configured for Linux, macOS and Windows. Source: <a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">CHANGELOG.md</a> and the roadmap in the repository.</p>
@@ -485,24 +490,24 @@ Outputs: discount</pre>
           <div class="lang"><span class="lang-name">Rust</span><span class="chip ref">core done</span><code>cargo add cleanrules</code></div>
           <div class="lang"><span class="lang-name">Python</span><span class="chip ref">runs from source</span><code>pip install cleanrules</code></div>
           <div class="lang"><span class="lang-name">C</span><span class="chip ref">runs from source</span><code>#include &lt;cleanrules.h&gt;</code></div>
-          <div class="lang"><span class="lang-name">C++</span><span class="chip planned">planned</span><code>find_package(cleanrules)</code></div>
-          <div class="lang"><span class="lang-name">JavaScript / TS</span><span class="chip planned">planned</span><code>npm i cleanrules</code></div>
+          <div class="lang"><span class="lang-name">C++</span><span class="chip ref">runs from source</span><code>find_package(cleanrules)</code></div>
+          <div class="lang"><span class="lang-name">JavaScript / TS</span><span class="chip ref">runs from source</span><code>npm i cleanrules</code></div>
           <div class="lang"><span class="lang-name">Java / Scala</span><span class="chip planned">planned</span><code>io.github.cleanrules</code></div>
           <div class="lang"><span class="lang-name">Go</span><span class="chip planned">planned</span><code>github.com/cleanrules/…</code></div>
           <div class="lang"><span class="lang-name">Erlang</span><span class="chip planned">planned</span><code>{deps, [cleanrules]}</code></div>
           <div class="lang"><span class="lang-name">AI agents</span><span class="chip planned">planned</span><code>cleanrules-mcp</code></div>
         </div>
-        <p class="caption center">Nothing is published yet: these are the intended package names for the first releases. Today, build from source (<a href="manual/installation.html">installation</a>).</p>
+        <p class="caption center">Nothing is published yet: these are the intended package names for the first releases (<code>npm i cleanrules</code> does not work yet, and C++ is not in ConanCenter or the vcpkg registry). Today, build from source: Python with maturin, Rust as a path dependency, C and C++ with CMake, Conan or vcpkg from the repository, and JavaScript with npm in <code>bindings/js</code> (<a href="manual/installation.html">installation</a>).</p>
 
         <div class="preview">
 <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
 <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-ov-py" data-lang="py" aria-controls="ov-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-ov-rs" data-lang="rs" aria-controls="ov-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
-<button role="tab" id="tab-ov-ts" data-lang="ts" aria-controls="ov-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-ov-ts" data-lang="ts" aria-controls="ov-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-ov-java" data-lang="java" aria-controls="ov-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-ov-go" data-lang="go" aria-controls="ov-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
-<button role="tab" id="tab-ov-cpp" data-lang="cpp" aria-controls="ov-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-ov-cpp" data-lang="cpp" aria-controls="ov-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-ov-erl" data-lang="erl" aria-controls="ov-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="ov-py" aria-labelledby="tab-ov-py">
@@ -554,21 +559,25 @@ loyal: selected</pre>
 <p class="panel-note">An excerpt of a complete program that was compiled and run against the core; its output is shown.</p>
 </div>
 <div role="tabpanel" id="ov-ts" aria-labelledby="tab-ov-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Rule, RuleSet } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet } from &#x27;cleanrules&#x27;
 
 const rules = new RuleSet([
-  new Rule(&quot;vip&quot;, F.customer.years.gt(5).and(F.order.total.gt(1000)), { discount: 0.15 }),
-  new Rule(&quot;loyal&quot;, F.customer.years.gt(2), { discount: 0.05 }),
-]);
+  new Rule(&#x27;vip&#x27;, F.customer.years.gt(5).and(F.order.total.gt(1000)), { discount: 0.15 }),
+  new Rule(&#x27;loyal&#x27;, F.customer.years.gt(2), { discount: 0.05 }),
+])
 
-const decision = rules.evaluate({ customer: { years: 3 }, order: { total: 1500 } });
-console.log(decision.output);
-const cause = decision.whyNot(&quot;vip&quot;).causes[0];
-console.log(decision.whyNot(&quot;vip&quot;).status, cause.counterfactual?.gap);</code></pre>
+const decision = rules.evaluate({ customer: { years: 3 }, order: { total: 1500 } })
+console.log(decision.output)
+
+const why = decision.whyNot(&#x27;vip&#x27;)
+const cause = why.causes[0]
+console.log(why.status, &#x27;because&#x27;, String(cause?.node), &#x27;is&#x27;, cause?.truth, &#x27;- short by&#x27;, cause?.counterfactual?.gap)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{ discount: 0.05 }
+not_fired because customer.years &gt; 5 is false - short by 2</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 on the native addon of the JavaScript binding, built from the repository; its WebAssembly build prints the same, in Node and in Deno. <code>String(node)</code> is the rule syntax that explanations use. Not on npm yet (<a href="manual/installation.html#javascript">build from source</a>, <a href="manual/api-js.html">API</a>).</p>
 </div>
 <div role="tabpanel" id="ov-java" aria-labelledby="tab-ov-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.java</span><span class="src dp">design preview</span></div>
@@ -612,22 +621,33 @@ fmt.Println(output, decision.WhyNot(&quot;vip&quot;).Causes[0].Counterfactual)</
 <p class="panel-note">Design preview: the Go binding does not exist yet (phase H); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
 </div>
 <div role="tabpanel" id="ov-cpp" aria-labelledby="tab-ov-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
-namespace cr = cleanrules;
-using cr::F;
 
-cr::RuleSet rules({
-    cr::Rule(&quot;vip&quot;, (F(&quot;customer&quot;)[&quot;years&quot;] &gt; 5) &amp; (F(&quot;order&quot;)[&quot;total&quot;] &gt; 1000))
-        .then({{&quot;discount&quot;, 0.15}}),
-    cr::Rule(&quot;loyal&quot;, F(&quot;customer&quot;)[&quot;years&quot;] &gt; 2).then({{&quot;discount&quot;, 0.05}}),
-});
-auto decision = rules.evaluate(cr::Value::from_json(R&quot;({&quot;customer&quot;: {&quot;years&quot;: 3}, &quot;order&quot;: {&quot;total&quot;: 1500}})&quot;));
-if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt;&lt; &#x27;\n&#x27;;</code></pre>
+namespace cr = cleanrules;
+
+int main() {
+    auto rules = cr::ruleset::read(R&quot;rules(
+        RULE vip   IF customer.years &gt; 5 AND order.total &gt; 1000 THEN discount = 0.15e0
+        RULE loyal IF customer.years &gt; 2                         THEN discount = 0.05e0
+    )rules&quot;, cr::format::text);
+
+    auto decision = rules.evaluate(cr::value::map({
+        {&quot;customer&quot;, cr::value::map({{&quot;years&quot;, 3}})},
+        {&quot;order&quot;, cr::value::map({{&quot;total&quot;, 1500}})},
+    }));
+    std::cout &lt;&lt; decision.output_json() &lt;&lt; &quot;\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;discount&quot;:0.05}
+HIT POLICY first: selected loyal
+[ ] vip (not fired): customer.years &gt; 5 AND order.total &gt; 1000
+    - customer.years &gt; 5 is false (customer.years = 3); short by 2
+[x] loyal (selected): customer.years &gt; 2
+    - customer.years &gt; 2 is true (customer.years = 3)</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. It will wrap the C ABI, which runs today (<a href="examples/index.html">worked examples in C</a>). The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code>, installed with CMake from the repository, and run. The C++ layer reads rules as documents (here the rule syntax, where <code>0.15e0</code> is a float, as in the other tabs); the explanation is the text every language prints (<a href="manual/installation.html#cpp">build from source</a>, <a href="manual/api-cpp.html">API</a>).</p>
 </div>
 <div role="tabpanel" id="ov-erl" aria-labelledby="tab-ov-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.erl</span><span class="src dp">design preview</span></div>
@@ -674,10 +694,13 @@ if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt
           <li class="done"><span class="step">B</span><div><h3>Rust core</h3><p>Everything above in Rust, passing 100% of the vectors. Property tests and benchmarks.</p></div></li>
           <li class="done"><span class="step">C</span><div><h3>Python binding</h3><p>Wheels (<code>abi3</code>, free-threaded <code>cp314t</code> and <code>abi3t</code>), the API (<code>F</code>, rules, decisions, explanations, errors), reading of dataclasses, Pydantic models and pandas rows, actions, and a conformance runner that passes every vector. It will be the first public release.</p></div></li>
           <li class="done"><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text syntax aligned with fuzzytool, decision tables from JSON, CSV, rows and data frames, and actions by registered name.</p></div></li>
-          <li class="now"><span class="step">E</span><div><h3>C and C++</h3><p>The C ABI is done: a header generated by cbindgen, native values, actions as C callbacks, decision tables row by row, and every conformance vector, checked under Miri and sanitizers. Next: a C++ RAII header with CMake, Conan and vcpkg packages.</p></div></li>
-          <li><span class="step">F–H, N</span><div><h3>JavaScript, JVM, Go, Erlang</h3><p>Each binding with its own conformance runner; the JVM and Go over the C ABI, Erlang through a rustler NIF.</p></div></li>
+          <li class="done"><span class="step">E</span><div><h3>C and C++</h3><p>The C ABI: a header generated by cbindgen, native values, actions as C callbacks, decision tables row by row, checked under Miri and sanitizers. <code>cleanrules.hpp</code>: a header-only C++17 layer with handles that free themselves, exceptions or <code>error_info</code> values, a CMake package, a Conan recipe and a vcpkg overlay port. Both pass every conformance vector, C++ also under AddressSanitizer and UndefinedBehaviorSanitizer.</p></div></li>
+          <li class="done"><span class="step">F</span><div><h3>JavaScript and TypeScript</h3><p>A napi-rs addon for Node (prebuilt per platform in CI) and a WebAssembly build for browsers and Deno, with one idiomatic TypeScript API: <code>F</code> and <code>.and()</code>, <code>.or()</code>, <code>.not()</code>, rules, decisions with native values, structured explanations and summaries, documents, <code>ruleFromText</code> and decision tables. A conformance runner on both builds and Deno, and the npm packages checked and installed on every platform in CI. Not on npm yet.</p></div></li>
+          <li class="now"><span class="step">G</span><div><h3>Java and Scala</h3><p>Java 25 and later through the Foreign Function &amp; Memory API over the C ABI, with no native code of its own, and an idiomatic Scala 3 layer; native libraries inside the jar, and its own conformance runner. In progress.</p></div></li>
+          <li><span class="step">H, N</span><div><h3>Go, Erlang</h3><p>Each binding with its own conformance runner; Go over the C ABI, Erlang through a rustler NIF.</p></div></li>
           <li><span class="step">I–L</span><div><h3>Validation, fuzzy &amp; audit, expert system, ML</h3><p>Arrow batches, fuzzy norms, static audit, Rete, rule extraction from models.</p></div></li>
           <li><span class="step">O</span><div><h3>AI agents</h3><p>An MCP server, guardrails for agent tool calls, adapters for agent frameworks, and verified rules proposed by LLMs.</p></div></li>
+          <li><span class="step">V</span><div><h3>Visualisation</h3><p>Conditions, rules, tables, decisions and explanations as diagrams, the same in every language.</p></div></li>
           <li><span class="step">1.0</span><div><h3>Synchronised release</h3><p>crates.io, PyPI, npm, Maven Central, Go modules, Hex, Conan and vcpkg. Paper and DOI.</p></div></li>
         </ol>
       </div>
@@ -732,7 +755,7 @@ if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -750,6 +773,8 @@ if (auto output = decision.output()) std::cout &lt;&lt; output-&gt;to_json() &lt
             <li><a href="format.html">JSON format v1</a></li>
             <li><a href="manual/api-python.html">Python API</a></li>
             <li><a href="manual/api-rust.html">Rust API</a></li>
+            <li><a href="manual/api-js.html">JavaScript API</a></li>
+            <li><a href="manual/api-cpp.html">C++ API</a></li>
             <li><a href="manual/errors.html">Errors</a></li>
             <li><a href="benchmarks.html">Benchmarks</a></li>
           </ul>

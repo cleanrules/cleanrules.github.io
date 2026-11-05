@@ -46,6 +46,8 @@
             <a href="../format.html">JSON format v1</a>
             <a href="../manual/api-python.html">Python API</a>
             <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -123,18 +125,18 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python and Rust run today, and the JSON tab is the rule set document the core writes. The other tabs are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
         <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
-<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="pv"></span>TypeScript</button>
+<button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
 <button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
-<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="pv"></span>C++</button>
+<button role="tab" id="tab-rules-cpp" data-lang="cpp" aria-controls="rules-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-rules-erl" data-lang="erl" aria-controls="rules-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
 </div>
 <div role="tabpanel" id="rules-py" aria-labelledby="tab-rules-py">
@@ -345,41 +347,49 @@ output(): rule_order decisions have several outputs (hit_policy_error)</pre>
 <p class="panel-note">The rule set document, written by the core from the Python rules above. The Rust program's rule set writes the identical document: the build checks it.</p>
 </div>
 <div role="tabpanel" id="rules-ts" aria-labelledby="tab-rules-ts" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.ts</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-typescript">// Design preview: the TypeScript binding does not exist yet (phase F).
-import { F, Rule, RuleSet } from &quot;cleanrules&quot;;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.ts</span><span class="src">JavaScript binding · runs</span></div>
+<pre class="code"><code class="language-typescript">import { F, Rule, RuleSet, float } from &#x27;cleanrules&#x27;
 
 const flags = new RuleSet(
   [
-    new Rule(&quot;large_amount&quot;, F.amount.gt(F.avg_amount.mul(3)), { risk: 40 }),
-    new Rule(&quot;country_mismatch&quot;, F.ip_country.ne(F.card_country), { risk: 25 }),
-    new Rule(&quot;velocity&quot;, F.tx_last_hour.ge(5), { risk: 30 }),
-    new Rule(&quot;new_device_large&quot;, F.new_device.and(F.amount.gt(500)), { risk: 20 }),
+    new Rule(&#x27;large_amount&#x27;, F.amount.gt(F.avg_amount.mul(3)), { risk: 40 }),
+    new Rule(&#x27;country_mismatch&#x27;, F.ip_country.ne(F.card_country), { risk: 25 }),
+    new Rule(&#x27;velocity&#x27;, F.tx_last_hour.ge(5), { risk: 30 }),
+    new Rule(&#x27;new_device_large&#x27;, F.new_device.and(F.amount.gt(500)), { risk: 20 }),
     new Rule(
-      &quot;disposable_email&quot;,
-      F.email.matches(&quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;),
+      &#x27;disposable_email&#x27;,
+      F.email.matches(String.raw`@(mailinator|guerrillamail|10minutemail)\.com$`),
       { risk: 35 },
     ),
-    new Rule(&quot;night_time&quot;, F.local_hour.between(0, 5), { risk: 10 }),
+    new Rule(&#x27;night_time&#x27;, F.local_hour.between(0, 5), { risk: 10 }),
   ],
-  { hitPolicy: &quot;rule_order&quot; },
-);
+  { hitPolicy: &#x27;rule_order&#x27; },
+)
 
+// 1890.0 is the int 1890 in JavaScript: float() keeps the amounts floats, as in the JSON input.
 const tx = {
-  amount: 1890.0,
-  avg_amount: 240.0,
-  ip_country: &quot;NG&quot;,
-  card_country: &quot;ES&quot;,
+  amount: float(1890),
+  avg_amount: float(240),
+  ip_country: &#x27;NG&#x27;,
+  card_country: &#x27;ES&#x27;,
   tx_last_hour: 2,
   new_device: true,
-  email: &quot;j.doe@mailinator.com&quot;,
+  email: &#x27;j.doe@mailinator.com&#x27;,
   local_hour: 14,
-};
-const decision = flags.evaluate(tx);
-console.log(decision.fired);
-console.log(decision.outputs);</code></pre>
+}
+const decision = flags.evaluate(tx)
+console.log(decision.fired)
+console.log(decision.outputs)</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[
+  &#x27;large_amount&#x27;,
+  &#x27;country_mismatch&#x27;,
+  &#x27;new_device_large&#x27;,
+  &#x27;disposable_email&#x27;
+]
+[ { risk: 40 }, { risk: 25 }, { risk: 20 }, { risk: 35 } ]</pre>
 </div>
-<p class="panel-note">Design preview: the TypeScript binding does not exist yet (phase F); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>. <code>float(1890)</code> keeps the amount a float: in JavaScript <code>1890.0</code> is the int 1890.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.java</span><span class="src dp">design preview</span></div>
@@ -561,37 +571,63 @@ int main(void) {
 <p class="panel-note">Compiled against the C ABI (<code>crates/ffi</code>) built from the repository, and run next to <code>fraud.ruleset.json</code>, the document in the JSON tab.</p>
 </div>
 <div role="tabpanel" id="rules-cpp" aria-labelledby="tab-rules-cpp" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.cpp</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-cpp">// Design preview: the C++ binding does not exist yet (phase E).
-#include &lt;cleanrules.hpp&gt;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
 #include &lt;iostream&gt;
 
 namespace cr = cleanrules;
-using cr::F;
 
 int main() {
-    auto risk = [](int points) { return cr::Value{{&quot;risk&quot;, points}}; };
-    cr::RuleSet flags({
-        cr::Rule(&quot;large_amount&quot;, F(&quot;amount&quot;) &gt; F(&quot;avg_amount&quot;) * 3).then(risk(40)),
-        cr::Rule(&quot;country_mismatch&quot;, F(&quot;ip_country&quot;) != F(&quot;card_country&quot;)).then(risk(25)),
-        cr::Rule(&quot;velocity&quot;, F(&quot;tx_last_hour&quot;) &gt;= 5).then(risk(30)),
-        cr::Rule(&quot;new_device_large&quot;, F(&quot;new_device&quot;) &amp; (F(&quot;amount&quot;) &gt; 500)).then(risk(20)),
-        cr::Rule(&quot;disposable_email&quot;,
-                 F(&quot;email&quot;).matches(R&quot;(@(mailinator|guerrillamail|10minutemail)\.com$)&quot;))
-            .then(risk(35)),
-        cr::Rule(&quot;night_time&quot;, F(&quot;local_hour&quot;).between(0, 5)).then(risk(10)),
-    }, {.hit_policy = cr::HitPolicy::rule_order});
+    auto flags = cr::ruleset::read(R&quot;rules(
+        HIT POLICY rule_order
 
-    auto decision = flags.evaluate(cr::Value::from_json(R&quot;({
-        &quot;amount&quot;: 1890.0, &quot;avg_amount&quot;: 240.0, &quot;ip_country&quot;: &quot;NG&quot;, &quot;card_country&quot;: &quot;ES&quot;,
-        &quot;tx_last_hour&quot;: 2, &quot;new_device&quot;: true, &quot;email&quot;: &quot;j.doe@mailinator.com&quot;,
-        &quot;local_hour&quot;: 14})&quot;));
-    for (const auto&amp; name : decision.fired()) std::cout &lt;&lt; name &lt;&lt; &#x27; &#x27;;
-    std::cout &lt;&lt; &#x27;\n&#x27;;
-    for (const auto&amp; output : decision.outputs()) std::cout &lt;&lt; output.to_json() &lt;&lt; &#x27;\n&#x27;;
+        RULE large_amount     IF amount &gt; avg_amount * 3       THEN risk = 40
+        RULE country_mismatch IF ip_country != card_country    THEN risk = 25
+        RULE velocity         IF tx_last_hour &gt;= 5             THEN risk = 30
+        RULE new_device_large IF new_device AND amount &gt; 500   THEN risk = 20
+        RULE disposable_email
+        IF email MATCHES &quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;
+        THEN risk = 35
+        RULE night_time       IF local_hour BETWEEN 0 AND 5    THEN risk = 10
+    )rules&quot;, cr::format::text);
+
+    auto tx = cr::value::map({
+        {&quot;amount&quot;, 1890.0}, {&quot;avg_amount&quot;, 240.0}, {&quot;ip_country&quot;, &quot;NG&quot;}, {&quot;card_country&quot;, &quot;ES&quot;},
+        {&quot;tx_last_hour&quot;, 2}, {&quot;new_device&quot;, true}, {&quot;email&quot;, &quot;j.doe@mailinator.com&quot;},
+        {&quot;local_hour&quot;, 14},
+    });
+    auto decision = flags.evaluate(tx);
+    std::cout &lt;&lt; decision.outputs_json() &lt;&lt; &quot;\n&quot;;
+
+    // rule_order has several outputs: output() throws, outputs() does not.
+    try {
+        (void)decision.output();
+    } catch (const cr::hit_policy_error &amp;e) {
+        std::cout &lt;&lt; cr::name(e.code()) &lt;&lt; &quot;: &quot; &lt;&lt; e.what() &lt;&lt; &quot;\n&quot;;
+    }
+    std::cout &lt;&lt; &quot;\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[{&quot;risk&quot;:40},{&quot;risk&quot;:25},{&quot;risk&quot;:20},{&quot;risk&quot;:35}]
+hit_policy_error: rule_order decisions have several outputs
+
+HIT POLICY rule_order: selected large_amount, country_mismatch, new_device_large, disposable_email
+[x] large_amount (selected): amount &gt; avg_amount * 3
+    - amount &gt; avg_amount * 3 is true (amount = 1890e0, avg_amount = 240e0)
+[x] country_mismatch (selected): ip_country != card_country
+    - ip_country != card_country is true (ip_country = &quot;NG&quot;, card_country = &quot;ES&quot;)
+[ ] velocity (not fired): tx_last_hour &gt;= 5
+    - tx_last_hour &gt;= 5 is false (tx_last_hour = 2); short by 3
+[x] new_device_large (selected): new_device AND amount &gt; 500
+    because all of these hold:
+    - new_device is true (new_device = TRUE)
+    - amount &gt; 500 is true (amount = 1890e0)
+[x] disposable_email (selected): email MATCHES &quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot;
+    - email MATCHES &quot;@(mailinator|guerrillamail|10minutemail)\\.com$&quot; is true (email = &quot;j.doe@mailinator.com&quot;)
+[ ] night_time (not fired): local_hour BETWEEN 0 AND 5
+    - local_hour &lt;= 5 is false (local_hour = 14); over by 9</pre>
 </div>
-<p class="panel-note">Design preview: the C++ binding does not exist yet (phase E); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the C library, installed with CMake from the repository (<code>find_package(cleanrules)</code>), and run. The rules are written in the rule syntax and read as the same document as the JSON tab; the decision and explanation equal the core&#x27;s documents below, and the explanation text is the one every language prints. <a href="../manual/installation.html#cpp">Build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-erl" aria-labelledby="tab-rules-erl" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>fraud.erl</span><span class="src dp">design preview</span></div>
@@ -974,7 +1010,7 @@ F.amount &gt; F.avg_amount * 3 false {(&#x27;amount&#x27;,): 180.0, (&#x27;avg_a
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python binding run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -992,6 +1028,8 @@ F.amount &gt; F.avg_amount * 3 false {(&#x27;amount&#x27;,): 180.0, (&#x27;avg_a
             <li><a href="../format.html">JSON format v1</a></li>
             <li><a href="../manual/api-python.html">Python API</a></li>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>
