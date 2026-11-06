@@ -48,6 +48,7 @@
             <a href="manual/api-rust.html">Rust API</a>
             <a href="manual/api-js.html">JavaScript API</a>
             <a href="manual/api-cpp.html">C++ API</a>
+            <a href="manual/api-java.html">Java API</a>
             <a href="manual/errors.html">Error codes</a>
             <a href="benchmarks.html">Benchmarks</a>
           </div>
@@ -80,7 +81,7 @@
         <h1>The contract <span class="grad">between languages</span>.</h1>
         <p class="lead">A rule written in Java and read in Go is the same tree and decides the same way. That holds because every binding reads and writes one versioned JSON format, defined in <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/json-format.md" rel="noopener"><code>spec/json-format.md</code></a>, with <a href="https://github.com/cleanrules/cleanrules/tree/main/spec/schemas/v1" rel="noopener">JSON Schemas</a> for editors and 556 conformance vectors for readers.</p>
         <div class="callout real">
-          <p>The Rust core reads condition, rule, rule set, decision table and decision documents and writes all seven kinds, in JSON and in YAML; the Python binding, the C ABI and the C++ and JavaScript bindings load and save them. <strong>Every example output and error on this page was produced by the core</strong> from the input shown. Rules also have a <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/text.md" rel="noopener">text syntax</a>, and decision tables a <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/tables.md" rel="noopener">CSV form</a>.</p>
+          <p>The Rust core reads condition, rule, rule set, decision table and decision documents and writes all seven kinds, in JSON and in YAML; the Python binding, the C ABI and the C++, JavaScript and Java bindings load and save them. <strong>Every example output and error on this page was produced by the core</strong> from the input shown. Rules also have a <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/text.md" rel="noopener">text syntax</a>, and decision tables a <a href="https://github.com/cleanrules/cleanrules/blob/main/spec/tables.md" rel="noopener">CSV form</a>.</p>
         </div>
         <nav aria-label="On this page">
           <ul class="toc">
@@ -646,11 +647,11 @@
           <div class="stack">
             <div class="table-wrap" style="margin-top: 0;">
               <table class="data">
-                <caption>In each language (Rust, Python, C, C++ and JavaScript today; the other bindings are planned)</caption>
+                <caption>In each language (Rust, Python, C, C++, JavaScript and Java today; the other bindings are planned)</caption>
                 <thead><tr><th>Language</th><th>Form</th></tr></thead>
                 <tbody>
                   <tr><td>Python</td><td>exceptions under <code>cleanrules.CleanRulesError</code>, keeping builtin bases (<code>ExpressionError</code> is also a <code>TypeError</code> and <code>ValueError</code>)</td></tr>
-                  <tr><td>Java, Scala</td><td>unchecked <code>…Exception</code> classes with <code>code()</code></td></tr>
+                  <tr><td>Java (and Scala)</td><td>unchecked <code>…Exception</code> classes with <code>code()</code> and <code>json()</code></td></tr>
                   <tr><td>JS / TS</td><td><code>Error</code> subclasses under <code>CleanRulesError</code>, with <code>code</code> and <code>context</code></td></tr>
                   <tr><td>C++</td><td>exceptions deriving from <code>std::runtime_error</code>, or an <code>error_info</code> value</td></tr>
                   <tr><td>Go</td><td>one <code>*cleanrules.Error</code> with sentinels for <code>errors.Is</code></td></tr>
@@ -803,7 +804,7 @@
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -823,6 +824,7 @@
             <li><a href="manual/api-rust.html">Rust API</a></li>
             <li><a href="manual/api-js.html">JavaScript API</a></li>
             <li><a href="manual/api-cpp.html">C++ API</a></li>
+            <li><a href="manual/api-java.html">Java API</a></li>
             <li><a href="manual/errors.html">Errors</a></li>
             <li><a href="benchmarks.html">Benchmarks</a></li>
           </ul>

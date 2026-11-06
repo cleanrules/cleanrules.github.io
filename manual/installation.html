@@ -48,6 +48,7 @@
             <a href="../manual/api-rust.html">Rust API</a>
             <a href="../manual/api-js.html">JavaScript API</a>
             <a href="../manual/api-cpp.html">C++ API</a>
+            <a href="../manual/api-java.html">Java API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -75,17 +76,17 @@
     <div class="wrap doc-layout">
       <aside class="doc-side" aria-label="Manual chapters">
         <details open>
-          <summary>Chapters <span class="muted">02 / 17</span></summary>
+          <summary>Chapters <span class="muted">02 / 18</span></summary>
           <nav aria-label="Chapters">
             <h2>Manual</h2>
-            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html" aria-current="page">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li><li><a href="api-js.html">JavaScript API</a></li><li><a href="api-cpp.html">C++ API</a></li></ol>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html" aria-current="page">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li><li><a href="api-js.html">JavaScript API</a></li><li><a href="api-cpp.html">C++ API</a></li><li><a href="api-java.html">Java API</a></li></ol>
           </nav>
         </details>
       </aside>
       <article class="doc-content">
         <p class="crumbs"><a href="index.html">Manual</a> / Chapter 02</p>
         <h1>Installation</h1>
-<p class="lead">cleanrules is pre-alpha and not on any package registry yet. Today you build it from the repository: the Python binding with maturin, the Rust crate as a path or git dependency, the C library with Cargo, C++ with CMake (or Conan or vcpkg, from the checkout), and the JavaScript package with npm. This page shows each of them, and the package names each language will use once it is published.</p>
+<p class="lead">cleanrules is pre-alpha and not on any package registry yet. Today you build it from the repository: the Python binding with maturin, the Rust crate as a path or git dependency, the C library with Cargo, C++ with CMake (or Conan or vcpkg, from the checkout), the JavaScript package with npm, and the Java jar with Gradle. This page shows each of them, and the package names each language will use once it is published.</p>
 
 <h2 id="requirements">Requirements<a class="h-anchor" href="#requirements" aria-label="Link to this section">#</a></h2>
 <ul>
@@ -94,6 +95,7 @@
   <li><a href="https://docs.astral.sh/uv/" rel="noopener">uv</a> is the simplest way to build the binding; plain <code>pip</code> works too, because the package uses maturin as its build backend.</li>
   <li><strong>C++</strong>: a C++17 compiler and CMake 3.21 or later (Conan 2 or vcpkg optional).</li>
   <li><strong>JavaScript</strong>: Node 22.12 or later with npm to build; the package then runs on Node 22.12 or later, Deno 2.6 or later and browsers.</li>
+  <li><strong>Java</strong>: a JDK 25 or later; Gradle comes with the repository&#x27;s wrapper.</li>
 </ul>
 
 <h2 id="python">Python, from source<a class="h-anchor" href="#python" aria-label="Link to this section">#</a></h2>
@@ -184,6 +186,39 @@ npm --prefix bindings/js test               # the test suite and the conformance
 import { init } from &#x27;cleanrules/wasm&#x27;           // browsers and bundlers: await init(url) first</code></pre></div>
 <p>On Node, where no addon fits the machine, <code>node --conditions=browser</code> runs the WebAssembly build. <code>npm i cleanrules</code> will work once the package is on npm: the main package, with the WebAssembly module, and one optional package per platform for the addon (Linux with glibc 2.28 or later or musl, macOS and Windows, x64 and arm64). The TypeScript programs of this site ran with Node 26 on the addon built this way. The API, the two builds and the JavaScript pitfalls are in the <a href="api-js.html">JavaScript API</a> chapter.</p>
 
+<h2 id="java">Java, from source<a class="h-anchor" href="#java" aria-label="Link to this section">#</a></h2>
+<p>The Java binding lives in <code>bindings/jvm</code>: a jar with no native code of its own, which calls the C library through the Foreign Function &amp; Memory API. It needs a JDK 25 or later (it compiles with <code>--release 25</code>, whatever JDK runs Gradle) and a Rust toolchain for the C library. The Gradle wrapper is in the repository, so nothing else is installed:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>terminal</span></div>
+<pre class="code"><code class="language-bash">cd cleanrules
+cargo build --release -p cleanrules-ffi    # the C library: target/release/libcleanrules_ffi.dylib (.so, .dll)
+(cd bindings/jvm &amp;&amp; ./gradlew jar)        # bindings/jvm/java/build/libs/cleanrules-0.0.0.jar
+(cd bindings/jvm &amp;&amp; ./gradlew test)       # builds the C library with cargo, then the JUnit tests</code></pre></div>
+<p>Until the native libraries go inside the jar (task G.1c, in review), the binding loads the C library you built: tell it where with the system property <code>cleanrules.library.path</code> (or the environment variable <code>CLEANRULES_LIBRARY_PATH</code>), the library&#x27;s file or the directory that holds it; <code>java.library.path</code> and the system&#x27;s loader are tried next. The binding calls restricted methods of <code>java.lang.foreign</code>, so allow native access with <code>--enable-native-access=ALL-UNNAMED</code> on the class path, or <code>--enable-native-access=io.github.cleanrules</code> on the module path. A small program, run with the source launcher:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Hello.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.field;
+
+import io.github.cleanrules.*;
+import java.util.Map;
+
+public class Hello {
+    public static void main(String[] args) {
+        System.out.println(CleanRules.version() + &quot; &quot; + CleanRules.FORMAT_VERSION);
+        RuleSet rules = RuleSet.of(Rule.named(&quot;adult&quot;).when(field(&quot;age&quot;).ge(18)));
+        System.out.println(rules.evaluate(Map.of(&quot;age&quot;, 20)).fired());
+    }
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">0.0.0 1
+[adult]</pre>
+</div>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>terminal</span></div>
+<pre class="code"><code class="language-bash">java --enable-native-access=ALL-UNNAMED -Dcleanrules.library.path=target/release \
+     -cp bindings/jvm/java/build/libs/cleanrules-0.0.0.jar Hello.java
+# or as a module
+java --enable-native-access=io.github.cleanrules -Dcleanrules.library.path=target/release \
+     --module-path bindings/jvm/java/build/libs --add-modules io.github.cleanrules Hello.java</code></pre></div>
+<p>Without <code>--enable-native-access</code>, Java prints a warning when the library loads; with <code>--illegal-native-access=deny</code>, or when the library cannot be found, every use of the binding throws an <code>UnsatisfiedLinkError</code> that says what to do. In your own build, put the jar on the class path (or module path) and pass the same two options to the JVM that runs your program. The Java programs of this site ran this way, with OpenJDK 27. Not on Maven Central yet; the API is in the <a href="api-java.html">Java API</a> chapter, and the <a href="https://github.com/cleanrules/cleanrules/blob/main/bindings/jvm/README.md" rel="noopener">Java README</a> has the rest.</p>
+
 <h2 id="registries">Planned packages<a class="h-anchor" href="#registries" aria-label="Link to this section">#</a></h2>
 <p>Every language will be published together at 1.0 (task M.2), with one version number for all packages. These are the intended names; none of them is published yet.</p>
 <div class="table-wrap">
@@ -194,7 +229,7 @@ import { init } from &#x27;cleanrules/wasm&#x27;           // browsers and bundl
       <tr><td>Python</td><td>PyPI: <code>cleanrules</code></td><td>phases C and D done; the first public release</td></tr>
       <tr><td>C / C++</td><td>CMake package, Conan and vcpkg: <code>cleanrules</code></td><td>phase E done: the CMake package, the Conan recipe and the vcpkg overlay port build from the repository; ConanCenter and the vcpkg registry at the first release</td></tr>
       <tr><td>JavaScript / TypeScript</td><td>npm: <code>cleanrules</code>, with <code>@cleanrules/node-&lt;platform&gt;</code> for the addons (napi-rs for Node, wasm for browsers and Deno)</td><td>phase F, done: runs from source; packages built and checked in CI, not on npm yet</td></tr>
-      <tr><td>Java / Scala</td><td>Maven Central: <code>io.github.cleanrules:cleanrules</code></td><td>phase G (Java FFM, a Scala layer)</td></tr>
+      <tr><td>Java / Scala</td><td>Maven Central: <code>io.github.cleanrules:cleanrules</code>, with the native libraries inside the jar</td><td>phase G, in progress: Java runs from source; the jar with native libraries is in review and the Scala 3 layer is being written; not on Maven Central yet</td></tr>
       <tr><td>Go</td><td>module <code>github.com/cleanrules/cleanrules/bindings/go</code></td><td>phase H (cgo)</td></tr>
       <tr><td>Erlang</td><td>Hex: <code>cleanrules</code> (rebar3)</td><td>phase N (rustler NIF)</td></tr>
       <tr><td>AI agents</td><td><code>cleanrules-mcp</code> server, in the MCP registry</td><td>phase O</td></tr>
@@ -208,13 +243,14 @@ import { init } from &#x27;cleanrules/wasm&#x27;           // browsers and bundl
 <pre class="code"><code class="language-bash">cargo test --workspace                       # the core, the C ABI, their conformance vectors and property tests
 (cd bindings/python && uv run pytest)        # the Python binding (builds the extension first)
 cmake -S bindings/cpp -B build/cpp && ctest --test-dir build/cpp   # C++, with its conformance runner
-npm --prefix bindings/js test                # JavaScript on the addon; test:wasm and test:deno for the others</code></pre></div>
+npm --prefix bindings/js test                # JavaScript on the addon; test:wasm and test:deno for the others
+(cd bindings/jvm &amp;&amp; ./gradlew check)       # Java: the C library, the JUnit tests and the javadoc</code></pre></div>
 
 <nav class="pager" aria-label="Chapters"><a class="prev" href="index.html"><small>← Previous</small>Introduction</a><a class="next" href="quickstart.html"><small>Next →</small>Quick start</a></nav>
       </article>
       <aside class="doc-toc" aria-label="On this page">
         <h2>On this page</h2>
-        <ol><li><a href="#requirements">Requirements</a></li><li><a href="#python">Python, from source</a></li><li><a href="#rust">Rust, from source</a></li><li><a href="#c">C, from source</a></li><li><a href="#cpp">C++, from source</a></li><li><a href="#javascript">JavaScript, from source</a></li><li><a href="#registries">Planned packages</a></li><li><a href="#develop">Running the tests</a></li></ol>
+        <ol><li><a href="#requirements">Requirements</a></li><li><a href="#python">Python, from source</a></li><li><a href="#rust">Rust, from source</a></li><li><a href="#c">C, from source</a></li><li><a href="#cpp">C++, from source</a></li><li><a href="#javascript">JavaScript, from source</a></li><li><a href="#java">Java, from source</a></li><li><a href="#registries">Planned packages</a></li><li><a href="#develop">Running the tests</a></li></ol>
       </aside>
     </div>
   </main>
@@ -224,7 +260,7 @@ npm --prefix bindings/js test                # JavaScript on the addon; test:was
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -244,6 +280,7 @@ npm --prefix bindings/js test                # JavaScript on the addon; test:was
             <li><a href="../manual/api-rust.html">Rust API</a></li>
             <li><a href="../manual/api-js.html">JavaScript API</a></li>
             <li><a href="../manual/api-cpp.html">C++ API</a></li>
+            <li><a href="../manual/api-java.html">Java API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

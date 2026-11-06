@@ -9,8 +9,8 @@ A static site with no build step. Pages:
 | Page | Contents |
 |---|---|
 | `index.html` | overview, start here, status, explanation demo, languages, roadmap, citation, author |
-| `manual/` | the manual: 17 chapters (introduction, installation, quick start, conditions, rules and actions, hit policies, evaluating data, explanations, summaries, errors, JSON, Python pitfalls, performance, and the Python, Rust, JavaScript and C++ API references) |
-| `examples/` | eight worked examples, each in Python, Rust, TypeScript, JSON, C and C++, with previews of four planned languages |
+| `manual/` | the manual: 18 chapters (introduction, installation, quick start, conditions, rules and actions, hit policies, evaluating data, explanations, summaries, errors, JSON, Python pitfalls, performance, and the Python, Rust, JavaScript, C++ and Java API references) |
+| `examples/` | eight worked examples, each in Python, Rust, TypeScript, Java, JSON, C and C++, with previews of three languages still to come |
 | `guide.html` | concepts: conditions as data, nodes, Kleene logic, reasons, strict mode, rules, hit policies, explanations, counterfactuals, summaries |
 | `format.html` | the JSON format v1: values, conditions, rules, decisions read back and verified, limits, error codes, schemas |
 | `benchmarks.html` | method, workload, core results and the zen-engine comparison, with caveats |
@@ -58,11 +58,21 @@ branch → `main` / root). `.nojekyll` disables Jekyll processing.
   library, built and installed with CMake from `bindings/cpp` at the same
   commit and found with `find_package(cleanrules)`, and run; their output is
   pasted as printed. They write the rules in the rule syntax.
+- Java programs (the overview, every worked example, the errors chapter, the
+  installation chapter and the Java API page) were run with the Java source
+  launcher of OpenJDK 27 on the Java binding built from the repository
+  (`bindings/jvm`, commit `a1758c5`, which targets Java 25: `./gradlew jar`),
+  on the class path, with `--enable-native-access=ALL-UNNAMED` and
+  `-Dcleanrules.library.path` pointing at the C library built with cargo at
+  the same commit. Their output is pasted as printed. The C++ program under
+  "Building in code" on the C++ API page was compiled against
+  `cleanrules.hpp` and that static library.
 - For each worked example, the Python rules, the Rust rules and the JSON rule set
   were checked to be the same document, and Python's decision, explanation and
-  summary documents equal the core's. The TypeScript rule set (through `dumps`)
-  and the C++ rule set (through `write()`) were checked to be that document
-  too, and their decision, explanation (JSON and text) and summary to equal the
-  core's.
-- Code in Java, Scala, Go and Erlang, and anything marked **design preview**,
-  is an API preview of a binding that does not exist yet.
+  summary documents equal the core's. The TypeScript rule set (through `dumps`),
+  the C++ rule set (through `write()`) and the Java rule set (through
+  `Documents.dumps`) were checked to be that document too, and their decision,
+  explanation (JSON and text) and summary to equal the core's.
+- Code in Scala, Go and Erlang, and anything marked **design preview**, is an
+  API preview of a binding that is not there yet (the Scala 3 layer is being
+  written, task G.2).

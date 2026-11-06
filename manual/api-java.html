@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java API — cleanrules manual</title>
+  <meta name="description" content="The Java binding over the C ABI with the FFM API: conditions and rules in code, decisions, explanations, summaries, documents, decision tables, exceptions and the native layer.">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="author" content="Jose L. Salmeron">
+  <link rel="canonical" href="https://cleanrules.github.io/manual/api-java.html">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="cleanrules">
+  <meta property="og:title" content="Java API — cleanrules manual">
+  <meta property="og:description" content="The Java binding over the C ABI with the FFM API: conditions and rules in code, decisions, explanations, summaries, documents, decision tables, exceptions and the native layer.">
+  <meta property="og:url" content="https://cleanrules.github.io/manual/api-java.html">
+  <meta property="og:image" content="https://cleanrules.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    // Dark by default; a saved choice wins. Applied before first paint to avoid a flash.
+    (() => { let t = "dark"; try { t = localStorage.getItem("theme") || t; } catch (e) {} document.documentElement.dataset.theme = t; })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="cleanrules home">
+        <img src="../assets/logo.svg" alt="" width="30" height="30">
+        <span>cleanrules</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="../index.html">Overview</a>
+        <a href="../manual/index.html">Manual</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="../guide.html">Concepts</a>
+        <div class="nav-drop on">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-controls="nav-ref">Reference<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-sub" id="nav-ref">
+            <a href="../format.html">JSON format v1</a>
+            <a href="../manual/api-python.html">Python API</a>
+            <a href="../manual/api-rust.html">Rust API</a>
+            <a href="../manual/api-js.html">JavaScript API</a>
+            <a href="../manual/api-cpp.html">C++ API</a>
+            <a href="../manual/api-java.html" aria-current="page">Java API</a>
+            <a href="../manual/errors.html">Error codes</a>
+            <a href="../benchmarks.html">Benchmarks</a>
+          </div>
+        </div>
+        <a href="../agents.html">Agents</a>
+        <a href="../compare.html">Compare</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cleanrules/cleanrules" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          <span class="gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="doc-main">
+    <div class="wrap doc-layout">
+      <aside class="doc-side" aria-label="Manual chapters">
+        <details open>
+          <summary>Chapters <span class="muted">18 / 18</span></summary>
+          <nav aria-label="Chapters">
+            <h2>Manual</h2>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li><li><a href="api-js.html">JavaScript API</a></li><li><a href="api-cpp.html">C++ API</a></li><li><a href="api-java.html" aria-current="page">Java API</a></li></ol>
+          </nav>
+        </details>
+      </aside>
+      <article class="doc-content">
+        <p class="crumbs"><a href="index.html">Manual</a> / Chapter 18</p>
+        <h1>Java API</h1>
+<p class="lead">The Java binding: the same engine and the same concepts as every other language (<code>RuleSet</code>, <code>Decision</code>, <code>explain</code>, <code>summary</code>), on the C ABI through the Foreign Function &amp; Memory API of Java 25. Conditions and rules are built in code with static imports and methods, decisions give Java values back, explanations and summaries are objects, and errors are unchecked exceptions. It has no native code of its own: the bindings of <code>cleanrules.h</code> are written in Java.</p>
+<div class="callout">
+  <p><strong>Not on Maven Central yet.</strong> The artifact <code>io.github.cleanrules:cleanrules</code> is not published (tasks G.3 and M.2); build the jar from the repository (<a href="installation.html#java">installation</a>). Until the native libraries go inside the jar (task G.1c, in review), point the binding at the C library you built with <code>-Dcleanrules.library.path=...</code>, and allow native access with <code>--enable-native-access</code>. This page is written from <code>bindings/jvm</code> and its README at commit <code>a1758c5</code>; its programs ran with the Java source launcher of OpenJDK 27 (the binding targets Java 25). A Scala 3 layer is being written (task G.2) and is not described here.</p>
+</div>
+<h2 id="example">A first program<a class="h-anchor" href="#example" aria-label="Link to this section">#</a></h2>
+<p>A rule read from the rule syntax with <code>ruleFromText</code>, one built in code, a decision, why a rule did not fire, the explanation and the summary as text, and the rule set written back. Run with <code>java --enable-native-access=ALL-UNNAMED -Dcleanrules.library.path=target/release -cp cleanrules-0.0.0.jar Api.java</code>:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Api.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
+import static io.github.cleanrules.Documents.*;
+
+import io.github.cleanrules.*;
+import java.math.BigDecimal;
+import java.util.Map;
+
+public class Api {
+    public static void main(String[] args) {
+        Rule vip = ruleFromText(&quot;RULE vip PRIORITY 10 IF customer.years &gt; 5 AND order.total &gt; 1000 THEN discount = 0.15&quot;);
+        Rule loyal = Rule.named(&quot;loyal&quot;)
+                .when(field(&quot;customer&quot;, &quot;years&quot;).gt(2))
+                .then(&quot;discount&quot;, new BigDecimal(&quot;0.05&quot;))
+                .priority(5);
+        RuleSet rules = RuleSet.builder().add(vip, loyal).hitPolicy(HitPolicy.PRIORITY).build();
+
+        Decision decision = rules.evaluate(Map.of(
+                &quot;customer&quot;, Map.of(&quot;years&quot;, 7),
+                &quot;order&quot;, Map.of(&quot;total&quot;, 900)));
+        System.out.println(decision.fired() + &quot; &quot; + decision.output().orElseThrow());
+        System.out.println(decision.whyNot(&quot;vip&quot;).causes().getFirst().counterfactual().orElseThrow());
+        System.out.println(decision.explain());
+        System.out.println(rules.summary());
+        System.out.print(dumps(rules, Format.TEXT));
+    }
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[loyal] {discount=0.05}
+Counterfactual[[order, total] gt 1000, gap=100]
+HIT POLICY priority: selected loyal
+[ ] vip (not fired): customer.years &gt; 5 AND order.total &gt; 1000
+    - order.total &gt; 1000 is false (order.total = 900); short by 100
+[x] loyal (selected): customer.years &gt; 2
+    - customer.years &gt; 2 is true (customer.years = 7)
+Rule set: 2 rules, hit policy priority, logic boolean
+  priority  name   condition                                  outputs
+        10  vip    customer.years &gt; 5 AND order.total &gt; 1000  discount
+         5  loyal  customer.years &gt; 2                         discount
+Fields read (2):
+  customer.years  conditions of vip, loyal
+  order.total     conditions of vip
+Outputs: discount
+HIT POLICY priority
+
+RULE vip PRIORITY 10
+IF customer.years &gt; 5 AND order.total &gt; 1000
+THEN discount = 0.15
+
+RULE loyal PRIORITY 5
+IF customer.years &gt; 2
+THEN discount = 0.05</pre>
+</div>
+<p>Outputs come back as Java values: the discount is a <code>BigDecimal</code>. The explanation and the summary are the text every language prints; the <a href="api-js.html#example">JavaScript API</a> runs the same program. The <a href="../examples/index.html">worked examples</a> have a Java tab each.</p>
+<h2 id="packages">Packages and layers<a class="h-anchor" href="#packages" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Package</th><th>What</th></tr></thead>
+    <tbody>
+      <tr><td><code>io.github.cleanrules</code></td><td>The idiomatic API on this page, and what every layer shares: the exceptions, the enums (<code>HitPolicy</code>, <code>Aggregate</code>, <code>Truth</code>, <code>Format</code>…), <code>Limits</code> and <code>CleanRules</code>.</td></tr>
+      <tr><td><code>io.github.cleanrules.ffi</code></td><td>The native layer the idiomatic API is built on: documents and rule sets read from text, decisions, nodes and actions, each owning a native handle (<a href="#native">below</a>). Like <code>cleanrules/native</code> in JavaScript.</td></tr>
+      <tr><td><code>io.github.cleanrules.internal</code></td><td>The hand-written FFM bindings and the data reader; the module does not export it.</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>One jar, one module (<code>io.github.cleanrules</code>), Java 25 or later, no dependencies. It works on the class path and on the module path; the source launcher runs single files against it, as on this page.</p>
+<h2 id="conditions">Building conditions<a class="h-anchor" href="#conditions" aria-label="Link to this section">#</a></h2>
+<p>A condition is data, a tree of nodes the core evaluates, never a Java lambda. Java has no operator overloading, so fuzzytool&#x27;s <code>&amp;</code>, <code>|</code> and <code>~</code> are the methods <code>and</code>, <code>or</code> and <code>not</code>. The core builds every node and checks it at once: a node that breaks a construction rule of <code>spec/ast.md</code>, a NaN, an integer beyond 64 bits, a decimal beyond 38 digits, a datetime finer than a microsecond or a constant that is not a scalar is an <code>ExpressionException</code>.</p>
+<section class="api" id="Conditions"><h3><span class="kind">class</span>Conditions<span class="muted"> (static imports)</span></h3>
+<p><code>import static io.github.cleanrules.Conditions.*;</code></p>
+<dl><dt>field(Object... path)</dt><dd>A field by its path: keys as <code>String</code>s, indexes as <code>int</code>s, <code>field(&quot;items&quot;, 0, &quot;price&quot;)</code>. A key is never split at dots: <code>field(&quot;customer.age&quot;)</code> is one key.</dd><dt>constant(value)</dt><dd>A constant where no node is involved, such as <code>constant(true)</code>. Java values next to a node become constants by themselves (<code>ge(18)</code>).</dd><dt>and(a, b, ...), or(a, b, ...), not(x)</dt><dd>The connectives, the same as the methods.</dd></dl></section>
+<section class="api" id="Expr"><h3><span class="kind">class</span>Expr<span class="muted"> (sealed: Field, Const and the other nodes)</span></h3>
+<p>A node of a condition tree, immutable and shareable between threads. Every method returns a new node.</p>
+<p class="muted">Comparisons and connectives</p><dl><dt>eq(other), ne, lt, le, gt, ge</dt><dd>Comparison with a node or a Java constant.</dd><dt>and(others...), or(others...), not()</dt><dd>Connectives.</dd><dt>isIn(values...), isIn(collection)</dt><dd>Membership in constants of one type group.</dd><dt>between(low, high[, closed])</dt><dd>A range; <code>Closed.BOTH</code> (default), <code>LEFT</code>, <code>RIGHT</code> or <code>NONE</code>.</dd><dt>isNull()</dt><dd>Missing or null; never unknown.</dd><dt>matches(pattern)</dt><dd>A regular expression search, in the Rust <code>regex</code> syntax (linear time).</dd><dt>startsWith(text), endsWith(text), contains(text)</dt><dd>String tests.</dd></dl>
+<p class="muted">Arithmetic</p><dl><dt>add(other), sub, mul, div</dt><dd>Arithmetic; a division by zero is unknown.</dd><dt>neg(), abs()</dt><dd>Negation and absolute value.</dd></dl>
+<p class="muted">Reading a node</p><dl><dt>tag(), kind()</dt><dd>The node&#x27;s tag (<code>&quot;gt&quot;</code>, <code>&quot;and&quot;</code>…) and its <code>Kind</code>: <code>CONDITION</code>, <code>VALUE</code> or <code>ANY</code>.</dd><dt>children(), walk()</dt><dd>The direct children, and the node with its descendants in pre-order.</dd><dt>fieldPaths()</dt><dd>The paths of the fields it reads.</dd><dt>evaluateTree(data[, logic, strict]), evaluateValueTree(data[, strict])</dt><dd>Evaluate this node alone, as a <a href="#ResultTree"><code>ResultTree</code></a>.</dd><dt>equals(other), hashCode(), sameAs(other)</dt><dd>Structural identity (see the <a href="#pitfalls">pitfalls</a>).</dd><dt>toString(), toJson()</dt><dd>The canonical text in the rule syntax (<code>customer.years &gt; 5 AND ...</code>), as explanations write it, and the node&#x27;s JSON.</dd></dl></section>
+<section class="api" id="Field"><h3><span class="kind">class</span>Field, Const<span class="muted"> extends Expr</span></h3>
+<p>A <code>Field</code> has <code>path()</code> and <code>at(segments...)</code>, the field further down (<code>field(&quot;items&quot;).at(0, &quot;price&quot;)</code>). A <code>Const</code> has <code>value()</code>, as a value given back.</p></section>
+<h2 id="rules">Rules and rule sets<a class="h-anchor" href="#rules" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Rule"><h3><span class="kind">class</span>Rule</h3>
+<p>A named condition and its payload, immutable. <code>Rule.named(name).when(condition)</code> starts one; each further step gives a new rule, checked by the core (a <code>RuleDefinitionException</code>).</p>
+<p class="muted">Steps</p><dl><dt>then(key, value), then(map)</dt><dd>Payload entries: a node or a Java constant. A map&#x27;s entries are added in order for a <code>SequencedMap</code> (<code>LinkedHashMap</code>, <code>TreeMap</code>), sorted by key otherwise.</dd><dt>priority(n)</dt><dd>For the <code>priority</code> hit policy; higher wins, 0 by default.</dd><dt>tags(...), description(text), metadata(map)</dt><dd>Labels (kept sorted, without repeats), a description and free-form data.</dd><dt>action(name), action(context -&gt; ...)</dt><dd>The action: a name, which is data and <code>RuleSet.bind</code> resolves, or code. A name set later clears the code.</dd></dl>
+<p class="muted">Members</p><dl><dt>name(), when(), then(), priority(), tags(), description(), metadata()</dt><dd>The rule as the core keeps it; <code>then()</code> is a <code>SequencedMap</code> of nodes, <code>description()</code> an <code>Optional</code>.</dd><dt>actionName(), action()</dt><dd>The action&#x27;s name and code, as <code>Optional</code>s.</dd></dl></section>
+<section class="api" id="RuleSet"><h3><span class="kind">class</span>RuleSet<span class="muted"> implements Iterable&lt;Rule&gt;</span></h3>
+<p>Rules evaluated together under a hit policy; immutable. <code>RuleSet.of(rules...)</code> takes the defaults (<code>FIRST</code>, Boolean logic, not strict); <code>RuleSet.builder().add(...).hitPolicy(...).aggregate(...).logic(...).strict(...).build()</code> sets them, all at once, so that an aggregate is checked against its policy.</p>
+<p class="muted">Members</p><dl><dt>rules(), size(), iterator()</dt><dd>The rules, in order.</dd><dt>get(name), rule(name), contains(name)</dt><dd><code>get</code> gives an <code>Optional</code>; <code>rule</code> throws the core&#x27;s <code>RuleNotFoundException</code>, with the names there are in <code>available()</code>.</dd><dt>hitPolicy(), aggregate(), logic(), isStrict(), fieldPaths()</dt><dd>Its configuration (<code>aggregate()</code> is an <code>Optional</code>) and the paths it reads; Java data is read along these only.</dd><dt>evaluate(data[, limits])</dt><dd>A <code>Decision</code>; never runs actions. In strict mode, an <code>EvaluationException</code> for a missing field or a type mismatch.</dd><dt>evaluateMany(rows[, limits])</dt><dd>One decision per item of any <code>Iterable</code>; an error names its <code>row()</code>.</dd><dt>readDecision(text[, format])</dt><dd>A recorded decision (JSON or YAML), checked against the rule set.</dd><dt>bind(actions)</dt><dd>A rule set whose named actions are resolved in a <code>Map</code> of actions.</dd><dt>run(data[, limits])</dt><dd>Evaluate, then call the selected rules&#x27; actions in rule order (<a href="#actions">below</a>).</dd><dt>summary()</dt><dd>A <code>Summary</code>.</dd></dl></section>
+<h2 id="decisions">Decisions<a class="h-anchor" href="#decisions" aria-label="Link to this section">#</a></h2>
+<section class="api" id="Decision"><h3><span class="kind">class</span>Decision<span class="muted"> implements AutoCloseable</span></h3>
+<p>The outcome of evaluating a rule set on one input.</p>
+<p class="muted">Members</p><dl><dt>ruleSet(), hitPolicy()</dt><dd>Where it comes from.</dd><dt>results(), selected()</dt><dd>Every rule&#x27;s <code>RuleResult</code> in rule order, and those the hit policy selected.</dd><dt>fired()</dt><dd>The names of the rules that fired.</dd><dt>output()</dt><dd>The winner&#x27;s payload or the aggregate, as an <code>Optional</code> map; a <code>HitPolicyException</code> for <code>rule_order</code>, and for <code>collect</code> without an aggregate.</dd><dt>outputs(), aggregated()</dt><dd>The payloads of the selected rules, in rule order; the aggregate&#x27;s values with <code>collect</code>.</dd><dt>explain(), whyNot(name)</dt><dd>An <code>Explanation</code> (read once, then kept), and one rule&#x27;s <code>RuleExplanation</code>.</dd><dt>toJson(), write(format)</dt><dd>The decision document; <code>RuleSet.readDecision</code> reads it back.</dd><dt>close()</dt><dd>Free the native memory now, which is optional: a <code>Cleaner</code> frees it otherwise. What was already read stays readable.</dd></dl></section>
+<section class="api" id="RuleResult"><h3><span class="kind">class</span>RuleResult</h3>
+<p>One rule&#x27;s result: <code>rule()</code>, <code>fired()</code>, <code>truth()</code> (<code>Truth.TRUE</code>, <code>FALSE</code>, <code>UNKNOWN</code>) and <code>output()</code>, its evaluated payload when the hit policy needed it, as an <code>Optional</code>.</p></section>
+<h2 id="actions">Actions<a class="h-anchor" href="#actions" aria-label="Link to this section">#</a></h2>
+<p><code>evaluate</code> never calls actions. <code>run</code> checks that every named action is bound (a <code>RegistryException</code> from the core otherwise, before reading anything), evaluates, and calls the actions of the selected rules in rule order, on the calling thread. An action that throws stops the run with an <code>ActionException</code> whose cause is what it threw, with <code>rule()</code>, <code>executed()</code> (the rules whose actions ran) and <code>decision()</code>; an error of the virtual machine (<code>StackOverflowError</code>…) goes on as it is.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Actions.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
+
+import io.github.cleanrules.*;
+import java.util.Map;
+
+public class Actions {
+    public static void main(String[] args) {
+        RuleSet rules = RuleSet.builder()
+                .add(Rule.named(&quot;vip&quot;).when(field(&quot;years&quot;).gt(5)).then(&quot;discount&quot;, 15).action(&quot;notify_sales&quot;),
+                     Rule.named(&quot;audit&quot;).when(field(&quot;years&quot;).gt(0)).action(context -&gt; {
+                         throw new IllegalStateException(&quot;audit log unavailable&quot;);
+                     }))
+                .hitPolicy(HitPolicy.RULE_ORDER)
+                .build();
+
+        // A named action is data: run refuses it until it is bound.
+        try {
+            rules.run(Map.of(&quot;years&quot;, 7));
+        } catch (RegistryException e) {
+            System.out.println(e.code() + &quot;: &quot; + e.getMessage());
+        }
+
+        RuleSet bound = rules.bind(Map.of(&quot;notify_sales&quot;, context -&gt;
+                System.out.println(&quot;notify_sales: &quot; + context.rule().name() + &quot; &quot; + context.output())));
+        try {
+            bound.run(Map.of(&quot;years&quot;, 7));
+        } catch (ActionException e) {
+            System.out.println(e.code() + &quot; in &quot; + e.rule().orElseThrow() + &quot;, after &quot; + e.executed()
+                    + &quot;; cause: &quot; + e.getCause());
+        }
+    }
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">registry_error: the action &quot;notify_sales&quot; of rule &quot;vip&quot; is not registered
+notify_sales: vip {discount=15}
+action_error in audit, after [vip]; cause: java.lang.IllegalStateException: audit log unavailable</pre>
+</div>
+<section class="api" id="ActionContext"><h3><span class="kind">interface</span>Action, class ActionContext</h3>
+<p>An <code>Action</code> is <code>context -&gt; { ... }</code>. Its <code>ActionContext</code> has <code>rule()</code>, <code>data()</code> (the object <code>run</code> received), <code>result()</code>, <code>output()</code> (the evaluated payload), <code>decision()</code> (the object <code>run</code> returns) and <code>tree()</code>, the <code>ResultTree</code> of the rule&#x27;s condition.</p></section>
+<h2 id="explanations">Explanations and summaries<a class="h-anchor" href="#explanations" aria-label="Link to this section">#</a></h2>
+<p>The core&#x27;s explanation and summary as objects; Java reads them, and never computes any part of them itself. Each has its text as <code>toString()</code> and its document as <code>toJson()</code>.</p>
+<section class="api" id="Explanation"><h3><span class="kind">class</span>Explanation, RuleExplanation</h3>
+<p>An <code>Explanation</code> has <code>rules()</code> (a <code>RuleExplanation</code> per rule), <code>selected()</code> and <code>forRule(name)</code>. A <code>RuleExplanation</code> has <code>rule()</code>, <code>status()</code> (<code>Status.SELECTED</code>, <code>FIRED</code>, <code>NOT_FIRED</code>, <code>UNKNOWN</code>), <code>requirement()</code> (a sealed <code>Requirement</code>: a <code>Cause</code> or a <code>CauseGroup</code>), <code>causes()</code> without their grouping, <code>note()</code> and <code>achievable()</code>, as <code>Optional</code>s.</p></section>
+<section class="api" id="Cause"><h3><span class="kind">class</span>Cause, CauseGroup, Counterfactual, Note, Reason</h3>
+<p>A <code>Cause</code> has <code>node()</code>, <code>truth()</code>, <code>negated()</code>, <code>holds()</code> (whether it went the way the rule needed), <code>values()</code> (<code>Cause.FieldValue</code>: <code>path()</code> and <code>value()</code>), <code>reason()</code> and <code>counterfactual()</code>. A <code>CauseGroup</code> has a <code>GroupKind</code> (<code>ALL</code> or <code>ANY</code>) and its items. A <code>Counterfactual</code> has <code>path()</code>, <code>op()</code>, <code>target()</code> and <code>gap()</code>: a number, a <code>java.time.Period</code> of days between dates, or a <code>java.time.Duration</code> between datetimes. A <code>Note</code> has a <code>NoteKind</code> (<code>LOWER_PRIORITY</code>, <code>SAME_PRIORITY</code>, <code>ANY_AGREES</code>, <code>EARLIER_RULE</code>), <code>winner()</code>, <code>priority()</code> and <code>winnerPriority()</code>. A <code>Reason</code> has <code>code()</code> (<code>missing_field</code>, <code>type_mismatch</code>…), <code>paths()</code>, <code>types()</code> and <code>detail()</code>. The enums give the format&#x27;s names with <code>jsonName()</code>.</p></section>
+<section class="api" id="Summary"><h3><span class="kind">class</span>Summary</h3>
+<p>What a rule set reads and produces, without evaluating it: <code>hitPolicy()</code>, <code>aggregate()</code>, <code>logic()</code>, <code>isStrict()</code>, <code>rules()</code> (<code>RuleSummary</code>: <code>name()</code>, <code>priority()</code>, <code>outputs()</code>, <code>action()</code>, <code>actionName()</code>), <code>fields()</code> (<code>FieldUsage</code>: <code>path()</code>, <code>conditions()</code>, and <code>payloads()</code> as <code>FieldUsage.Payload(rule, key)</code>), <code>outputs()</code> and <code>tags()</code>. Rules whose action is code are marked.</p></section>
+<h2 id="documents">Documents<a class="h-anchor" href="#documents" aria-label="Link to this section">#</a></h2>
+<p><code>import static io.github.cleanrules.Documents.*;</code> Formats are <code>Format.JSON</code> (the default), <code>YAML</code>, <code>TEXT</code> (the rule syntax) and <code>CSV</code> (decision tables); a file&#x27;s extension (<code>.json</code>, <code>.yaml</code>, <code>.yml</code>, <code>.rules</code>, <code>.csv</code>) gives its format unless one is given. Reading is the core&#x27;s, strict and bounded: errors have a JSON Pointer or a line and column, and <code>Limits</code> sets the bounds.</p>
+<section class="api" id="loads"><h3><span class="kind">static</span>loads, load<span class="muted">(text[, format[, limits]][, actions]), (path[, format, limits][, actions]): DocumentContent</span></h3>
+<p>Read a condition, rule, rule set or decision table document, from a <code>String</code> (or UTF-8 bytes) or a <code>Path</code>. <code>DocumentContent</code> is a sealed interface of <code>Expr</code>, <code>Rule</code>, <code>RuleSet</code> and <code>DecisionTable</code>: take it apart with <code>instanceof</code> or a <code>switch</code>. <code>actions</code> binds the named actions of the rules read; without it they stay unbound. A file beyond the size limit of its format is not read (<code>limit_exceeded</code>). Rules read keep the core&#x27;s own rules, so they write back exactly.</p></section>
+<section class="api" id="dumps"><h3><span class="kind">static</span>dumps, dump<span class="muted">(value[, format[, omitActions]]), (value, path[, format, omitActions])</span></h3>
+<p>The canonical document of a condition, rule, rule set or table, as a <code>String</code> or to a file. A value node is an <code>ExpressionException</code>; a rule whose action is code without a name is an <code>UnsupportedException</code> unless <code>omitActions</code>. Decisions are written with <code>Decision.toJson()</code> and <code>write(format)</code>.</p></section>
+<section class="api" id="ruleFromText"><h3><span class="kind">static</span>ruleFromText<span class="muted">(text[, action | actions | limits]), (text, limits, actions)</span></h3>
+<p>One rule in the rule syntax (fuzzytool&#x27;s verb); <code>rule_1</code> without a <code>RULE</code> line. A name the text gives its action (<code>DO notify</code>) is bound to the <code>action</code>, or looked up in <code>actions</code>.</p></section>
+<h2 id="tables">Decision tables and result trees<a class="h-anchor" href="#tables" aria-label="Link to this section">#</a></h2>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Tables.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
+import static io.github.cleanrules.Documents.*;
+
+import io.github.cleanrules.*;
+import java.util.Map;
+
+public class Tables {
+    public static void main(String[] args) {
+        // A decision table from rows: strings are cells as the CSV writes them.
+        DecisionTable table = DecisionTable.builder()
+                .hitPolicy(TablePolicy.PRIORITY)
+                .header(&quot;RULE&quot;, field(&quot;customer&quot;, &quot;years&quot;), &quot;order.total&quot;, TableOutput.of(&quot;risk&quot;, &quot;high&quot;, &quot;low&quot;))
+                .row(&quot;new&quot;, field(&quot;customer&quot;, &quot;years&quot;).lt(1), &quot;&gt; 1000&quot;, &quot;&#x27;high&#x27;&quot;)
+                .row(&quot;vip&quot;, &quot;&gt; 5&quot;, &quot;-&quot;, &quot;&#x27;low&#x27;&quot;)
+                .row(&quot;default&quot;, null, null, &quot;&#x27;low&#x27;&quot;)
+                .build();
+        System.out.print(dumps(table, Format.CSV));
+        Decision decision = table.evaluate(Map.of(&quot;customer&quot;, Map.of(&quot;years&quot;, 0), &quot;order&quot;, Map.of(&quot;total&quot;, 4000)));
+        System.out.println(decision.output().orElseThrow());
+
+        // A document read back: a sealed interface, taken apart with a switch.
+        String yaml = dumps(RuleSet.of(ruleFromText(&quot;RULE vip IF customer.years &gt; 5 THEN discount = 0.15 DO notify&quot;)),
+                Format.YAML);
+        switch (loads(yaml, Format.YAML, Map.of(&quot;notify&quot;, context -&gt; System.out.println(&quot;notify &quot; + context.output())))) {
+            case RuleSet rules -&gt; rules.run(Map.of(&quot;customer&quot;, Map.of(&quot;years&quot;, 7)));
+            default -&gt; throw new IllegalStateException(&quot;not a rule set&quot;);
+        }
+
+        // One condition on its own, with the result of every node.
+        Expr vip = field(&quot;customer&quot;, &quot;years&quot;).gt(5).and(field(&quot;order&quot;, &quot;total&quot;).gt(1000));
+        ResultTree tree = vip.evaluateTree(Map.of(&quot;customer&quot;, Map.of(&quot;years&quot;, 7)));
+        for (ResultTree child : tree.children()) {
+            System.out.println(child.node() + &quot;: &quot; + child.truth().orElseThrow().jsonName()
+                    + child.reason().map(r -&gt; &quot; (&quot; + r.code() + &quot;)&quot;).orElse(&quot;&quot;));
+        }
+    }
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">HIT POLICY,priority
+RULE,customer.years,order.total,&quot;THEN risk IN (&#x27;high&#x27;, &#x27;low&#x27;)&quot;
+new,&lt; 1,&gt; 1000,&#x27;high&#x27;
+vip,&gt; 5,-,&#x27;low&#x27;
+default,-,-,&#x27;low&#x27;
+{risk=high}
+notify {discount=0.15}
+customer.years &gt; 5: true
+order.total &gt; 1000: unknown (missing_field)</pre>
+</div>
+<section class="api" id="DecisionTable"><h3><span class="kind">class</span>DecisionTable</h3>
+<p>A decision table and the rule set it compiles into, built with <code>DecisionTable.of(header, rows)</code> or <code>DecisionTable.builder()</code> (<code>header(...)</code>, <code>row(...)</code>, <code>rows(...)</code>, <code>hitPolicy(TablePolicy)</code>, <code>aggregate</code>, <code>logic</code>, <code>strict</code>, <code>limits</code>), or read from CSV. A header item is a CSV header field&#x27;s text (<code>&quot;RULE&quot;</code>, <code>&quot;THEN discount&quot;</code>, an input expression), an input <code>Expr</code>, or a <code>TableOutput.of(name, values...)</code>. A <code>String</code> cell is read as the CSV writes it (<code>&quot;&gt; 5&quot;</code>, <code>&quot;-&quot;</code>, <code>&quot;&#x27;VIP&#x27;&quot;</code> for the string); an <code>Expr</code> cell is an input&#x27;s condition or an output&#x27;s value; <code>null</code> and <code>Optional.empty()</code> are empty; anything else is a constant. Errors point at <code>/header/&lt;c&gt;</code> or <code>/rows/&lt;r&gt;/&lt;c&gt;</code>.</p>
+<p class="muted">Members</p><dl><dt>hitPolicy(), aggregate(), logic(), isStrict()</dt><dd>As a rule set&#x27;s; <code>TablePolicy.OUTPUT_ORDER</code> is also a policy here.</dd><dt>inputs(), outputs(), rows()</dt><dd>The input <code>Expr</code>s, the <code>TableOutput</code>s and the <code>TableRow</code>s (<code>name()</code>, <code>priority()</code>, <code>description()</code>, and <code>inputs()</code> and <code>outputs()</code> as <code>Optional&lt;Expr&gt;</code>s).</dd><dt>ruleSet(), evaluate, evaluateMany, summary(), toJson()</dt><dd>The compiled rule set, and as a rule set&#x27;s.</dd></dl></section>
+<section class="api" id="ResultTree"><h3><span class="kind">class</span>ResultTree</h3>
+<p>The result of every node of a condition: <code>node()</code>, <code>truth()</code> (empty for a value), <code>value()</code>, <code>reason()</code>, <code>children()</code> and <code>toJson()</code>, the core&#x27;s JSON result tree. From <code>expr.evaluateTree(data)</code>, <code>evaluateValueTree(data)</code>, or <code>ActionContext.tree()</code> in an action.</p></section>
+<h2 id="values">Values<a class="h-anchor" href="#values" aria-label="Link to this section">#</a></h2>
+<p>Java data is read along the rule set&#x27;s field paths only, each object once (<code>spec/data-model.md</code>, <em>Java and Scala</em>):</p>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Java</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>null</code>, <code>Optional.empty()</code></td><td>null; <code>Optional.of(x)</code> is <code>x</code></td></tr>
+      <tr><td><code>Boolean</code></td><td>boolean</td></tr>
+      <tr><td><code>Byte</code>, <code>Short</code>, <code>Integer</code>, <code>Long</code>, <code>BigInteger</code></td><td>int; beyond 64 bits, a null with reason <code>int_overflow</code></td></tr>
+      <tr><td><code>Float</code>, <code>Double</code></td><td>float; NaN is null</td></tr>
+      <tr><td><code>BigDecimal</code></td><td>decimal; beyond 38 digits, a null with reason <code>decimal_overflow</code></td></tr>
+      <tr><td><code>String</code>, <code>CharSequence</code>; enum constants</td><td>string; an enum by its <code>name()</code></td></tr>
+      <tr><td><code>LocalDate</code>, <code>java.sql.Date</code>; <code>LocalDateTime</code></td><td>date; naive datetime, truncated to the microsecond</td></tr>
+      <tr><td><code>Instant</code>, <code>java.util.Date</code>, <code>java.sql.Timestamp</code>; <code>OffsetDateTime</code>; <code>ZonedDateTime</code></td><td>aware datetime in <code>Z</code>; at its offset; in its zone</td></tr>
+      <tr><td><code>List</code>, arrays (not <code>byte[]</code>)</td><td>list</td></tr>
+      <tr><td><code>Map</code> with <code>String</code> keys; records; other objects</td><td>map: a <code>SequencedMap</code> in its order, other maps sorted by key; a record&#x27;s components in order; public fields and JavaBean getters, sorted by name</td></tr>
+      <tr><td>sets, <code>byte[]</code>, lambdas, threads, class loaders, classes, other objects of the Java platform, the binding&#x27;s own objects</td><td>opaque: never read through, compared by identity</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Nothing but public data is read: no private member, no method with parameters, no static member, and nothing a class of the platform declares (<code>getClass()</code>), so a rule loaded from a file cannot reach a <code>Class</code>, a <code>ClassLoader</code> or a <code>Thread</code>. A getter that throws gives a null with reason <code>read_error</code> (in strict mode, an <code>EvaluationException</code> with the exception as its cause). Values come back as <code>null</code>, <code>Boolean</code>, <code>Long</code>, <code>Double</code>, <code>BigDecimal</code> (with its scale), <code>String</code>, <code>LocalDate</code>, <code>LocalDateTime</code>, <code>ZonedDateTime</code>, unmodifiable <code>List</code>s and <code>SequencedMap</code>s in the engine&#x27;s order, and, for an opaque value, the very object that was read.</p>
+<h2 id="errors">Errors<a class="h-anchor" href="#errors" aria-label="Link to this section">#</a></h2>
+<p>Every error is an unchecked <code>CleanRulesException</code>, with the class of its code, as in every language (<a href="errors.html">Errors</a>):</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>hierarchy</span></div>
+<pre class="code"><code class="language-text">CleanRulesException (a RuntimeException)
+├── FormatException                 format_error, unsupported_version, limit_exceeded, decision_mismatch
+├── ExpressionException             expression_error
+├── RuleDefinitionException         rule_definition_error
+├── RuleSyntaxException             rule_syntax_error
+├── RegistryException               registry_error
+├── RuleNotFoundException           rule_not_found
+├── EvaluationException             evaluation_error
+│   ├── MissingFieldException       missing_field
+│   ├── TypeMismatchException       type_mismatch
+│   └── HitPolicyException          hit_policy_error
+├── ActionException                 action_error
+└── UnsupportedException            unsupported</code></pre></div>
+<section class="api" id="CleanRulesException"><h3><span class="kind">class</span>CleanRulesException<span class="muted"> extends RuntimeException</span></h3>
+<p>The base class of every error cleanrules raises. Immutable and serializable (an <code>ActionException</code> loses its decision when serialized).</p>
+<p class="muted">Members</p><dl><dt>code(), getMessage(), hint()</dt><dd>The stable code, the message the core writes, and how to fix it (an <code>Optional</code>).</dd><dt>pointer(), line(), column(), row()</dt><dd>Where a document or a batch failed; <code>line()</code>, <code>column()</code> and <code>row()</code> are <code>OptionalInt</code>s.</dd><dt>rule(), rules(), path(), types(), name(), available(), executed(), node(), operation(), reason()</dt><dd>The other context fields of <code>spec/errors.md</code>: empty where they do not apply. <code>path()</code> has <code>String</code> keys and <code>Integer</code> indexes.</dd><dt>json()</dt><dd>The error&#x27;s JSON form.</dd><dt>getCause()</dt><dd>What caused it: what an action threw, or a getter in strict mode.</dd></dl></section>
+<p>Misuses are Java&#x27;s own exceptions: <code>NullPointerException</code>; <code>IllegalArgumentException</code> (a negative limit, an empty or repeated action name); <code>IllegalStateException</code> (a closed object, an action call used after it ended, or an internal error, a bug in cleanrules to report); <code>IndexOutOfBoundsException</code>. The <a href="errors.html#languages">errors chapter</a> has a Java program with its output.</p>
+<h2 id="native">The native layer<a class="h-anchor" href="#native" aria-label="Link to this section">#</a></h2>
+<p><code>io.github.cleanrules.ffi</code> is what the idiomatic API is built on, and stays available: rule sets read from documents, evaluated on Java data or JSON, with outputs as Java values or JSON text and explanations as text or documents. Its four classes own native memory: close them with <code>try</code>-with-resources, or a <code>Cleaner</code> frees them.</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>NativeLayer.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import io.github.cleanrules.Format;
+import io.github.cleanrules.ffi.Decision;
+import io.github.cleanrules.ffi.RuleSet;
+import java.math.BigDecimal;
+import java.util.Map;
+
+public class NativeLayer {
+    record Customer(int years, boolean newsletter) {}
+
+    public static void main(String[] args) {
+        try (RuleSet rules = RuleSet.read(&quot;&quot;&quot;
+                HIT POLICY priority
+                RULE vip PRIORITY 10
+                IF customer.years &gt; 5 AND order.total &gt; 1000
+                THEN discount = 0.15
+                DO notify_sales
+                &quot;&quot;&quot;, Format.TEXT)) {
+            var order = Map.of(&quot;customer&quot;, new Customer(7, false), &quot;order&quot;, Map.of(&quot;total&quot;, new BigDecimal(&quot;1500.00&quot;)));
+            try (Decision decision = rules.evaluate(order)) {
+                Object discount = ((Map&lt;?, ?&gt;) decision.output()).get(&quot;discount&quot;);
+                System.out.println(discount + &quot; &quot; + discount.getClass().getSimpleName());
+                System.out.println(decision.outputJson());
+            }
+            rules.run(order, Map.of(&quot;notify_sales&quot;, call -&gt;
+                    System.out.println(&quot;notify &quot; + call.ruleName() + &quot;: &quot; + call.output()))).close();
+        }
+    }
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">0.15 BigDecimal
+{&quot;discount&quot;:{&quot;$decimal&quot;:&quot;0.15&quot;}}
+notify vip: {discount=0.15}</pre>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Class</th><th>What</th></tr></thead>
+    <tbody>
+      <tr><td><code>Document</code></td><td>a document in JSON, YAML, the rule syntax or CSV: <code>read(text, format[, limits])</code>, <code>kind()</code>, <code>write([format])</code></td></tr>
+      <tr><td><code>RuleSet</code></td><td><code>read(text, format[, limits])</code>, <code>fromDocument(doc)</code>, <code>write</code>, <code>summary([format])</code>, <code>size()</code>, <code>ruleName(i)</code>, <code>ruleNames()</code>, <code>hitPolicy()</code>, <code>logic()</code>, <code>aggregate()</code>, <code>isStrict()</code>, <code>fieldPaths()</code>, <code>evaluate</code>, <code>evaluateJson</code>, <code>evaluateMany</code>, <code>evaluateManyJson</code>, <code>readDecision</code>, <code>checkActions(names)</code>, <code>run(data, actions[, limits])</code></td></tr>
+      <tr><td><code>Decision</code></td><td><code>size()</code>, <code>ruleName(i)</code>, <code>firedAt(i)</code>, <code>truth(i)</code>, <code>selected()</code>, <code>output()</code>, <code>outputs()</code>, <code>ruleOutput(i)</code>, <code>outputJson()</code>, <code>outputsJson()</code>, <code>write([format])</code> (JSON by default), <code>explain([format])</code> (text by default)</td></tr>
+      <tr><td><code>Node</code></td><td>one condition or value: <code>read</code>, <code>write</code>, <code>fieldPaths()</code>, <code>evaluateTree</code>, <code>evaluateValueTree</code> and their <code>...Json</code> forms</td></tr>
+      <tr><td><code>Action</code>, <code>ActionCall</code></td><td><code>call -&gt; ...</code>, and its call: <code>ruleName()</code>, <code>position()</code>, <code>truth()</code>, <code>output()</code>, <code>data()</code>, <code>decision()</code> (a copy you own); valid during the call only</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Rule positions are <code>int</code>s from 0; a position out of the rule set is an <code>IndexOutOfBoundsException</code>.</p>
+<h2 id="memory">Memory and threads<a class="h-anchor" href="#memory" aria-label="Link to this section">#</a></h2>
+<p>Expressions, rules, rule sets, decisions, decision tables and result trees of the idiomatic API are immutable and may be shared between threads: one rule set may evaluate on many threads at once. A <code>Cleaner</code> frees their native memory once they are unreachable, so they have no <code>close()</code>, except decisions, which may be closed early. In the native layer, <code>Document</code>, <code>RuleSet</code>, <code>Decision</code> and <code>Node</code> are <code>AutoCloseable</code>: closing twice does nothing, using a closed object is an <code>IllegalStateException</code> (&quot;this RuleSet is closed&quot;), and closing one while another thread uses it is safe: it is freed when the last call returns. The memory of each call lives in a confined arena freed when the call returns. Actions run on the thread that called <code>run</code>, and may run rule sets again; nothing an action throws crosses the native frames.</p>
+<h2 id="pitfalls">Pitfalls<a class="h-anchor" href="#pitfalls" aria-label="Link to this section">#</a></h2>
+<ul>
+  <li><strong>Native access needs a flag.</strong> Run with <code>--enable-native-access=ALL-UNNAMED</code> on the class path or <code>--enable-native-access=io.github.cleanrules</code> on the module path. Without it Java prints a warning; with <code>--illegal-native-access=deny</code>, every use of the binding throws an <code>UnsatisfiedLinkError</code> that says which flag to add. A library that cannot be found or loaded, or of another ABI or format version, is an <code>UnsatisfiedLinkError</code> too, every time it is used; <code>CleanRules.load()</code> loads it at once.</li>
+  <li><strong><code>equals</code> is structural identity</strong>, not a comparison: <code>expr.equals(other)</code> never builds a node; <code>eq(other)</code> does. Constants compare by type and value, so <code>ge(18)</code> and <code>ge(18.0)</code> differ, and <code>Expr</code>s work as keys of a <code>HashMap</code>. <code>hashCode()</code> is the core&#x27;s, stable on every platform for one version of the library: never store it.</li>
+  <li><strong><code>field</code> never splits at dots.</strong> <code>field(&quot;customer.age&quot;)</code> is one key with a dot in it; write <code>field(&quot;customer&quot;, &quot;age&quot;)</code>.</li>
+  <li><strong><code>Map.of</code> has no order.</strong> <code>then(map)</code> keeps the order of a <code>SequencedMap</code> and sorts any other map, so a payload given with <code>Map.of</code> comes out sorted by key; use a <code>LinkedHashMap</code>, or <code>then(key, value)</code> step by step, to choose it.</li>
+  <li><strong><code>get(name)</code> is an <code>Optional</code>, <code>rule(name)</code> throws</strong> a <code>RuleNotFoundException</code> that lists the rules. The same holds for <code>output()</code>, an <code>Optional</code> that is empty when nothing was selected and throws a <code>HitPolicyException</code> under <code>rule_order</code>: use <code>outputs()</code> there.</li>
+  <li><strong>A <code>Decision</code> is <code>AutoCloseable</code>.</strong> Closing it frees its native memory early; what was already read stays readable, and what still needs the native decision throws <code>IllegalStateException</code>. Without <code>close()</code>, the <code>Cleaner</code> frees it.</li>
+  <li><strong><code>ruleFromText(text, null)</code> does not compile</strong>: a bare <code>null</code> matches the <code>Action</code>, <code>Map</code> and <code>Limits</code> overloads. Call <code>ruleFromText(text)</code>, or <code>ruleFromText(text, limits, actions)</code>, where both may be null.</li>
+</ul>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Pitfalls.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
+
+import io.github.cleanrules.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class Pitfalls {
+    public static void main(String[] args) {
+        // 1. equals is structural identity, not a comparison node: use eq() for that.
+        Expr adult = field(&quot;age&quot;).ge(18);
+        System.out.println(adult.equals(field(&quot;age&quot;).ge(18)) + &quot; &quot; + adult.equals(field(&quot;age&quot;).ge(18.0))
+                + &quot; | &quot; + field(&quot;age&quot;).eq(18));
+
+        // 2. field() never splits at dots: &quot;customer.age&quot; is one key.
+        System.out.println(field(&quot;customer.age&quot;).fieldPaths() + &quot; &quot; + field(&quot;customer&quot;, &quot;age&quot;).fieldPaths());
+
+        // 3. then(map) keeps the order of a SequencedMap only; Map.of has none, so it is sorted.
+        Rule sorted = Rule.named(&quot;r&quot;).when(adult).then(Map.of(&quot;tier&quot;, &quot;gold&quot;, &quot;discount&quot;, 10));
+        var ordered = new LinkedHashMap&lt;String, Object&gt;();
+        ordered.put(&quot;tier&quot;, &quot;gold&quot;);
+        ordered.put(&quot;discount&quot;, 10);
+        Rule kept = Rule.named(&quot;r&quot;).when(adult).then(ordered);
+        System.out.println(sorted.then().keySet() + &quot; &quot; + kept.then().keySet());
+
+        // 4. get(name) is an Optional; rule(name) throws, listing the rules there are.
+        RuleSet rules = RuleSet.of(Rule.named(&quot;adult&quot;).when(adult));
+        System.out.println(rules.get(&quot;minor&quot;));
+        try {
+            rules.rule(&quot;minor&quot;);
+        } catch (RuleNotFoundException e) {
+            System.out.println(e.code() + &quot;: &quot; + e.getMessage() + &quot; &quot; + e.available());
+        }
+
+        // 5. A decision is AutoCloseable: what was read stays, the rest needs it open.
+        Decision decision = rules.evaluate(Map.of(&quot;age&quot;, 20));
+        System.out.println(decision.fired());
+        decision.close();
+        System.out.println(decision.fired());
+        try {
+            decision.explain();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">true false | age = 18
+[[customer.age]] [[customer, age]]
+[discount, tier] [tier, discount]
+Optional.empty
+rule_not_found: no rule named &quot;minor&quot; [adult]
+[adult]
+[adult]
+this Decision is closed</pre>
+</div>
+<h2 id="module">CleanRules and Limits<a class="h-anchor" href="#module" aria-label="Link to this section">#</a></h2>
+<section class="api" id="CleanRules"><h3><span class="kind">class</span>CleanRules</h3>
+<p><code>FORMAT_VERSION</code> (1), the version of the JSON format, and <code>ABI_VERSION</code>, of the C ABI this binding was written for; loading compares both with the library&#x27;s. <code>version()</code> is the library&#x27;s version (<code>0.0.0</code> until the first release), <code>load()</code> loads it now, and <code>libraryPath()</code> says where it came from. The library is looked up in the system property <code>cleanrules.library.path</code> or the environment variable <code>CLEANRULES_LIBRARY_PATH</code> (its file, or the directory that holds it), then <code>java.library.path</code>, then the system&#x27;s loader. The binding needs a 64-bit platform.</p></section>
+<section class="api" id="Limits"><h3><span class="kind">class</span>Limits</h3>
+<p>Immutable bounds on what is read: <code>Limits.defaults()</code>, read from the core, and <code>withMaxSize(n)</code> (JSON, YAML and text), <code>withMaxNesting</code>, <code>withMaxDepth</code>, <code>withMaxTableSize</code>, <code>withMaxYamlSize</code>, <code>withMaxTextSize</code>, each a new <code>Limits</code>. They apply to documents, to Java data (its nesting) and to files.</p></section>
+
+<nav class="pager" aria-label="Chapters"><a class="prev" href="api-cpp.html"><small>← Previous</small>C++ API</a></nav>
+      </article>
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol><li><a href="#example">A first program</a></li><li><a href="#packages">Packages and layers</a></li><li><a href="#conditions">Building conditions</a></li><li><a href="#rules">Rules and rule sets</a></li><li><a href="#decisions">Decisions</a></li><li><a href="#actions">Actions</a></li><li><a href="#explanations">Explanations and summaries</a></li><li><a href="#documents">Documents</a></li><li><a href="#tables">Tables and result trees</a></li><li><a href="#values">Values</a></li><li><a href="#errors">Errors</a></li><li><a href="#native">The native layer</a></li><li><a href="#memory">Memory and threads</a></li><li><a href="#pitfalls">Pitfalls</a></li><li><a href="#module">CleanRules and Limits</a></li></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
+        </div>
+        <div class="footer-col">
+          <h2>Learn</h2>
+          <ul>
+            <li><a href="../manual/index.html">Manual</a></li>
+            <li><a href="../manual/quickstart.html">Quick start</a></li>
+            <li><a href="../examples/index.html">Worked examples</a></li>
+            <li><a href="../guide.html">Concepts</a></li>
+            <li><a href="../manual/pitfalls.html">Python pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="../format.html">JSON format v1</a></li>
+            <li><a href="../manual/api-python.html">Python API</a></li>
+            <li><a href="../manual/api-rust.html">Rust API</a></li>
+            <li><a href="../manual/api-js.html">JavaScript API</a></li>
+            <li><a href="../manual/api-cpp.html">C++ API</a></li>
+            <li><a href="../manual/api-java.html">Java API</a></li>
+            <li><a href="../manual/errors.html">Errors</a></li>
+            <li><a href="../benchmarks.html">Benchmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="../index.html#status">Status and roadmap</a></li>
+            <li><a href="../agents.html">AI agents (planned)</a></li>
+            <li><a href="../compare.html">Compare &amp; FAQ</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/tree/main/spec" rel="noopener">Specification</a></li>
+            <li><a href="https://github.com/cleanrules/cleanrules/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Author</h2>
+          <ul>
+            <li><a href="../about.html">About the author</a></li>
+            <li><a href="https://joselsalmeron.github.io/" rel="noopener">Professional website</a></li>
+            <li><a href="https://orcid.org/0000-0001-7811-3716" rel="noopener">ORCID 0000-0001-7811-3716</a></li>
+            <li><a href="../index.html#cite">How to cite</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-legal">Apache-2.0 licensed · © 2026 <a href="https://joselsalmeron.github.io/" rel="noopener">Jose L. Salmeron</a> · <a href="https://github.com/cleanrules/cleanrules" rel="noopener">github.com/cleanrules/cleanrules</a></p>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scala.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-erlang.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-toml.min.js"></script>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

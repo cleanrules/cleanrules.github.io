@@ -48,6 +48,7 @@
             <a href="../manual/api-rust.html">Rust API</a>
             <a href="../manual/api-js.html">JavaScript API</a>
             <a href="../manual/api-cpp.html">C++ API</a>
+            <a href="../manual/api-java.html">Java API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -113,14 +114,14 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
-        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <p class="sub">Python, Rust, TypeScript, Java, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Scala, Go and Erlang are design previews of bindings still to come: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: not runnable yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
 <button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
-<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="ok"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
@@ -339,48 +340,63 @@ submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;
 <p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>. Node 26 has <code>Temporal</code>; where a runtime has none, a Temporal polyfill works, since the binding recognises Temporal values by their tag.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.java</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Eligibility.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
+
 import io.github.cleanrules.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
-import static io.github.cleanrules.Conditions.*;
+import java.util.Map;
 
 public class Eligibility {
-    record Applicant(LocalDate residence_since, LocalDate birth_date, int household_income,
-                     ZonedDateTime submitted_at) {}
-
     public static void main(String[] args) {
-        var madrid = ZoneId.of(&quot;Europe/Madrid&quot;);
-        var grant = Rule.named(&quot;housing_grant&quot;)
-            .when(field(&quot;residence_since&quot;).le(LocalDate.of(2024, 11, 1))
-                .and(field(&quot;birth_date&quot;).le(LocalDate.of(2008, 11, 1)))
-                .and(field(&quot;household_income&quot;).lt(28_000))
-                .and(field(&quot;submitted_at&quot;).le(ZonedDateTime.of(2026, 12, 15, 14, 0, 0, 0, madrid))))
-            .then(&quot;grant&quot;, new BigDecimal(&quot;1500.00&quot;))
-            .description(&quot;Two years of residence, adult, low income, before the deadline&quot;);
-        var rules = RuleSet.builder().add(grant).build();
+        ZoneId madrid = ZoneId.of(&quot;Europe/Madrid&quot;);
+        Rule grant = Rule.named(&quot;housing_grant&quot;)
+                .when(field(&quot;residence_since&quot;).le(LocalDate.of(2024, 11, 1))
+                        .and(field(&quot;birth_date&quot;).le(LocalDate.of(2008, 11, 1)))
+                        .and(field(&quot;household_income&quot;).lt(28_000))
+                        .and(field(&quot;submitted_at&quot;).le(ZonedDateTime.of(2026, 12, 15, 14, 0, 0, 0, madrid))))
+                .then(&quot;grant&quot;, new BigDecimal(&quot;1500.00&quot;))
+                .description(&quot;Two years of residence, adult, low income, before the deadline&quot;);
+        RuleSet rules = RuleSet.of(grant);
 
-        var applicant = new Applicant(
-            LocalDate.of(2025, 1, 20),
-            LocalDate.of(1999, 4, 2),
-            26_500,
-            ZonedDateTime.of(2026, 12, 16, 9, 30, 0, 0, madrid));
-        var decision = rules.evaluate(applicant);
-        System.out.println(decision.fired());
-        System.out.println(decision.output());
+        var applicant = Map.of(
+                &quot;residence_since&quot;, LocalDate.of(2025, 1, 20),
+                &quot;birth_date&quot;, LocalDate.of(1999, 4, 2),
+                &quot;household_income&quot;, 26_500,
+                &quot;submitted_at&quot;, ZonedDateTime.of(2026, 12, 16, 9, 30, 0, 0, madrid));
+        Decision decision = rules.evaluate(applicant);
+        System.out.println(decision.fired() + &quot; &quot; + decision.output());
+
+        for (Cause cause : decision.whyNot(&quot;housing_grant&quot;).causes()) {
+            if (!cause.holds()) {
+                System.out.println(cause.node() + &quot; - gap &quot; + cause.counterfactual().orElseThrow().gap().orElseThrow());
+            }
+        }
+        System.out.println();
+        System.out.println(decision.explain());
     }
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[] Optional.empty
+residence_since &lt;= DATE &quot;2024-11-01&quot; - gap P80D
+submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot; - gap PT19H30M
+
+HIT POLICY first: selected no rule
+[ ] housing_grant (not fired): residence_since &lt;= DATE &quot;2024-11-01&quot; AND birth_date &lt;= DATE &quot;2008-11-01&quot; AND household_income &lt; 28000 AND submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot;
+    Two years of residence, adult, low income, before the deadline
+    would fire if all of these changed:
+    - residence_since &lt;= DATE &quot;2024-11-01&quot; is false (residence_since = DATE &quot;2025-01-20&quot;); over by 80 days
+    - submitted_at &lt;= DATETIME &quot;2026-12-15T14:00:00+01:00[Europe/Madrid]&quot; is false (submitted_at = DATETIME &quot;2026-12-16T09:30:00+01:00[Europe/Madrid]&quot;); over by 19 hours 30 minutes</pre>
 </div>
-<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run with the Java source launcher on JDK 27, on the Java binding built from the repository (<code>bindings/jvm</code>, Java 25 or later) and its native library. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below; the explanation text is the one every language prints. Not on Maven Central yet: <a href="../manual/installation.html#java">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.scala</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
-import io.github.cleanrules.scala.*
+<pre class="code"><code class="language-scala">// Design preview: the Scala 3 layer is being written (task G.2).
+import io.github.cleanrules.scaladsl.*
 import java.time.{LocalDate, ZoneId, ZonedDateTime}
 
 case class Applicant(residence_since: LocalDate, birth_date: LocalDate, household_income: Int,
@@ -409,7 +425,7 @@ case class Applicant(residence_since: LocalDate, birth_date: LocalDate, househol
     println(decision.fired)
     println(decision.output)</code></pre>
 </div>
-<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Design preview: the Scala 3 layer is being written (task G.2) and is not on the main branch yet; its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
 </div>
 <div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>eligibility.go</span><span class="src dp">design preview</span></div>
@@ -822,7 +838,7 @@ unknown [&#x27;missing_field&#x27;]</pre>
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -842,6 +858,7 @@ unknown [&#x27;missing_field&#x27;]</pre>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
             <li><a href="../manual/api-js.html">JavaScript API</a></li>
             <li><a href="../manual/api-cpp.html">C++ API</a></li>
+            <li><a href="../manual/api-java.html">Java API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

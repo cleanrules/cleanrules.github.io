@@ -48,6 +48,7 @@
             <a href="../manual/api-rust.html">Rust API</a>
             <a href="../manual/api-js.html">JavaScript API</a>
             <a href="../manual/api-cpp.html">C++ API</a>
+            <a href="../manual/api-java.html">Java API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -122,14 +123,14 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
-        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <p class="sub">Python, Rust, TypeScript, Java, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Scala, Go and Erlang are design previews of bindings still to come: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: not runnable yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
 <button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
-<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="ok"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
@@ -381,43 +382,72 @@ high_value_car   { premium: 208 }</pre>
 <p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.java</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
-import io.github.cleanrules.*;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Insurance.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
 
-import static io.github.cleanrules.Conditions.*;
+import io.github.cleanrules.*;
 
 public class Insurance {
     record Driver(int age, int claims_3y, int years_licensed, String zone, int car_value) {}
 
     public static void main(String[] args) {
-        var rules = RuleSet.builder()
-            .hitPolicy(HitPolicy.COLLECT)
-            .aggregate(Aggregate.SUM)
-            .add(Rule.named(&quot;base&quot;).when(field(&quot;age&quot;).ge(18)).then(&quot;premium&quot;, 420))
-            .add(Rule.named(&quot;young_driver&quot;).when(field(&quot;age&quot;).lt(25)).then(&quot;premium&quot;, 380))
-            .add(Rule.named(&quot;senior_driver&quot;).when(field(&quot;age&quot;).ge(75)).then(&quot;premium&quot;, 150))
-            .add(Rule.named(&quot;recent_claims&quot;).when(field(&quot;claims_3y&quot;).ge(2)).then(&quot;premium&quot;, 260))
-            .add(Rule.named(&quot;city_zone&quot;).when(field(&quot;zone&quot;).isIn(&quot;urban&quot;, &quot;metro&quot;)).then(&quot;premium&quot;, 90))
-            .add(Rule.named(&quot;no_claims_bonus&quot;)
-                .when(field(&quot;claims_3y&quot;).eq(0).and(field(&quot;years_licensed&quot;).ge(5)))
-                .then(&quot;premium&quot;, -110))
-            .add(Rule.named(&quot;high_value_car&quot;).when(field(&quot;car_value&quot;).gt(40_000))
-                .then(&quot;premium&quot;, field(&quot;car_value&quot;).times(0.004)))
-            .build();
+        RuleSet rules = RuleSet.builder()
+                .add(Rule.named(&quot;base&quot;).when(field(&quot;age&quot;).ge(18)).then(&quot;premium&quot;, 420),
+                     Rule.named(&quot;young_driver&quot;).when(field(&quot;age&quot;).lt(25)).then(&quot;premium&quot;, 380),
+                     Rule.named(&quot;senior_driver&quot;).when(field(&quot;age&quot;).ge(75)).then(&quot;premium&quot;, 150),
+                     Rule.named(&quot;recent_claims&quot;).when(field(&quot;claims_3y&quot;).ge(2)).then(&quot;premium&quot;, 260),
+                     Rule.named(&quot;city_zone&quot;).when(field(&quot;zone&quot;).isIn(&quot;urban&quot;, &quot;metro&quot;)).then(&quot;premium&quot;, 90),
+                     Rule.named(&quot;no_claims_bonus&quot;)
+                             .when(field(&quot;claims_3y&quot;).eq(0).and(field(&quot;years_licensed&quot;).ge(5)))
+                             .then(&quot;premium&quot;, -110),
+                     Rule.named(&quot;high_value_car&quot;).when(field(&quot;car_value&quot;).gt(40_000))
+                             .then(&quot;premium&quot;, field(&quot;car_value&quot;).mul(0.004)))
+                .hitPolicy(HitPolicy.COLLECT)
+                .aggregate(Aggregate.SUM)
+                .build();
 
-        var decision = rules.evaluate(new Driver(31, 0, 9, &quot;urban&quot;, 52_000));
+        Decision decision = rules.evaluate(new Driver(31, 0, 9, &quot;urban&quot;, 52_000));
         System.out.println(decision.fired());
         System.out.println(decision.output().orElseThrow());
+        for (RuleResult result : decision.selected()) {
+            System.out.printf(&quot;%-16s %s%n&quot;, result.rule().name(), result.output().orElseThrow());
+        }
+        System.out.println();
+        System.out.println(decision.explain());
     }
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[base, city_zone, no_claims_bonus, high_value_car]
+{premium=608.0}
+base             {premium=420}
+city_zone        {premium=90}
+no_claims_bonus  {premium=-110}
+high_value_car   {premium=208.0}
+
+HIT POLICY collect AGGREGATE sum: selected base, city_zone, no_claims_bonus, high_value_car
+[x] base (selected): age &gt;= 18
+    - age &gt;= 18 is true (age = 31)
+[ ] young_driver (not fired): age &lt; 25
+    - age &lt; 25 is false (age = 31); over by 6
+[ ] senior_driver (not fired): age &gt;= 75
+    - age &gt;= 75 is false (age = 31); short by 44
+[ ] recent_claims (not fired): claims_3y &gt;= 2
+    - claims_3y &gt;= 2 is false (claims_3y = 0); short by 2
+[x] city_zone (selected): zone IN (&quot;metro&quot;, &quot;urban&quot;)
+    - zone IN (&quot;metro&quot;, &quot;urban&quot;) is true (zone = &quot;urban&quot;)
+[x] no_claims_bonus (selected): claims_3y = 0 AND years_licensed &gt;= 5
+    because all of these hold:
+    - claims_3y = 0 is true (claims_3y = 0)
+    - years_licensed &gt;= 5 is true (years_licensed = 9)
+[x] high_value_car (selected): car_value &gt; 40000
+    - car_value &gt; 40000 is true (car_value = 52000)</pre>
 </div>
-<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run with the Java source launcher on JDK 27, on the Java binding built from the repository (<code>bindings/jvm</code>, Java 25 or later) and its native library. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below; the explanation text is the one every language prints. Not on Maven Central yet: <a href="../manual/installation.html#java">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.scala</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
-import io.github.cleanrules.scala.*
+<pre class="code"><code class="language-scala">// Design preview: the Scala 3 layer is being written (task G.2).
+import io.github.cleanrules.scaladsl.*
 
 case class Driver(age: Int, claims_3y: Int, years_licensed: Int, zone: String, car_value: Int)
 
@@ -432,15 +462,15 @@ case class Driver(age: Int, claims_3y: Int, years_licensed: Int, zone: String, c
             Rule(&quot;no_claims_bonus&quot;, F.claims_3y === 0 &amp; F.years_licensed &gt;= 5, Map(&quot;premium&quot; -&gt; -110)),
             Rule(&quot;high_value_car&quot;, F.car_value &gt; 40000, Map(&quot;premium&quot; -&gt; F.car_value * 0.004)),
         ),
-        hitPolicy = HitPolicy.Collect,
-        aggregate = Some(Aggregate.Sum),
+        hitPolicy = HitPolicy.COLLECT,
+        aggregate = Some(Aggregate.SUM),
     )
 
     val decision = rules.evaluate(Driver(31, 0, 9, &quot;urban&quot;, 52000))
     println(decision.fired)
     println(decision.output)</code></pre>
 </div>
-<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Design preview: the Scala 3 layer is being written (task G.2) and is not on the main branch yet; its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
 </div>
 <div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>insurance.go</span><span class="src dp">design preview</span></div>
@@ -997,7 +1027,7 @@ except MissingFieldError as err:
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -1017,6 +1047,7 @@ except MissingFieldError as err:
             <li><a href="../manual/api-rust.html">Rust API</a></li>
             <li><a href="../manual/api-js.html">JavaScript API</a></li>
             <li><a href="../manual/api-cpp.html">C++ API</a></li>
+            <li><a href="../manual/api-java.html">Java API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

@@ -48,6 +48,7 @@
             <a href="manual/api-rust.html">Rust API</a>
             <a href="manual/api-js.html">JavaScript API</a>
             <a href="manual/api-cpp.html">C++ API</a>
+            <a href="manual/api-java.html">Java API</a>
             <a href="manual/errors.html">Error codes</a>
             <a href="benchmarks.html">Benchmarks</a>
           </div>
@@ -129,20 +130,20 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
       <div class="wrap">
         <p class="eyebrow">Start here</p>
         <h2>A manual, worked examples and the reference.</h2>
-        <p class="sub">Every Python, Rust, C, C++ and TypeScript snippet on this site was run, and its output is pasted as printed. The planned languages are shown as clearly labelled design previews.</p>
+        <p class="sub">Every Python, Rust, C, C++, TypeScript and Java snippet on this site was run, and its output is pasted as printed. The languages still to come are shown as clearly labelled design previews.</p>
         <div class="funnel">
           <a class="card" href="manual/index.html">
-            <span class="ex-num">17 chapters</span>
+            <span class="ex-num">18 chapters</span>
             <span class="big">The manual</span>
-            <p>Install from source, write conditions and rules, choose a hit policy, handle missing data, read explanations and errors. Python and Rust, with real output, and API references for Python, Rust, JavaScript and C++.</p>
-            <ul><li><span>Quick start</span></li><li><span>Writing conditions</span></li><li><span>Explanations and counterfactuals</span></li><li><span>Python, Rust, JavaScript and C++ API</span></li></ul>
+            <p>Install from source, write conditions and rules, choose a hit policy, handle missing data, read explanations and errors. Python and Rust, with real output, and API references for Python, Rust, JavaScript, C++ and Java.</p>
+            <ul><li><span>Quick start</span></li><li><span>Writing conditions</span></li><li><span>Explanations and counterfactuals</span></li><li><span>Python, Rust, JavaScript, C++ and Java API</span></li></ul>
             <span class="more">Open the manual →</span>
           </a>
           <a class="card" href="examples/index.html">
             <span class="ex-num">8 problems · 10 languages</span>
             <span class="big">Worked examples</span>
             <p>Loan approval, insurance premiums, shipping tables, fraud flags, order validation, eligibility deadlines, discount agreement and an AI-agent guardrail.</p>
-            <ul><li><span>Python, Rust, TypeScript, JSON, C and C++ that run</span></li><li><span>Java, Scala, Go, Erlang previews</span></li></ul>
+            <ul><li><span>Python, Rust, TypeScript, Java, JSON, C and C++ that run</span></li><li><span>Scala, Go, Erlang previews</span></li></ul>
             <span class="more">Browse the examples →</span>
           </a>
           <a class="card" href="guide.html">
@@ -160,10 +161,10 @@ not_fired because F.customer.years &gt; 5 is false - short by 2</pre>
     <section class="section alt" id="status">
       <div class="wrap">
         <p class="eyebrow">Status at a glance</p>
-        <h2>The Rust core, Python, C, C++ and JavaScript are done; the JVM is next.</h2>
-        <p class="sub">Phases A (the contract between languages), B (the Rust core), C (the Python binding), D (rules as data: JSON, YAML, a text syntax, decision tables and actions by name) and E (the C ABI and a header-only C++17 wrapper, with a CMake package, a Conan recipe and a vcpkg port) and F (JavaScript and TypeScript: a native addon for Node, prebuilt per platform with a glibc 2.28 floor, and a WebAssembly build for browsers and Deno, sharing one idiomatic API and passing the conformance suite) are complete. Phase G, Java (25 and later, through the FFM API over the C ABI) and Scala, has started. That is 55 of the 93 tasks of the roadmap. Everything builds from source today, and nothing is published to any registry yet (crates.io, PyPI, npm, Conan, vcpkg): the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
+        <h2>The Rust core, Python, C, C++ and JavaScript are done; Java runs from source.</h2>
+        <p class="sub">Phases A (the contract between languages), B (the Rust core), C (the Python binding), D (rules as data: JSON, YAML, a text syntax, decision tables and actions by name) and E (the C ABI and a header-only C++17 wrapper, with a CMake package, a Conan recipe and a vcpkg port) and F (JavaScript and TypeScript: a native addon for Node, prebuilt per platform with a glibc 2.28 floor, and a WebAssembly build for browsers and Deno, sharing one idiomatic API and passing the conformance suite) are complete. Phase G, the JVM, is in progress: the Java binding (Java 25 and later, through the FFM API over the C ABI, with no native code of its own) has its native layer and its idiomatic API (conditions and rules in code, decisions, structured explanations and summaries, documents, <code>ruleFromText</code>, decision tables and result trees) on the main branch; the native libraries inside the jar are in review, the Scala 3 layer is being written, and the Java conformance runner and Maven Central come last. That is 58 of the 96 tasks of the roadmap. Everything builds from source today, and nothing is published to any registry yet (crates.io, PyPI, npm, Maven Central, Conan, vcpkg): the Python binding will be the first public release, and the 1.0 release will ship every language together. These are the figures from the repository today.</p>
         <div class="stats">
-          <div class="stat"><b>2,508</b><span>conformance vectors, all passing</span><small>1,952 through the core's runner (1,151 condition, 178 value, 302 evaluation, 317 explanation, 4 summary) and 556 document-reading cases. Every binding passes them too: Python and C++ all 2,508 through JSON and 1,952 with native data, the C ABI all 2,508, and JavaScript all 2,508 with native data on the addon and on WebAssembly (2,480 also through JSON; grids are native data only).</small></div>
+          <div class="stat"><b>2,508</b><span>conformance vectors, all passing</span><small>1,952 through the core's runner (1,151 condition, 178 value, 302 evaluation, 317 explanation, 4 summary) and 556 document-reading cases. Every binding passes them too: Python and C++ all 2,508 through JSON and 1,952 with native data, the C ABI all 2,508, and JavaScript all 2,508 with native data on the addon and on WebAssembly (2,480 also through JSON; grids are native data only). Java runs a smoke pass for now (the 131 vectors of <code>ast/</code>, <code>explain/</code> and <code>rules/</code> through JSON, 127 with Java data); its full runner is task G.3.</small></div>
           <div class="stat"><b>10 &times; 512</b><span>property tests</span><small><code>proptest</code>: evaluation never fails and gives reasons exactly for unknowns, De Morgan, strict mode, JSON, text and CSV round trips, decisions read back, explanation causes point the right way.</small></div>
           <div class="stat"><b>7.2&nbsp;&micro;s</b><span>per input, 12 rules</span><small>One input under <code>first</code>, with every result tree kept for <code>explain()</code>. Apple M5, rustc 1.97.1, criterion. <a href="benchmarks.html">Method and caveats</a></small></div>
           <div class="stat"><b>6.4&times; / 6.7&times;</b><span>vs zen-engine 2.1.6</span><small>1,000 evaluations under <code>first</code> / <code>collect</code>, on one workload and one machine, after checking both engines select the same rules. <a href="benchmarks.html#zen">Read the caveats</a></small></div>
@@ -492,20 +493,21 @@ Outputs: discount</pre>
           <div class="lang"><span class="lang-name">C</span><span class="chip ref">runs from source</span><code>#include &lt;cleanrules.h&gt;</code></div>
           <div class="lang"><span class="lang-name">C++</span><span class="chip ref">runs from source</span><code>find_package(cleanrules)</code></div>
           <div class="lang"><span class="lang-name">JavaScript / TS</span><span class="chip ref">runs from source</span><code>npm i cleanrules</code></div>
-          <div class="lang"><span class="lang-name">Java / Scala</span><span class="chip planned">planned</span><code>io.github.cleanrules</code></div>
+          <div class="lang"><span class="lang-name">Java</span><span class="chip ref">runs from source</span><code>io.github.cleanrules</code></div>
+          <div class="lang"><span class="lang-name">Scala</span><span class="chip soon">in progress</span><code>io.github.cleanrules</code></div>
           <div class="lang"><span class="lang-name">Go</span><span class="chip planned">planned</span><code>github.com/cleanrules/…</code></div>
           <div class="lang"><span class="lang-name">Erlang</span><span class="chip planned">planned</span><code>{deps, [cleanrules]}</code></div>
           <div class="lang"><span class="lang-name">AI agents</span><span class="chip planned">planned</span><code>cleanrules-mcp</code></div>
         </div>
-        <p class="caption center">Nothing is published yet: these are the intended package names for the first releases (<code>npm i cleanrules</code> does not work yet, and C++ is not in ConanCenter or the vcpkg registry). Today, build from source: Python with maturin, Rust as a path dependency, C and C++ with CMake, Conan or vcpkg from the repository, and JavaScript with npm in <code>bindings/js</code> (<a href="manual/installation.html">installation</a>).</p>
+        <p class="caption center">Nothing is published yet: these are the intended package names for the first releases (<code>npm i cleanrules</code> does not work yet, C++ is not in ConanCenter or the vcpkg registry, and Java is not on Maven Central). Today, build from source: Python with maturin, Rust as a path dependency, C and C++ with CMake, Conan or vcpkg from the repository, JavaScript with npm in <code>bindings/js</code>, and Java with Gradle in <code>bindings/jvm</code> (<a href="manual/installation.html">installation</a>).</p>
 
         <div class="preview">
-<p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+<p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: not runnable yet</span></p>
 <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-ov-py" data-lang="py" aria-controls="ov-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-ov-rs" data-lang="rs" aria-controls="ov-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-ov-ts" data-lang="ts" aria-controls="ov-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
-<button role="tab" id="tab-ov-java" data-lang="java" aria-controls="ov-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-ov-java" data-lang="java" aria-controls="ov-java" aria-selected="false" tabindex="-1"><span class="ok"></span>Java</button>
 <button role="tab" id="tab-ov-go" data-lang="go" aria-controls="ov-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-ov-cpp" data-lang="cpp" aria-controls="ov-cpp" aria-selected="false" tabindex="-1"><span class="ok"></span>C++</button>
 <button role="tab" id="tab-ov-erl" data-lang="erl" aria-controls="ov-erl" aria-selected="false" tabindex="-1"><span class="pv"></span>Erlang</button>
@@ -580,22 +582,34 @@ not_fired because customer.years &gt; 5 is false - short by 2</pre>
 <p class="panel-note">Run as TypeScript with Node 26 on the native addon of the JavaScript binding, built from the repository; its WebAssembly build prints the same, in Node and in Deno. <code>String(node)</code> is the rule syntax that explanations use. Not on npm yet (<a href="manual/installation.html#javascript">build from source</a>, <a href="manual/api-js.html">API</a>).</p>
 </div>
 <div role="tabpanel" id="ov-java" aria-labelledby="tab-ov-java" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.java</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
-import static io.github.cleanrules.Conditions.*;
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Pricing.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
 
-var rules = RuleSet.builder()
-    .add(Rule.named(&quot;vip&quot;)
-        .when(field(&quot;customer&quot;, &quot;years&quot;).gt(5).and(field(&quot;order&quot;, &quot;total&quot;).gt(1000)))
-        .then(&quot;discount&quot;, 0.15))
-    .add(Rule.named(&quot;loyal&quot;).when(field(&quot;customer&quot;, &quot;years&quot;).gt(2)).then(&quot;discount&quot;, 0.05))
-    .build();
+import io.github.cleanrules.*;
+import java.util.Map;
 
-var decision = rules.evaluate(Map.of(&quot;customer&quot;, Map.of(&quot;years&quot;, 3), &quot;order&quot;, Map.of(&quot;total&quot;, 1500)));
-System.out.println(decision.output().orElseThrow());
-System.out.println(decision.whyNot(&quot;vip&quot;).causes().get(0).counterfactual());</code></pre>
+public class Pricing {
+    public static void main(String[] args) {
+        RuleSet rules = RuleSet.of(
+                Rule.named(&quot;vip&quot;)
+                        .when(field(&quot;customer&quot;, &quot;years&quot;).gt(5).and(field(&quot;order&quot;, &quot;total&quot;).gt(1000)))
+                        .then(&quot;discount&quot;, 0.15),
+                Rule.named(&quot;loyal&quot;).when(field(&quot;customer&quot;, &quot;years&quot;).gt(2)).then(&quot;discount&quot;, 0.05));
+
+        Decision decision = rules.evaluate(Map.of(&quot;customer&quot;, Map.of(&quot;years&quot;, 3), &quot;order&quot;, Map.of(&quot;total&quot;, 1500)));
+        System.out.println(decision.output().orElseThrow());
+
+        RuleExplanation why = decision.whyNot(&quot;vip&quot;);
+        Cause cause = why.causes().getFirst();
+        System.out.println(why.status().jsonName() + &quot; because &quot; + cause.node() + &quot; is &quot; + cause.truth().jsonName()
+                + &quot; - short by &quot; + cause.counterfactual().orElseThrow().gap().orElseThrow());
+    }
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{discount=0.05}
+not_fired because customer.years &gt; 5 is false - short by 2</pre>
 </div>
-<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run with the Java source launcher on JDK 27, on the Java binding built from the repository (Java 25 or later, through the FFM API over the C ABI). <code>cause.node()</code> prints the rule syntax that explanations use, and the enums give the format&#x27;s names with <code>jsonName()</code>. Not on Maven Central yet (<a href="manual/installation.html#java">build from source</a>, <a href="manual/api-java.html">API</a>).</p>
 </div>
 <div role="tabpanel" id="ov-go" aria-labelledby="tab-ov-go" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>pricing.go</span><span class="src dp">design preview</span></div>
@@ -696,7 +710,7 @@ HIT POLICY first: selected loyal
           <li class="done"><span class="step">D</span><div><h3>Rules as data</h3><p>JSON and YAML, a text syntax aligned with fuzzytool, decision tables from JSON, CSV, rows and data frames, and actions by registered name.</p></div></li>
           <li class="done"><span class="step">E</span><div><h3>C and C++</h3><p>The C ABI: a header generated by cbindgen, native values, actions as C callbacks, decision tables row by row, checked under Miri and sanitizers. <code>cleanrules.hpp</code>: a header-only C++17 layer with handles that free themselves, exceptions or <code>error_info</code> values, a CMake package, a Conan recipe and a vcpkg overlay port. Both pass every conformance vector, C++ also under AddressSanitizer and UndefinedBehaviorSanitizer.</p></div></li>
           <li class="done"><span class="step">F</span><div><h3>JavaScript and TypeScript</h3><p>A napi-rs addon for Node (prebuilt per platform in CI) and a WebAssembly build for browsers and Deno, with one idiomatic TypeScript API: <code>F</code> and <code>.and()</code>, <code>.or()</code>, <code>.not()</code>, rules, decisions with native values, structured explanations and summaries, documents, <code>ruleFromText</code> and decision tables. A conformance runner on both builds and Deno, and the npm packages checked and installed on every platform in CI. Not on npm yet.</p></div></li>
-          <li class="now"><span class="step">G</span><div><h3>Java and Scala</h3><p>Java 25 and later through the Foreign Function &amp; Memory API over the C ABI, with no native code of its own, and an idiomatic Scala 3 layer; native libraries inside the jar, and its own conformance runner. In progress.</p></div></li>
+          <li class="now"><span class="step">G</span><div><h3>Java and Scala</h3><p>Java 25 and later through the Foreign Function &amp; Memory API over the C ABI, with no native code of its own. On the main branch: the native layer and the idiomatic API (<code>field(&quot;customer&quot;, &quot;age&quot;).ge(18)</code>, <code>Rule.named(...)</code>, <code>RuleSet.builder()</code>, decisions, structured explanations and summaries, documents, <code>ruleFromText</code>, decision tables and result trees). Next: the native libraries inside the jar (in review), an idiomatic Scala 3 layer with <code>&amp;</code>, <code>|</code> and <code>~</code> (being written), and the conformance runner and Maven Central. In progress.</p></div></li>
           <li><span class="step">H, N</span><div><h3>Go, Erlang</h3><p>Each binding with its own conformance runner; Go over the C ABI, Erlang through a rustler NIF.</p></div></li>
           <li><span class="step">I–L</span><div><h3>Validation, fuzzy &amp; audit, expert system, ML</h3><p>Arrow batches, fuzzy norms, static audit, Rete, rule extraction from models.</p></div></li>
           <li><span class="step">O</span><div><h3>AI agents</h3><p>An MCP server, guardrails for agent tool calls, adapters for agent frameworks, and verified rules proposed by LLMs.</p></div></li>
@@ -755,7 +769,7 @@ HIT POLICY first: selected loyal
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -775,6 +789,7 @@ HIT POLICY first: selected loyal
             <li><a href="manual/api-rust.html">Rust API</a></li>
             <li><a href="manual/api-js.html">JavaScript API</a></li>
             <li><a href="manual/api-cpp.html">C++ API</a></li>
+            <li><a href="manual/api-java.html">Java API</a></li>
             <li><a href="manual/errors.html">Errors</a></li>
             <li><a href="benchmarks.html">Benchmarks</a></li>
           </ul>

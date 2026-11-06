@@ -48,6 +48,7 @@
             <a href="manual/api-rust.html">Rust API</a>
             <a href="manual/api-js.html">JavaScript API</a>
             <a href="manual/api-cpp.html">C++ API</a>
+            <a href="manual/api-java.html">Java API</a>
             <a href="manual/errors.html">Error codes</a>
             <a href="benchmarks.html">Benchmarks</a>
           </div>
@@ -139,7 +140,8 @@
           <li><strong>JSON documents</strong> were written by the core. For every worked example, the Python rules, the Rust rules and the JSON rule set were checked to be the same document, and Python's decision, explanation and summary documents equal the core's for the same input.</li>
           <li><strong>C programs</strong> were compiled against the C ABI (<code>crates/ffi</code>) built from the repository and run next to each example&#x27;s JSON rule set.</li>
           <li><strong>TypeScript code and output</strong> was run with Node 26.13 on the JavaScript binding built from the repository at commit <code>01ea4a4</code> (its native addon, and its WebAssembly build, which printed the same), and type-checked with <code>tsc</code>. <strong>C++ programs</strong> were compiled as C++17 against <code>cleanrules.hpp</code> at the same commit, installed with CMake, and run. For every worked example, the TypeScript rule set writes the same document as the JSON tab, the C++ rules in the rule syntax read as that document, and both give the decision, explanation and summary the core gives.</li>
-          <li><strong>Code in Java, Scala, Go and Erlang</strong> is a design preview of bindings that do not exist yet; it may change and does not run.</li>
+          <li><strong>Java code and output</strong> was run with the Java source launcher on OpenJDK 27 against the Java binding built from the repository at commit <code>a1758c5</code> (<code>bindings/jvm</code>, which targets Java 25) and the C library built with cargo at the same commit; for every worked example, the Java rule set writes the same document as the JSON tab and gives the decision, explanation and summary the core gives.</li>
+          <li><strong>Code in Scala, Go and Erlang</strong> is a design preview of bindings that are not there yet (the Scala 3 layer is being written); it may change and does not run.</li>
           <li><strong>Status and roadmap</strong> come from <code>docs/PLAN.md</code> and <code>CHANGELOG.md</code>; benchmark figures from <code>benchmarks/results/</code>.</li>
         </ul>
       </div>
@@ -151,7 +153,7 @@
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -171,6 +173,7 @@
             <li><a href="manual/api-rust.html">Rust API</a></li>
             <li><a href="manual/api-js.html">JavaScript API</a></li>
             <li><a href="manual/api-cpp.html">C++ API</a></li>
+            <li><a href="manual/api-java.html">Java API</a></li>
             <li><a href="manual/errors.html">Errors</a></li>
             <li><a href="benchmarks.html">Benchmarks</a></li>
           </ul>

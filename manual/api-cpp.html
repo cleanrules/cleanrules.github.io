@@ -48,6 +48,7 @@
             <a href="../manual/api-rust.html">Rust API</a>
             <a href="../manual/api-js.html">JavaScript API</a>
             <a href="../manual/api-cpp.html" aria-current="page">C++ API</a>
+            <a href="../manual/api-java.html">Java API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -75,10 +76,10 @@
     <div class="wrap doc-layout">
       <aside class="doc-side" aria-label="Manual chapters">
         <details open>
-          <summary>Chapters <span class="muted">17 / 17</span></summary>
+          <summary>Chapters <span class="muted">17 / 18</span></summary>
           <nav aria-label="Chapters">
             <h2>Manual</h2>
-            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li><li><a href="api-js.html">JavaScript API</a></li><li><a href="api-cpp.html" aria-current="page">C++ API</a></li></ol>
+            <ol class="doc-chapters"><li class="grp" aria-hidden="true">Getting started</li><li><a href="index.html">Introduction</a></li><li><a href="installation.html">Installation</a></li><li><a href="quickstart.html">Quick start</a></li><li class="grp" aria-hidden="true">Using cleanrules</li><li><a href="conditions.html">Writing conditions</a></li><li><a href="rules.html">Rules and rule sets</a></li><li><a href="hit-policies.html">Hit policies and aggregates</a></li><li><a href="evaluating.html">Evaluating data</a></li><li><a href="explanations.html">Explanations and counterfactuals</a></li><li><a href="summaries.html">Summaries</a></li><li class="grp" aria-hidden="true">Going further</li><li><a href="errors.html">Errors</a></li><li><a href="json.html">Rules as JSON</a></li><li><a href="pitfalls.html">Python pitfalls</a></li><li><a href="performance.html">Performance</a></li><li class="grp" aria-hidden="true">Reference</li><li><a href="api-python.html">Python API</a></li><li><a href="api-rust.html">Rust API</a></li><li><a href="api-js.html">JavaScript API</a></li><li><a href="api-cpp.html" aria-current="page">C++ API</a></li><li><a href="api-java.html">Java API</a></li></ol>
           </nav>
         </details>
       </aside>
@@ -87,7 +88,7 @@
         <h1>C++ API</h1>
 <p class="lead"><code>cleanrules.hpp</code> is a header-only C++17 layer over the C ABI: the same engine and the same concepts (<code>ruleset</code>, <code>decision</code>, <code>explain</code>, <code>summary</code>), with handles that free themselves, values built from C++ data, and errors as exceptions or as values. Everything lives in <code>namespace cleanrules</code>; the examples write <code>namespace cr = cleanrules;</code>.</p>
 <div class="callout">
-  <p><strong>Built from the repository.</strong> The CMake package, the Conan recipe and the vcpkg overlay port all build from a checkout (<a href="installation.html#cpp">installation</a>); nothing is in ConanCenter or the vcpkg registry yet. This page is written from <code>bindings/cpp/include/cleanrules.hpp</code> and its README at commit <code>01ea4a4</code>. The C++ layer reads rules as documents (JSON, YAML, the rule syntax or CSV tables); it has no condition builder like Python&#x27;s <code>F</code>.</p>
+  <p><strong>Built from the repository.</strong> The CMake package, the Conan recipe and the vcpkg overlay port all build from a checkout (<a href="installation.html#cpp">installation</a>); nothing is in ConanCenter or the vcpkg registry yet. This page is written from <code>bindings/cpp/include/cleanrules.hpp</code> and its README at commit <code>01ea4a4</code>, and <a href="#building-in-code">building in code</a> at commit <code>a1758c5</code>. The C++ layer reads rules as documents (JSON, YAML, the rule syntax or CSV tables), and can also build them node by node with the constructors of the C ABI; it has no operator syntax like Python&#x27;s <code>F</code>.</p>
 </div>
 <h2 id="example">A first program<a class="h-anchor" href="#example" aria-label="Link to this section">#</a></h2>
 <p>Rules in the rule syntax, an input built from C++ values, which rules fired, an exact decimal, an action as a lambda, an error as a value, and the summary. Compiled as C++17 against the installed package and run:</p>
@@ -236,6 +237,55 @@ is an evaluation_error: true</pre>
 <p class="muted">Members</p><dl><dt>size()</dt><dd>The number of rules.</dd><dt>fired(i), truth(i), rule_name(i)</dt><dd>Each rule&#x27;s result: whether it fired, its <code>truth</code> (<code>true_</code>, <code>false_</code>, <code>unknown</code>), its name.</dd><dt>selected()</dt><dd>The positions of the selected rules.</dd><dt>output(), outputs()</dt><dd>The single output (a map, the aggregate, or a plain null), or the list of outputs; <code>output()</code> throws a <code>hit_policy_error</code> for policies with several.</dd><dt>rule_output(i)</dt><dd>A rule&#x27;s evaluated payload, or a plain null.</dd><dt>output_json(), outputs_json()</dt><dd>The same, as JSON.</dd><dt>write(format = json)</dt><dd>The decision document.</dd><dt>explain(format = text)</dt><dd>The explanation: the text every language prints, or a JSON or YAML document.</dd></dl></section>
 <section class="api" id="batch"><h3><span class="kind">class</span>batch</h3>
 <p>The decisions of <code>evaluate_many</code>: <code>size()</code>, <code>empty()</code>, <code>b[i]</code> and iteration give <code>decision_ref</code>s that live as long as the batch.</p></section>
+<h2 id="building-in-code">Building in code<a class="h-anchor" href="#building-in-code" aria-label="Link to this section">#</a></h2>
+<p>The C ABI&#x27;s constructors, added for the Java binding, build nodes, rules and rule sets in code; the core checks each one as it is made (an <code>expression_error</code> or a <code>rule_definition_error</code>). The rules of the first program, built this way and run:</p>
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>building.cpp</span><span class="src">C++ binding · runs</span></div>
+<pre class="code"><code class="language-cpp">#include &lt;cleanrules.hpp&gt;
+#include &lt;iostream&gt;
+
+namespace cr = cleanrules;
+
+int main() {
+    auto years = cr::node::field(cr::value::list({&quot;customer&quot;, &quot;years&quot;}));
+    auto total = cr::node::field(cr::value::list({&quot;order&quot;, &quot;total&quot;}));
+    auto vip = cr::rule::make(&quot;vip&quot;, cr::node::and_({cr::node::compare(&quot;gt&quot;, years, cr::node::constant(5)),
+                                                     cr::node::compare(&quot;gt&quot;, total, cr::node::constant(1000))}))
+                   .with_payload(&quot;discount&quot;, cr::node::constant(cr::value::decimal(&quot;0.15&quot;)))
+                   .with_priority(10);
+    auto loyal = cr::rule::make(&quot;loyal&quot;, cr::node::compare(&quot;gt&quot;, years, cr::node::constant(2)))
+                     .with_payload(&quot;discount&quot;, cr::node::constant(cr::value::decimal(&quot;0.05&quot;)))
+                     .with_priority(5);
+    auto rules = cr::ruleset::make({vip, loyal}, cr::ruleset_settings{&quot;priority&quot;, {}, {}, false});
+
+    auto decision = rules.evaluate(cr::value::map({
+        {&quot;customer&quot;, cr::value::map({{&quot;years&quot;, 7}})},
+        {&quot;order&quot;, cr::value::map({{&quot;total&quot;, 900}})},
+    }));
+    std::cout &lt;&lt; decision.output_json() &lt;&lt; &quot;\n&quot; &lt;&lt; decision.explain() &lt;&lt; &quot;\n&quot;;
+    std::cout &lt;&lt; rules.write(cr::format::text);
+}</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">{&quot;discount&quot;:{&quot;$decimal&quot;:&quot;0.05&quot;}}
+HIT POLICY priority: selected loyal
+[ ] vip (not fired): customer.years &gt; 5 AND order.total &gt; 1000
+    - order.total &gt; 1000 is false (order.total = 900); short by 100
+[x] loyal (selected): customer.years &gt; 2
+    - customer.years &gt; 2 is true (customer.years = 7)
+HIT POLICY priority
+
+RULE vip PRIORITY 10
+IF customer.years &gt; 5 AND order.total &gt; 1000
+THEN discount = 0.15
+
+RULE loyal PRIORITY 5
+IF customer.years &gt; 2
+THEN discount = 0.05</pre>
+</div>
+<p class="panel-note">Compiled as C++17 against <code>cleanrules.hpp</code> and the static C library built with cargo at commit <code>a1758c5</code>, and run.</p>
+<section class="api" id="node-builders"><h3><span class="kind">functions</span>node::field, constant, compare, arith, and_, or_, not_, is_in, between, is_null, matches, string_test, abs, neg</h3>
+<p>Nodes by tag (<code>compare(&quot;gt&quot;, a, b)</code>, <code>arith(&quot;mul&quot;, a, b)</code>, <code>string_test(&quot;ends_with&quot;, a, text)</code>); <code>field</code> takes a list of keys and indexes, never split at dots. A node gives its <code>tag()</code>, <code>kind()</code>, <code>children()</code>, <code>detail()</code>, <code>same_as(other)</code> and <code>hash()</code>, with <code>std::hash</code> and <code>std::equal_to</code> for unordered containers.</p></section>
+<section class="api" id="rule"><h3><span class="kind">class</span>rule</h3>
+<p><code>rule::make(name, when)</code> and its <code>with_payload</code>, <code>with_priority</code>, <code>with_tags</code>, <code>with_description</code>, <code>with_metadata</code> and <code>with_action</code> steps, each a new rule; <code>rule::from_text(text)</code> reads one in the rule syntax. A rule gives <code>name()</code>, <code>description()</code>, <code>action_name()</code>, <code>priority()</code>, <code>when()</code>, <code>payload()</code>, <code>tags()</code> and <code>metadata()</code>. <code>ruleset::make(rules, ruleset_settings{hit_policy, aggregate, logic, strict})</code> makes a rule set; <code>rule_at(i)</code> and <code>rule_position(name)</code> (a <code>rule_not_found_error</code> otherwise) read it; <code>document::from_condition</code> and <code>from_rule</code> make documents to write. <code>decision::explanation()</code> gives the explanation as a <code>value</code>.</p></section>
 <h2 id="actions">Actions<a class="h-anchor" href="#actions" aria-label="Link to this section">#</a></h2>
 <section class="api" id="actions-registry"><h3><span class="kind">class</span>actions</h3>
 <p>An action registry: names mapped to callables (<code>std::function&lt;void(action_call &amp;)&gt;</code>), which it keeps. <code>add(name, fn)</code> registers one; register them all before running. A finished registry may be used from several threads, whose actions then run concurrently.</p></section>
@@ -250,11 +300,11 @@ is an evaluation_error: true</pre>
 <h2 id="threads">Threads and ownership<a class="h-anchor" href="#threads" aria-label="Link to this section">#</a></h2>
 <p>Rule sets, documents, decisions, nodes and batches never change once made: share them between threads. Values, limits, grids and action registries change while they are built; finish them first. Every handle frees its C handle; <code>c_ptr()</code> lends it to C code, and <code>value::adopt</code>, <code>decision::adopt</code> and <code>value::release()</code> move ownership across. The header includes <code>cleanrules.h</code>, so the whole C ABI stays available.</p>
 
-<nav class="pager" aria-label="Chapters"><a class="prev" href="api-js.html"><small>← Previous</small>JavaScript API</a></nav>
+<nav class="pager" aria-label="Chapters"><a class="prev" href="api-js.html"><small>← Previous</small>JavaScript API</a><a class="next" href="api-java.html"><small>Next →</small>Java API</a></nav>
       </article>
       <aside class="doc-toc" aria-label="On this page">
         <h2>On this page</h2>
-        <ol><li><a href="#example">A first program</a></li><li><a href="#building">Building and linking</a></li><li><a href="#versions">Versions</a></li><li><a href="#errors">Errors</a></li><li><a href="#values">Values</a></li><li><a href="#rulesets">Documents and rule sets</a></li><li><a href="#decisions">Decisions</a></li><li><a href="#actions">Actions</a></li><li><a href="#nodes">Nodes and tables</a></li><li><a href="#threads">Threads and ownership</a></li></ol>
+        <ol><li><a href="#example">A first program</a></li><li><a href="#building">Building and linking</a></li><li><a href="#versions">Versions</a></li><li><a href="#errors">Errors</a></li><li><a href="#values">Values</a></li><li><a href="#rulesets">Documents and rule sets</a></li><li><a href="#decisions">Decisions</a></li><li><a href="#building-in-code">Building in code</a></li><li><a href="#actions">Actions</a></li><li><a href="#nodes">Nodes and tables</a></li><li><a href="#threads">Threads and ownership</a></li></ol>
       </aside>
     </div>
   </main>
@@ -264,7 +314,7 @@ is an evaluation_error: true</pre>
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -284,6 +334,7 @@ is an evaluation_error: true</pre>
             <li><a href="../manual/api-rust.html">Rust API</a></li>
             <li><a href="../manual/api-js.html">JavaScript API</a></li>
             <li><a href="../manual/api-cpp.html">C++ API</a></li>
+            <li><a href="../manual/api-java.html">Java API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>

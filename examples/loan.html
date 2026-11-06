@@ -48,6 +48,7 @@
             <a href="../manual/api-rust.html">Rust API</a>
             <a href="../manual/api-js.html">JavaScript API</a>
             <a href="../manual/api-cpp.html">C++ API</a>
+            <a href="../manual/api-java.html">Java API</a>
             <a href="../manual/errors.html">Error codes</a>
             <a href="../benchmarks.html">Benchmarks</a>
           </div>
@@ -117,14 +118,14 @@
       <div class="wrap">
         <p class="eyebrow">The rules in every language</p>
         <h2>One rule set, ten ways to write it.</h2>
-        <p class="sub">Python, Rust, TypeScript, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Java, Scala, Go and Erlang are design previews of the planned bindings: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
-        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: the binding does not exist yet</span></p>
+        <p class="sub">Python, Rust, TypeScript, Java, C and C++ run today, built from the repository, and the JSON tab is the rule set document the core writes. Scala, Go and Erlang are design previews of bindings still to come: they show the intended API, and the result they would print is the one the core computes for the same rules and data.</p>
+        <p class="tab-legend"><span><span class="ok"></span>runs today: real code, real output</span><span><span class="pv"></span>design preview: not runnable yet</span></p>
         <div class="tabs lang-tabs" role="tablist" aria-label="Languages" data-tabgroup data-langtabs>
 <button role="tab" id="tab-rules-py" data-lang="py" aria-controls="rules-py" aria-selected="true" tabindex="0"><span class="ok"></span>Python</button>
 <button role="tab" id="tab-rules-rs" data-lang="rs" aria-controls="rules-rs" aria-selected="false" tabindex="-1"><span class="ok"></span>Rust</button>
 <button role="tab" id="tab-rules-json" data-lang="json" aria-controls="rules-json" aria-selected="false" tabindex="-1"><span class="ok"></span>JSON</button>
 <button role="tab" id="tab-rules-ts" data-lang="ts" aria-controls="rules-ts" aria-selected="false" tabindex="-1"><span class="ok"></span>TypeScript</button>
-<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="pv"></span>Java</button>
+<button role="tab" id="tab-rules-java" data-lang="java" aria-controls="rules-java" aria-selected="false" tabindex="-1"><span class="ok"></span>Java</button>
 <button role="tab" id="tab-rules-scala" data-lang="scala" aria-controls="rules-scala" aria-selected="false" tabindex="-1"><span class="pv"></span>Scala</button>
 <button role="tab" id="tab-rules-go" data-lang="go" aria-controls="rules-go" aria-selected="false" tabindex="-1"><span class="pv"></span>Go</button>
 <button role="tab" id="tab-rules-c" data-lang="c" aria-controls="rules-c" aria-selected="false" tabindex="-1"><span class="ok"></span>C</button>
@@ -427,45 +428,71 @@ not_fired true Counterfactual { path: [ &#x27;score&#x27; ], op: &#x27;ge&#x27;,
 <p class="panel-note">Run as TypeScript with Node 26 (which strips the types; <code>tsc</code> checked them) on the native addon built from the repository (<code>bindings/js</code>), and on the WebAssembly build, which prints the same. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below. Not on npm yet: <a href="../manual/installation.html#javascript">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-java" aria-labelledby="tab-rules-java" hidden>
-<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.java</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-java">// Design preview: the Java binding does not exist yet (phase G).
+<div class="window"><div class="window-bar"><i></i><i></i><i></i><span>Loan.java</span><span class="src">Java binding · runs</span></div>
+<pre class="code"><code class="language-java">import static io.github.cleanrules.Conditions.*;
+
 import io.github.cleanrules.*;
 import java.math.BigDecimal;
-
-import static io.github.cleanrules.Conditions.*;
 
 public class Loan {
     record Applicant(int age, String country, int score, int income, int debt) {}
 
     public static void main(String[] args) {
-        var rules = RuleSet.builder()
-            .hitPolicy(HitPolicy.PRIORITY)
-            .add(Rule.named(&quot;sanctioned&quot;).when(field(&quot;country&quot;).isIn(&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;))
-                .then(&quot;decision&quot;, &quot;decline&quot;).priority(100))
-            .add(Rule.named(&quot;underage&quot;).when(field(&quot;age&quot;).lt(18))
-                .then(&quot;decision&quot;, &quot;decline&quot;).priority(90))
-            .add(Rule.named(&quot;over_indebted&quot;).when(field(&quot;debt&quot;).div(field(&quot;income&quot;)).gt(0.45))
-                .then(&quot;decision&quot;, &quot;refer&quot;).priority(50))
-            .add(Rule.named(&quot;prime&quot;).when(field(&quot;score&quot;).ge(740).and(field(&quot;income&quot;).ge(40_000)))
-                .then(&quot;decision&quot;, &quot;approve&quot;).then(&quot;apr&quot;, new BigDecimal(&quot;6.9&quot;)).priority(20))
-            .add(Rule.named(&quot;near_prime&quot;)
-                .when(field(&quot;score&quot;).between(660, 740, Closed.LEFT).and(field(&quot;income&quot;).ge(30_000)))
-                .then(&quot;decision&quot;, &quot;approve&quot;).then(&quot;apr&quot;, new BigDecimal(&quot;9.9&quot;)).priority(10))
-            .add(Rule.named(&quot;fallback&quot;).when(constant(true)).then(&quot;decision&quot;, &quot;refer&quot;))
-            .build();
+        RuleSet rules = RuleSet.builder()
+                .add(Rule.named(&quot;sanctioned&quot;).when(field(&quot;country&quot;).isIn(&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;))
+                             .then(&quot;decision&quot;, &quot;decline&quot;).priority(100),
+                     Rule.named(&quot;underage&quot;).when(field(&quot;age&quot;).lt(18))
+                             .then(&quot;decision&quot;, &quot;decline&quot;).priority(90),
+                     Rule.named(&quot;over_indebted&quot;).when(field(&quot;debt&quot;).div(field(&quot;income&quot;)).gt(0.45))
+                             .then(&quot;decision&quot;, &quot;refer&quot;).priority(50),
+                     Rule.named(&quot;prime&quot;).when(field(&quot;score&quot;).ge(740).and(field(&quot;income&quot;).ge(40_000)))
+                             .then(&quot;decision&quot;, &quot;approve&quot;).then(&quot;apr&quot;, new BigDecimal(&quot;6.9&quot;)).priority(20),
+                     Rule.named(&quot;near_prime&quot;)
+                             .when(field(&quot;score&quot;).between(660, 740, Closed.LEFT).and(field(&quot;income&quot;).ge(30_000)))
+                             .then(&quot;decision&quot;, &quot;approve&quot;).then(&quot;apr&quot;, new BigDecimal(&quot;9.9&quot;)).priority(10),
+                     Rule.named(&quot;fallback&quot;).when(constant(true)).then(&quot;decision&quot;, &quot;refer&quot;))
+                .hitPolicy(HitPolicy.PRIORITY)
+                .build();
 
-        var decision = rules.evaluate(new Applicant(34, &quot;ES&quot;, 728, 52_000, 14_000));
-        System.out.println(decision.fired());
-        System.out.println(decision.output().orElseThrow());
+        Decision decision = rules.evaluate(new Applicant(34, &quot;ES&quot;, 728, 52_000, 14_000));
+        System.out.println(decision.selected().stream().map(result -&gt; result.rule().name()).toList()
+                + &quot; &quot; + decision.output().orElseThrow());
+
+        RuleExplanation why = decision.whyNot(&quot;prime&quot;);
+        System.out.println(why.status().jsonName() + &quot; &quot; + why.achievable().orElseThrow()
+                + &quot; &quot; + why.causes().getFirst().counterfactual().orElseThrow());
+        System.out.println();
+        System.out.println(decision.explain());
     }
 }</code></pre>
+<div class="out-label">Output</div>
+<pre class="term out">[near_prime] {decision=approve, apr=9.9}
+not_fired true Counterfactual[[score] ge 740, gap=12]
+
+HIT POLICY priority: selected near_prime
+[ ] sanctioned (not fired): country IN (&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;)
+    - country IN (&quot;IR&quot;, &quot;KP&quot;, &quot;SY&quot;) is false (country = &quot;ES&quot;)
+[ ] underage (not fired): age &lt; 18
+    - age &lt; 18 is false (age = 34); over by 16
+[ ] over_indebted (not fired): debt / income &gt; 0.45e0
+    - debt / income &gt; 0.45e0 is false (debt = 14000, income = 52000)
+[ ] prime (not fired): score &gt;= 740 AND income &gt;= 40000
+    - score &gt;= 740 is false (score = 728); short by 12
+[x] near_prime (selected): score BETWEEN 660 AND 740 CLOSED LEFT AND income &gt;= 30000
+    because all of these hold:
+    - score &gt;= 660 is true (score = 728)
+    - score &lt; 740 is true (score = 728)
+    - income &gt;= 30000 is true (income = 52000)
+[x] fallback (fired, not selected): TRUE
+    fired, but near_prime has a higher priority (10 &gt; 0)
+    - TRUE is true</pre>
 </div>
-<p class="panel-note">Design preview: the Java binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Run with the Java source launcher on JDK 27, on the Java binding built from the repository (<code>bindings/jvm</code>, Java 25 or later) and its native library. Its rule set writes the same document as the JSON tab, and its decision and explanation equal the core&#x27;s documents below; the explanation text is the one every language prints. Not on Maven Central yet: <a href="../manual/installation.html#java">build it from source</a>.</p>
 </div>
 <div role="tabpanel" id="rules-scala" aria-labelledby="tab-rules-scala" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.scala</span><span class="src dp">design preview</span></div>
-<pre class="code"><code class="language-scala">// Design preview: the Scala binding does not exist yet (phase G).
-import io.github.cleanrules.scala.*
+<pre class="code"><code class="language-scala">// Design preview: the Scala 3 layer is being written (task G.2).
+import io.github.cleanrules.scaladsl.*
 
 case class Applicant(age: Int, country: String, score: Int, income: Int, debt: Int)
 
@@ -478,18 +505,18 @@ case class Applicant(age: Int, country: String, score: Int, income: Int, debt: I
             Rule(&quot;over_indebted&quot;, F.debt / F.income &gt; 0.45, Map(&quot;decision&quot; -&gt; &quot;refer&quot;), priority = 50),
             Rule(&quot;prime&quot;, F.score &gt;= 740 &amp; F.income &gt;= 40000,
                 Map(&quot;decision&quot; -&gt; &quot;approve&quot;, &quot;apr&quot; -&gt; BigDecimal(&quot;6.9&quot;)), priority = 20),
-            Rule(&quot;near_prime&quot;, F.score.between(660, 740, Closed.Left) &amp; F.income &gt;= 30000,
+            Rule(&quot;near_prime&quot;, F.score.between(660, 740, Closed.LEFT) &amp; F.income &gt;= 30000,
                 Map(&quot;decision&quot; -&gt; &quot;approve&quot;, &quot;apr&quot; -&gt; BigDecimal(&quot;9.9&quot;)), priority = 10),
             Rule(&quot;fallback&quot;, Const(true), Map(&quot;decision&quot; -&gt; &quot;refer&quot;)),
         ),
-        hitPolicy = HitPolicy.Priority,
+        hitPolicy = HitPolicy.PRIORITY,
     )
 
     val decision = rules.evaluate(Applicant(34, &quot;ES&quot;, 728, 52000, 14000))
     println(decision.fired)
     println(decision.output)</code></pre>
 </div>
-<p class="panel-note">Design preview: the Scala binding does not exist yet (phase G); its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
+<p class="panel-note">Design preview: the Scala 3 layer is being written (task G.2) and is not on the main branch yet; its API may change. The output it would print is the core&#x27;s, shown under the Python and Rust tabs.</p>
 </div>
 <div role="tabpanel" id="rules-go" aria-labelledby="tab-rules-go" hidden>
 <div class="window"><div class="window-bar"><i></i><i></i><i></i><span>loan.go</span><span class="src dp">design preview</span></div>
@@ -1075,7 +1102,7 @@ for data in (more_debt, no_score):
       <div class="footer-grid">
         <div class="footer-about">
           <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="24" height="24"><span>cleanrules</span></a>
-          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++ and JavaScript bindings run from source; nothing is published to a registry yet.</p>
+          <p>An explainable rules engine with one Rust core. Pre-alpha: the core and the Python, C, C++, JavaScript and Java bindings run from source; nothing is published to a registry yet.</p>
         </div>
         <div class="footer-col">
           <h2>Learn</h2>
@@ -1095,6 +1122,7 @@ for data in (more_debt, no_score):
             <li><a href="../manual/api-rust.html">Rust API</a></li>
             <li><a href="../manual/api-js.html">JavaScript API</a></li>
             <li><a href="../manual/api-cpp.html">C++ API</a></li>
+            <li><a href="../manual/api-java.html">Java API</a></li>
             <li><a href="../manual/errors.html">Errors</a></li>
             <li><a href="../benchmarks.html">Benchmarks</a></li>
           </ul>
